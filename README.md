@@ -63,31 +63,21 @@ All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Pha
 
 ## Pipeline at a glance
 
-```
-Gene list + Disease
-        │
-        ▼
-┌───────────────────────┐     refined prompt
-│ Hypothesis Generation │◀───────────────────────┐
-└───────────┬───────────┘                         │
-            │ candidate pathways (GO/KEGG/REAC)    │
-            ▼                                      │
-┌───────────────────────┐   unvalidated   ┌────────────────┐
-│ Statistical Validation │ ───────────────▶│ Feedback Agent │
-│  (g:Profiler, FDR)     │                 └────────────────┘
-└───────────┬───────────┘
-            │ validated hypotheses
-            ▼
-┌───────────────────────┐
-│  Biological Ranking    │  ← description · pathology · overlap genes · enrichment · PubMed
-└───────────┬───────────┘
-            │ validated + ranked pathways
-            ▼
-┌───────────────────────┐
-│    Interpretation      │  → driver genes · cell/tissue context · mechanistic themes
-└───────────┬───────────┘
-            ▼
-   Pathways + biological interpretations
+```mermaid
+flowchart TD
+    A["Gene list + disease"]:::io --> B["<b>Hypothesis Generation</b><br/>candidate pathways: GO:BP/MF/CC, KEGG, Reactome"]:::gen
+    B --> C["<b>Statistical Validation</b><br/>g:Profiler enrichment, FDR control"]:::val
+    C -->|unvalidated| F["<b>Feedback Agent</b><br/>analyze failures, refine prompt"]:::fb
+    F -->|refined prompt| B
+    C -->|validated hypotheses| D["<b>Biological Ranking</b><br/>description · pathology · intersection genes · enrichment P · PubMed"]:::rank
+    D -->|validated + ranked| E["<b>Structured Interpretation</b><br/>driver genes · cell/tissue context · mechanistic themes"]:::interp
+    E --> G["Pathways + biological interpretations"]:::io
+    classDef io fill:#eef2f8,stroke:#c3ccdb,color:#1c2230;
+    classDef gen fill:#E9EFF7,stroke:#3E5C8A,color:#2c456b;
+    classDef val fill:#E5F1EA,stroke:#4E8C6A,color:#356b4d;
+    classDef fb fill:#FDECEB,stroke:#C0392B,color:#8a3226;
+    classDef rank fill:#F7EEDC,stroke:#C0812E,color:#8a5b18;
+    classDef interp fill:#ECE8F4,stroke:#6B5B95,color:#4f4173;
 ```
 
 ---
