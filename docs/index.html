@@ -98,6 +98,10 @@
   .card .ic{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;margin-bottom:15px}
   .card h3{font-size:16.5px;font-weight:700;margin-bottom:7px}
   .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+  .stat{background:var(--bg-alt);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;text-align:center}
+  .stat .n{display:block;font-family:var(--serif);font-size:26px;font-weight:600;color:var(--ink);letter-spacing:-.01em;line-height:1.1}
+  .stat .l{display:block;color:var(--muted);font-size:12.5px;margin-top:9px;line-height:1.45}
 
   /* ---------- Pipeline walkthrough ---------- */
   .rail{margin-top:40px;background:linear-gradient(#fff,#fbfcfe);border:1px solid var(--line);
@@ -197,10 +201,18 @@
     padding:2px 6px;border-radius:6px;color:var(--ink)}
 
   /* code map */
-  .tree{font-family:var(--mono);font-size:13px;line-height:1.85;background:var(--bg-alt);
-    border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;overflow-x:auto;color:var(--ink)}
-  .tree .p{color:var(--blue);font-weight:600}
-  .tree .cm{color:var(--faint)}
+  .tree-map{margin-top:26px;background:var(--bg-alt);border:1px solid var(--line);
+    border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .tree-map > *{border-bottom:1px solid var(--line)}
+  .tree-map > *:last-child{border-bottom:none}
+  .tree-map .tgroup{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--faint);padding:12px 22px;background:var(--bg-deep)}
+  .tree-map .trow{display:grid;grid-template-columns:minmax(150px,190px) 1fr;gap:18px;
+    padding:11px 22px;align-items:baseline;transition:background .15s}
+  .tree-map .trow:hover{background:#fff}
+  .tree-map code{font-family:var(--mono);font-size:13px;color:var(--blue);font-weight:600;white-space:nowrap}
+  .tree-map .dir code{color:var(--amber-ink)}
+  .tree-map .trow span{color:var(--muted);font-size:13.5px}
   table.mods{width:100%;border-collapse:collapse;margin-top:22px;font-size:14px}
   table.mods th{text-align:left;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--faint);padding:10px 12px;border-bottom:2px solid var(--line-strong)}
@@ -242,8 +254,11 @@
   }
   @media(max-width:560px){
     .grid.g4,.grid.g3{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr}
     section{padding:56px 0}
     .hero{padding:70px 0 54px}
+    .tree-map .trow{grid-template-columns:1fr;gap:3px;padding:10px 16px}
+    .tree-map .tgroup{padding:10px 16px}
   }
 </style>
 </head>
@@ -283,13 +298,13 @@
   <div class="wrap">
     <div class="tags reveal">
       <span class="tag"><b>5</b> specialized agents</span>
-      <span class="tag"><b>30</b> benchmark diseases</span>
+      <span class="tag"><b>24</b> benchmark diseases</span>
       <span class="tag">GO · KEGG · Reactome</span>
       <span class="tag">g:Profiler FDR</span>
       <span class="tag">PubMed evidence</span>
     </div>
     <h1 class="reveal">A reliable agentic AI framework for interpretable biological pathway discovery</h1>
-    <p class="sub reveal">A team of large-language-model agents turns a <b>gene list</b> and a <b>disease</b> into pathways that are statistically validated, biologically meaningful, and accompanied by a transparent reasoning trace.</p>
+    <p class="sub reveal">A closed-loop, agentic framework for statistically grounded, LLM-driven pathway analysis — turning a <b>gene list</b> and a <b>disease</b> into pathways that are statistically validated and biologically meaningful, each with a transparent reasoning trace.</p>
     <div class="cta reveal">
       <a class="btn primary" href="#example">Explore the walkthrough
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -309,7 +324,13 @@
   <div class="wrap">
     <div class="eyebrow reveal">The framework</div>
     <h2 class="reveal">Statistics you can trust, biology you can read</h2>
-    <p class="lead reveal">Conventional enrichment tools tell you <em>which terms are over-represented</em> — but not whether a result is mechanistically meaningful, and they leave no reasoning trail. This framework wraps a team of LLM agents around rigorous enrichment testing to deliver pathways that are validated <em>and</em> interpretable.</p>
+    <p class="lead reveal">Conventional enrichment tools tell you <em>which terms are over-represented</em> — but not why one term should be prioritized over a related one, whether a plausible pathway is actually supported by the genes, or how pathways combine into a disease-relevant narrative. Large language models propose fluent pathway names, yet in zero-shot settings many are broad, weakly matched, or unsupported by FDR-controlled enrichment. This framework closes the gap between <em>linguistic fluency</em> and <em>statistical reliability</em>: a closed loop that proposes hypotheses, tests them against g:Profiler under FDR control, corrects them with explicit feedback, and ranks them by biological evidence.</p>
+
+    <div class="stats reveal">
+      <div class="stat"><span class="n">24</span><span class="l">disease benchmark, spanning<br>9 clinical categories</span></div>
+      <div class="stat"><span class="n">29.0% → 42.2%</span><span class="l">non-redundant functional discovery rate (nFDR),<br>zero-shot → validation-guided feedback</span></div>
+      <div class="stat"><span class="n">5</span><span class="l">functional sources<br>GO:BP · GO:MF · GO:CC · KEGG · Reactome</span></div>
+    </div>
 
     <figure class="figure-card reveal" style="margin-bottom:0">
       <img src="assets/figure1.png" alt="Figure 1 — the agentic framework overview and its three functional stages (panels A–D)" id="fig1">
@@ -332,7 +353,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>
         </div>
         <h3>Evidence-grounded ranking</h3>
-        <p>Validated pathways are ranked by synthesizing five signals — description, pathology, overlap genes, enrichment, and literature.</p>
+        <p>Validated pathways are ranked by synthesizing five evidence sources — pathway description, disease pathology, intersection genes, enrichment P values, and PubMed literature.</p>
       </div>
       <div class="card reveal">
         <div class="ic" style="background:#fdeceb;color:var(--red)">
@@ -446,7 +467,7 @@
           <div class="badge" style="background:var(--blue)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="10" rx="2.5"/><path d="M12 8V4M9 2h6"/><circle cx="9.5" cy="13" r="1"/><circle cx="14.5" cy="13" r="1"/></svg></div>
           <div>
             <h3>Hypothesis Generation Agent</h3>
-            <div class="role">The LLM reasons over the module to propose candidate pathways across GO:BP, GO:MF, GO:CC, KEGG, and Reactome — with supporting genes, gene–pathway links, and a disease-mechanism rationale.</div>
+            <div class="role">GPT-5.1 reasons over the gene set to propose candidate pathways across five functional sources — GO:BP, GO:MF, GO:CC, KEGG, and Reactome (ten candidates per source, up to 50 hypotheses) — each with supporting genes, a gene–pathway link, and a disease-mechanism rationale.</div>
             <div class="mods">
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/agents/hypothesis_generation_agent.py" target="_blank" rel="noopener">agents/hypothesis_generation_agent.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/predictor.py" target="_blank" rel="noopener">predictor.py</a>
@@ -511,7 +532,7 @@
           <div class="badge" style="background:var(--amber)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20V10M12 20V4M18 20v-7"/></svg></div>
           <div>
             <h3>Biological Ranking Agent</h3>
-            <div class="role">Validated pathways are ranked <em>within each category</em> by synthesizing five evidence sources — pathway description, disease pathology, intersection genes, enrichment strength, and PubMed literature.</div>
+            <div class="role">Validated pathways are ranked <em>within each functional source</em> by synthesizing five evidence sources — pathway description, disease pathology (NCBI MeSH), intersection genes, enrichment P values, and PubMed literature.</div>
             <div class="mods">
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/agents/biological_ranking_agent.py" target="_blank" rel="noopener">agents/biological_ranking_agent.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/tools/pubmed.py" target="_blank" rel="noopener">tools/pubmed.py</a>
@@ -628,13 +649,13 @@ python -m refined.orchestrator <span class="f">--disease</span> AD <span class="
 <span class="c"># disable cross-disease memory bank</span>
 python -m refined.orchestrator <span class="f">--disease</span> AD <span class="f">--test</span> <span class="f">--no-memory</span>
 
-<span class="c"># any of 30 diseases — or a full name</span>
+<span class="c"># any disease — abbreviation or full name (MeSH-resolved)</span>
 python -m refined.orchestrator <span class="f">--disease</span> PD   <span class="c"># Parkinson's</span>
 python -m refined.orchestrator <span class="f">--disease</span> <span class="s">"Breast Cancer"</span></pre>
       </div>
       <div class="env reveal">
         <h3>Environment</h3>
-        <p><code>OPENAI_API_KEY</code> — required. Powers generation, feedback, ranking, and interpretation. Default model <code>gpt-5.1</code> (configurable).</p>
+        <p><code>OPENAI_API_KEY</code> — required. Powers generation, feedback, ranking, and interpretation. The central reasoning model is GPT-5.1 (<code>gpt-5.1</code>), configurable.</p>
         <p><code>ENTREZ_EMAIL</code> — recommended. Enables PubMed / Entrez evidence retrieval without throttling.</p>
         <p style="margin-bottom:0">LLM responses are deterministically disk-cached under <code>~/.cache/pathway_analysis/</code>, making re-runs stable and cheaper.</p>
       </div>
@@ -655,25 +676,27 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
         <tr><td class="agent">🤖 Hypothesis Generation</td><td>Proposes candidate pathways across five databases from module genes + disease</td><td><code>agents/hypothesis_generation_agent.py</code>, <code>predictor.py</code></td></tr>
         <tr><td class="agent">✅ Statistical Validation</td><td>Formal g:Profiler enrichment test; writes matched / FDR / nominal contract</td><td><code>agents/statistical_validation_agent.py</code></td></tr>
         <tr><td class="agent">🔁 Feedback</td><td>Analyzes failure cases to refine the generation prompt between iterations</td><td><code>agents/feedback_agent.py</code>, <code>prompts/feedback.py</code></td></tr>
-        <tr><td class="agent">📊 Biological Ranking</td><td>Ranks validated pathways within category by synthesizing five evidence signals</td><td><code>agents/biological_ranking_agent.py</code></td></tr>
+        <tr><td class="agent">📊 Biological Ranking</td><td>Ranks validated pathways within each functional source by synthesizing five evidence sources</td><td><code>agents/biological_ranking_agent.py</code></td></tr>
         <tr><td class="agent">🧩 Interpretation</td><td>Decomposes the reasoning path into structured cross-pathway insights</td><td><code>predictor.py</code>, <code>backend/reasoning_parser.py</code></td></tr>
       </tbody>
     </table>
 
-    <div class="tree reveal" style="margin-top:26px">
-<span class="cm"># repository layout</span>
-orchestrator.py        <span class="cm"># command-line entry point &amp; pipeline coordinator</span>
-config.py              <span class="cm"># disease configuration (MeSH / NCBI lookup)</span>
-framework.py           <span class="cm"># iterative framework wired to the feedback agent</span>
-predictor.py           <span class="cm"># hypothesis generation + reasoning-audit traces</span>
-llm_client.py          <span class="cm"># LLM client + disk cache</span>
-report.py  visualization.py   <span class="cm"># reporting &amp; plots</span>
-<span class="p">agents/</span>                <span class="cm"># the five specialized agents</span>
-<span class="p">prompts/</span>               <span class="cm"># generation · feedback · reasoning-audit templates</span>
-<span class="p">tools/</span>                 <span class="cm"># PubMed · ranking · g:Profiler cache</span>
-<span class="p">backend/</span>               <span class="cm"># bundled runtime (multi-agent analysis, memory bank)</span>
-<span class="p">docs/</span>                  <span class="cm"># this demo homepage</span>
-<span class="p">assets/</span>                <span class="cm"># Figure 1 (PNG / PDF)</span>
+    <div class="tree-map reveal">
+      <div class="tgroup">Files</div>
+      <div class="trow"><code>orchestrator.py</code><span>Command-line entry point &amp; pipeline coordinator</span></div>
+      <div class="trow"><code>config.py</code><span>Disease configuration (MeSH / NCBI lookup)</span></div>
+      <div class="trow"><code>framework.py</code><span>Iterative framework wired to the feedback agent</span></div>
+      <div class="trow"><code>predictor.py</code><span>Hypothesis generation + reasoning-audit traces</span></div>
+      <div class="trow"><code>llm_client.py</code><span>LLM client + disk cache</span></div>
+      <div class="trow"><code>report.py</code><span>Summary report generation</span></div>
+      <div class="trow"><code>visualization.py</code><span>Validation &amp; category plots</span></div>
+      <div class="tgroup">Directories</div>
+      <div class="trow dir"><code>agents/</code><span>The five specialized agents</span></div>
+      <div class="trow dir"><code>prompts/</code><span>Generation · feedback · reasoning-audit templates</span></div>
+      <div class="trow dir"><code>tools/</code><span>PubMed · ranking · g:Profiler cache</span></div>
+      <div class="trow dir"><code>backend/</code><span>Bundled runtime (multi-agent analysis, memory bank)</span></div>
+      <div class="trow dir"><code>docs/</code><span>This demo homepage</span></div>
+      <div class="trow dir"><code>assets/</code><span>Figure 1 (PNG / PDF)</span></div>
     </div>
   </div>
 </section>

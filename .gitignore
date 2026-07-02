@@ -1,0 +1,36 @@
+# ── Secrets / credentials (never commit) ──
+.env
+.env.*
+*.key
+secrets.*
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+
+# ── Caches ──
+.cache/
+.pytest_cache/
+.mypy_cache/
+gprofiler_cache*/
+*_cache/
+
+# ── Run outputs (analysis artifacts) ──
+iterative_feedback_*/
+*_aggregated_*/
+drug_target_analysis.json
+*.log
+
+# ── OS / editor ──
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

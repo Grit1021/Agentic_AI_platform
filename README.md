@@ -7,7 +7,7 @@
 
 <p align="center">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
-  <img alt="LLM" src="https://img.shields.io/badge/LLM-GPT--5%20class-4A6FA5">
+  <img alt="LLM" src="https://img.shields.io/badge/LLM-GPT--5.1-4A6FA5">
   <img alt="Enrichment" src="https://img.shields.io/badge/Enrichment-g%3AProfiler-5B9B7A">
   <img alt="Evidence" src="https://img.shields.io/badge/Evidence-PubMed%2FEntrez-C88A3C">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-6B5B95">
@@ -31,17 +31,19 @@
 
 ## Overview
 
-Standard enrichment tools answer *"which annotation terms are over-represented in my gene list?"* — but they leave the biologist to judge whether a result is mechanistically meaningful, and they offer no reasoning trail. This framework closes that gap with a **team of specialized LLM agents** wrapped around rigorous statistics.
+Standard enrichment tools answer *"which annotation terms are over-represented in my gene list?"* — but they do not explain why one term should be prioritized over a related one, whether a plausible pathway is actually supported by the genes, or how pathways combine into a disease-relevant narrative. Large language models propose fluent pathway names, yet in zero-shot settings many are broad, weakly matched, or unsupported by FDR-controlled enrichment. This **closed-loop, agentic framework** closes the gap between *linguistic fluency* and *statistical reliability*: hypotheses are proposed, validated against g:Profiler under FDR control, corrected with explicit feedback, and ranked by biological evidence.
 
 Given a **disease** and a **module of genes**, the system:
 
 1. **Generates** candidate pathway hypotheses by reasoning over GO:BP, GO:MF, GO:CC, KEGG, and Reactome.
 2. **Validates** every hypothesis with a formal g:Profiler enrichment test (FDR control).
 3. **Learns from failures** — a feedback agent analyzes unvalidated hypotheses and refines the generation prompt across iterations.
-4. **Ranks** validated pathways by strength of biological evidence, synthesizing pathway description, disease pathology, overlap genes, enrichment strength, and PubMed literature.
+4. **Ranks** validated pathways by strength of biological evidence, synthesizing pathway description, disease pathology (NCBI MeSH), intersection genes, enrichment P values, and PubMed literature.
 5. **Interprets** the results, decomposing the reasoning path into structured insights: driver genes, cell/tissue context, and mechanistic themes.
 
 The output is a set of pathways that are **statistically validated *and* biologically meaningful**, each accompanied by a transparent reasoning trace.
+
+Across a 24-disease benchmark, zero-shot generation validates only 29.0% of non-redundant matched pathways; validation-guided feedback raises this **non-redundant functional discovery rate (nFDR)** to 42.2%.
 
 ---
 
@@ -125,12 +127,16 @@ python -m refined.orchestrator --disease AD --test --tag test_run
 python -m refined.orchestrator --disease AD --test --no-memory --tag no_memory
 ```
 
-`--disease` accepts an abbreviation defined in [`config.py`](config.py) (e.g. `AD`, `PD`, `IBD`, `T2D`, `BC`) **or** a full disease name. Disease metadata (MeSH ID, description, keywords) is resolved automatically from NCBI/MeSH — no hardcoding required.
+`--disease` accepts an abbreviation (e.g. `AD`, `PD`, `MS`, `T2D`) **or** a full disease name. Disease metadata (MeSH ID, description, keywords) is resolved automatically from NCBI/MeSH — no hardcoding required.
 
 <details>
-<summary><b>30 benchmark diseases available out of the box</b></summary>
+<summary><b>24-disease benchmark (as reported in the paper)</b></summary>
 
-`AD, PD, IBD, MS, ALS, RA, T2D, SLE, CD, UC, HD, CF, CKD, HF, AST, EP, MDD, PS, HTN, OA, COPD, MI, ATH, NAFLD, SCZ, OBS, BC, LC, IPF, COVID` — see [`config.py`](config.py).
+Spanning neurodegenerative, cardiovascular, autoimmune, metabolic, infectious, oncological, respiratory, renal, and dermatological conditions:
+
+`AD, PD, ALS, PSP, MDD, MS, RA, AIT, SLE, PS, IBD, CD, COPD, AST, CAD, AF, HF, HTN, T2D, CKD, OSA, TB, CRC, HCC`
+
+Any other disease can be analyzed by passing its name or abbreviation — metadata is resolved from NCBI/MeSH.
 </details>
 
 ---
