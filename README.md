@@ -14,9 +14,9 @@
 </p>
 
 <p align="center">
-  <b>🌐 Demo homepage:</b> <a href="https://OWNER.github.io/REPO/">OWNER.github.io/REPO</a> &nbsp;·&nbsp;
+  <b>🌐 Demo homepage:</b> <a href="https://grit1021.github.io/Agentic_AI_platform/">grit1021.github.io/Agentic_AI_platform</a> &nbsp;·&nbsp;
   <b>📄 Paper:</b> <a href="#">[arXiv / DOI]</a> &nbsp;·&nbsp;
-  <b>💻 Code:</b> <a href="#">github.com/OWNER/REPO</a>
+  <b>💻 Code:</b> <a href="https://github.com/Grit1021/Agentic_AI_platform">github.com/Grit1021/Agentic_AI_platform</a>
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@
 
 <p align="center"><sub><b>Figure 1.</b> Overview of the agentic framework (A) and its three functional stages: input &amp; hypothesis generation (B), statistical validation &amp; biological ranking (C), and structured interpretation &amp; output (D).</sub></p>
 
-> **Note on branding.** The repository is named after the paper's Figure 1 title. Replace `OWNER/REPO`, `[Authors]`, and the paper link placeholders throughout before publishing.
+> **Before publishing.** Fill in the [Authors] and paper-link ([arXiv / DOI]) placeholders. The GitHub and Pages URLs are already set.
 
 ---
 
@@ -93,8 +93,8 @@ Gene list + Disease
 ## Installation
 
 ```bash
-git clone https://github.com/OWNER/REPO.git
-cd REPO
+git clone https://github.com/Grit1021/Agentic_AI_platform.git
+cd Agentic_AI_platform
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt      # pandas, numpy, biopython, gprofiler-official, openai, matplotlib, ...
 ```
@@ -202,7 +202,7 @@ Full runs call external services — OpenAI, NCBI/MeSH, PubMed/Entrez, and g:Pro
   author  = {[Authors]},
   journal = {[Journal / Preprint]},
   year    = {[Year]},
-  url     = {https://github.com/OWNER/REPO}
+  url     = {https://github.com/Grit1021/Agentic_AI_platform}
 }
 ```
 
