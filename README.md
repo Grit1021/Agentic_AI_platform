@@ -65,19 +65,25 @@ All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Pha
 
 ```mermaid
 flowchart TD
-    A["Gene list + disease"]:::io --> B["<b>Hypothesis Generation</b><br/>candidate pathways: GO:BP/MF/CC, KEGG, Reactome"]:::gen
-    B --> C["<b>Statistical Validation</b><br/>g:Profiler enrichment, FDR control"]:::val
-    C -->|unvalidated| F["<b>Feedback Agent</b><br/>analyze failures, refine prompt"]:::fb
+    A["Gene list + disease"] --> B["Hypothesis Generation<br/>candidate pathways: GO:BP, GO:MF, GO:CC, KEGG, Reactome"]
+    B --> C["Statistical Validation<br/>g:Profiler enrichment · FDR control"]
+    C -->|unvalidated| F["Feedback Agent<br/>analyze failures · refine prompt"]
     F -->|refined prompt| B
-    C -->|validated hypotheses| D["<b>Biological Ranking</b><br/>description · pathology · intersection genes · enrichment P · PubMed"]:::rank
-    D -->|validated + ranked| E["<b>Structured Interpretation</b><br/>driver genes · cell/tissue context · mechanistic themes"]:::interp
-    E --> G["Pathways + biological interpretations"]:::io
-    classDef io fill:#eef2f8,stroke:#c3ccdb,color:#1c2230;
-    classDef gen fill:#E9EFF7,stroke:#3E5C8A,color:#2c456b;
-    classDef val fill:#E5F1EA,stroke:#4E8C6A,color:#356b4d;
-    classDef fb fill:#FDECEB,stroke:#C0392B,color:#8a3226;
-    classDef rank fill:#F7EEDC,stroke:#C0812E,color:#8a5b18;
-    classDef interp fill:#ECE8F4,stroke:#6B5B95,color:#4f4173;
+    C -->|validated hypotheses| D["Biological Ranking<br/>description · pathology · intersection genes · enrichment P · PubMed"]
+    D -->|validated + ranked| E["Structured Interpretation<br/>driver genes · cell/tissue context · mechanistic themes"]
+    E --> G["Pathways + biological interpretations"]
+    classDef io fill:#eef2f8,stroke:#c3ccdb,color:#1c2230
+    classDef gen fill:#e9eff7,stroke:#3e5c8a,color:#2c456b
+    classDef val fill:#e5f1ea,stroke:#4e8c6a,color:#356b4d
+    classDef fb fill:#fdeceb,stroke:#c0392b,color:#8a3226
+    classDef rank fill:#f7eedc,stroke:#c0812e,color:#8a5b18
+    classDef interp fill:#ece8f4,stroke:#6b5b95,color:#4f4173
+    class A,G io
+    class B gen
+    class C val
+    class F fb
+    class D rank
+    class E interp
 ```
 
 ---
