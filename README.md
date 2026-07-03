@@ -63,6 +63,9 @@ All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Pha
 
 ## Pipeline at a glance
 
+<details>
+<summary><b>Show the pipeline diagram</b></summary>
+
 ```mermaid
 flowchart TD
     A["Gene list + disease"] --> B["Hypothesis Generation<br/>candidate pathways: GO:BP, GO:MF, GO:CC, KEGG, Reactome"]
@@ -85,6 +88,8 @@ flowchart TD
     class D rank
     class E interp
 ```
+
+</details>
 
 ---
 
