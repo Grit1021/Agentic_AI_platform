@@ -51,7 +51,7 @@ Across a 24-disease benchmark, zero-shot generation validates only 29.0% of non-
 
 | Agent | Role | Module |
 |---|---|---|
-| 🤖 **Hypothesis Generation** | Reasons over module genes + disease to propose candidate pathways across five databases | [`agents/hypothesis_generation_agent.py`](agents/hypothesis_generation_agent.py) · [`predictor.py`](predictor.py) |
+| 🤖 **Hypothesis Generation** | Reasons over module genes + disease to propose candidate pathways across five functional sources | [`agents/hypothesis_generation_agent.py`](agents/hypothesis_generation_agent.py) · [`predictor.py`](predictor.py) |
 | ✅ **Statistical Validation** | Runs the formal enrichment test and writes the matched / FDR&nbsp;p&lt;0.05 / nominal validation contract | [`agents/statistical_validation_agent.py`](agents/statistical_validation_agent.py) |
 | 🔁 **Feedback** | Analyzes failure cases to refine the hypothesis-generation prompt between iterations | [`agents/feedback_agent.py`](agents/feedback_agent.py) · [`prompts/feedback.py`](prompts/feedback.py) |
 | 📊 **Biological Ranking** | Ranks validated pathways within each category by synthesizing five evidence sources | [`agents/biological_ranking_agent.py`](agents/biological_ranking_agent.py) |
@@ -118,7 +118,7 @@ export ENTREZ_EMAIL="name@example.com"  # recommended: PubMed / Entrez access
 Run commands from the directory that contains this package.
 
 ```bash
-# Full analysis for Alzheimer's Disease
+# Full analysis for Alzheimer's disease
 python -m refined.orchestrator --disease AD --tag full_run
 
 # Fast smoke test (a couple of modules only)

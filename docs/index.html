@@ -285,7 +285,7 @@
         <path d="M13 14L20 27L27 14" stroke="#fff" stroke-width="1.7" opacity=".85"/>
         <path d="M13 14H27" stroke="#fff" stroke-width="1.7" opacity=".5"/>
       </svg>
-      <span>Agentic Pathway Discovery</span>
+      <span>Agentic Pathway Analysis</span>
     </a>
     <nav class="nav-links">
       <a href="#overview">Overview</a>
@@ -333,7 +333,7 @@
 <section id="overview">
   <div class="wrap">
     <div class="eyebrow reveal">The framework</div>
-    <h2 class="reveal">Statistics you can trust, biology you can read</h2>
+    <h2 class="reveal">Rigorous statistics, interpretable biology</h2>
     <p class="lead reveal">Conventional enrichment tools tell you <em>which terms are over-represented</em> — but not why one term should be prioritized over a related one, whether a plausible pathway is actually supported by the genes, or how pathways combine into a disease-relevant narrative. Large language models propose fluent pathway names, yet in zero-shot settings many are broad, weakly matched, or unsupported by FDR-controlled enrichment. This framework closes the gap between <em>linguistic fluency</em> and <em>statistical reliability</em>: a closed loop that proposes hypotheses, tests them against g:Profiler under FDR control, corrects them with explicit feedback, and ranks them by biological evidence.</p>
 
     <div class="stats reveal">
@@ -356,7 +356,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
         </div>
         <h3>Rigorous by construction</h3>
-        <p>Every hypothesis faces a formal g:Profiler enrichment test with FDR control before it is allowed to matter.</p>
+        <p>Every hypothesis faces a formal g:Profiler enrichment test under FDR control before it is retained.</p>
       </div>
       <div class="card reveal">
         <div class="ic" style="background:var(--amber-soft);color:var(--amber)">
@@ -370,14 +370,14 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9 9 0 016.7 3H21"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 01-9 9 9 9 0 01-6.7-3H3"/><path d="M3 21v-5h5"/></svg>
         </div>
         <h3>Self-correcting</h3>
-        <p>A feedback agent studies unvalidated hypotheses and rewrites the generation prompt, so each iteration gets sharper.</p>
+        <p>A feedback agent analyzes unvalidated hypotheses and refines the generation prompt, so generation improves with each iteration.</p>
       </div>
       <div class="card reveal">
         <div class="ic" style="background:var(--purple-soft);color:var(--purple)">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
         </div>
         <h3>Transparent reasoning</h3>
-        <p>Reasoning-path decomposition turns raw model output into structured insights: driver genes, context, mechanistic themes.</p>
+        <p>Reasoning-path decomposition turns the model's reasoning path into structured insights: driver genes, cell/tissue context, mechanistic themes.</p>
       </div>
     </div>
   </div>
@@ -388,7 +388,7 @@
   <div class="wrap">
     <div class="eyebrow reveal">Interactive walkthrough</div>
     <h2 class="reveal" id="example">Follow one query through the agents</h2>
-    <p class="lead reveal">Click any stage to see what its agent does, which code module runs it, and an example of the data flowing in and out. The example below traces an <b>Alzheimer's Disease</b> gene module through the full pipeline.</p>
+    <p class="lead reveal">Click any stage to see what its agent does, which code module runs it, and an example of the data flowing in and out. The example below traces an <b>Alzheimer's disease</b> gene module through the full pipeline.</p>
 
     <div class="rail reveal">
       <div class="rail-top">
@@ -458,7 +458,7 @@
         <div class="io">
           <div class="in">
             <h4>Disease context</h4>
-            <p class="kv"><span class="k">Disease:</span> <b>Alzheimer's Disease</b> (AD)</p>
+            <p class="kv"><span class="k">Disease:</span> <b>Alzheimer's disease</b> (AD)</p>
             <p class="kv"><span class="k">MeSH:</span> D000544 · resolved from NCBI</p>
             <p class="kv"><span class="k">Module:</span> walktrap cluster #5</p>
           </div>
@@ -646,7 +646,7 @@
 <span class="k">export</span> OPENAI_API_KEY=<span class="s">"sk-..."</span>
 <span class="k">export</span> ENTREZ_EMAIL=<span class="s">"name@example.com"</span>
 
-<span class="c"># 3 · run the full pipeline for Alzheimer's Disease</span>
+<span class="c"># 3 · run the full pipeline for Alzheimer's disease</span>
 <span class="k">python</span> -m refined.orchestrator <span class="f">--disease</span> AD <span class="f">--tag</span> full_run</pre>
     </div>
 
@@ -678,12 +678,12 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
   <div class="wrap">
     <div class="eyebrow reveal">Under the hood</div>
     <h2 class="reveal">Code map</h2>
-    <p class="lead reveal">Five agents, one orchestrator, and the tools that ground them in real statistics and literature.</p>
+    <p class="lead reveal">Five agents, one orchestrator, and the tools that ground them in formal statistics and literature.</p>
 
     <table class="mods reveal">
       <thead><tr><th>Agent</th><th>Role</th><th>Module</th></tr></thead>
       <tbody>
-        <tr><td class="agent">🤖 Hypothesis Generation</td><td>Proposes candidate pathways across five databases from module genes + disease</td><td><code>agents/hypothesis_generation_agent.py</code>, <code>predictor.py</code></td></tr>
+        <tr><td class="agent">🤖 Hypothesis Generation</td><td>Proposes candidate pathways across five functional sources from module genes + disease</td><td><code>agents/hypothesis_generation_agent.py</code>, <code>predictor.py</code></td></tr>
         <tr><td class="agent">✅ Statistical Validation</td><td>Formal g:Profiler enrichment test; writes matched / FDR / nominal contract</td><td><code>agents/statistical_validation_agent.py</code></td></tr>
         <tr><td class="agent">🔁 Feedback</td><td>Analyzes failure cases to refine the generation prompt between iterations</td><td><code>agents/feedback_agent.py</code>, <code>prompts/feedback.py</code></td></tr>
         <tr><td class="agent">📊 Biological Ranking</td><td>Ranks validated pathways within each functional source by synthesizing five evidence sources</td><td><code>agents/biological_ranking_agent.py</code></td></tr>
