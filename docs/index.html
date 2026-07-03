@@ -213,6 +213,16 @@
   .tree-map code{font-family:var(--mono);font-size:13px;color:var(--blue);font-weight:600;white-space:nowrap}
   .tree-map .dir code{color:var(--amber-ink)}
   .tree-map .trow span{color:var(--muted);font-size:13.5px}
+  .code-toggle{margin-top:26px}
+  .code-toggle > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:9px;
+    font-size:14px;font-weight:600;color:var(--ink);background:var(--bg-alt);border:1px solid var(--line);
+    border-radius:11px;padding:12px 18px;transition:border-color .15s,color .15s;user-select:none}
+  .code-toggle > summary::-webkit-details-marker{display:none}
+  .code-toggle > summary::before{content:"▸";color:var(--faint);font-size:12px;transition:transform .15s}
+  .code-toggle[open] > summary::before{transform:rotate(90deg)}
+  .code-toggle > summary:hover{border-color:var(--blue);color:var(--blue)}
+  .code-toggle[open] > summary{margin-bottom:16px}
+  .code-toggle .tree-map{margin-top:0}
   table.mods{width:100%;border-collapse:collapse;margin-top:22px;font-size:14px}
   table.mods th{text-align:left;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--faint);padding:10px 12px;border-bottom:2px solid var(--line-strong)}
@@ -309,7 +319,7 @@
       <a class="btn primary" href="#example">Explore the walkthrough
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <a class="btn ghost" href="https://github.com/Grit1021/Agentic_AI_platform" target="_blank" rel="noopener">View on GitHub</a>
-      <a class="btn ghost" href="#" target="_blank" rel="noopener">Read the paper</a>
+      <a class="btn ghost" href="https://github.com/Grit1021/Agentic_AI_platform" target="_blank" rel="noopener">Read the paper</a>
     </div>
     <div class="meta reveal">
       <span><b>Input</b> — gene module + disease</span>
@@ -681,7 +691,9 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
       </tbody>
     </table>
 
-    <div class="tree-map reveal">
+    <details class="code-toggle reveal">
+      <summary>Repository layout</summary>
+      <div class="tree-map">
       <div class="tgroup">Files</div>
       <div class="trow"><code>orchestrator.py</code><span>Command-line entry point &amp; pipeline coordinator</span></div>
       <div class="trow"><code>config.py</code><span>Disease configuration (MeSH / NCBI lookup)</span></div>
@@ -697,7 +709,8 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
       <div class="trow dir"><code>backend/</code><span>Bundled runtime (multi-agent analysis, memory bank)</span></div>
       <div class="trow dir"><code>docs/</code><span>This demo homepage</span></div>
       <div class="trow dir"><code>assets/</code><span>Figure 1 (PNG / PDF)</span></div>
-    </div>
+      </div>
+    </details>
   </div>
 </section>
 
