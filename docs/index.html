@@ -388,7 +388,7 @@
   <div class="wrap">
     <div class="eyebrow reveal">Interactive walkthrough</div>
     <h2 class="reveal" id="example">Follow one query through the agents</h2>
-    <p class="lead reveal">Click any stage to see what its agent does, which code module runs it, and an example of the data flowing in and out. The example below traces an <b>Alzheimer's disease</b> gene module through the full pipeline.</p>
+    <p class="lead reveal">Click any stage to see what its agent does, which code module runs it, and an example of the data flowing in and out. The example below traces one real <b>Alzheimer's disease</b> module (walktrap module 105, 14 genes) through the full pipeline.</p>
 
     <div class="rail reveal">
       <div class="rail-top">
@@ -460,12 +460,12 @@
             <h4>Disease context</h4>
             <p class="kv"><span class="k">Disease:</span> <b>Alzheimer's disease</b> (AD)</p>
             <p class="kv"><span class="k">MeSH:</span> D000544 · resolved from NCBI</p>
-            <p class="kv"><span class="k">Module:</span> walktrap cluster #5</p>
+            <p class="kv"><span class="k">Module:</span> walktrap module 105 · 14 genes</p>
           </div>
           <div>
-            <h4>Module genes (example)</h4>
+            <h4>Module genes</h4>
             <div class="genes">
-              <span class="gene">APP</span><span class="gene">PSEN1</span><span class="gene">PSEN2</span><span class="gene">MAPT</span><span class="gene">APOE</span><span class="gene">BACE1</span><span class="gene">CLU</span><span class="gene">TREM2</span><span class="gene">BIN1</span><span class="gene">PICALM</span><span class="gene">CR1</span><span class="gene">ABCA7</span>
+              <span class="gene">L1CAM</span><span class="gene">CHL1</span><span class="gene">CNTN1</span><span class="gene">ICAM2</span><span class="gene">BACE1</span><span class="gene">PSEN1</span><span class="gene">SORL1</span><span class="gene">PICALM</span><span class="gene">BIN1</span><span class="gene">GSK3B</span><span class="gene">CDK5</span><span class="gene">DNM2</span><span class="gene">MAPK1</span><span class="gene">MAPK3</span>
             </div>
           </div>
         </div>
@@ -494,13 +494,13 @@
             <p class="kv">🩺 <span class="k">Disease mechanism</span> — relevance to AD pathology</p>
           </div>
           <div>
-            <h4>Candidate pathways (illustrative)</h4>
+            <h4>Candidate pathways (5 of 50 generated)</h4>
             <ul class="plist">
-              <li><span class="src bp">GO:BP</span><span class="pname">Amyloid-beta formation</span></li>
-              <li><span class="src cc">GO:CC</span><span class="pname">Postsynaptic membrane</span></li>
-              <li><span class="src mf">GO:MF</span><span class="pname">Tau protein binding</span></li>
-              <li><span class="src kegg">KEGG</span><span class="pname">Alzheimer disease pathway</span></li>
-              <li><span class="src reac">REAC</span><span class="pname">Amyloid fiber formation</span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Synapse organization</span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Axon guidance</span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Neuron projection development</span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Cell adhesion</span></li>
+              <li><span class="src mf">GO:MF</span><span class="pname">Transmembrane receptor tyrosine kinase activity</span></li>
             </ul>
           </div>
         </div>
@@ -521,18 +521,20 @@
         </div>
         <div class="io">
           <div class="single">
-            <h4>Enrichment test — FDR p&lt;0.05 (illustrative)</h4>
+            <h4>g:Profiler enrichment — FDR p&lt;0.05 (AD module 105)</h4>
             <ul class="plist">
-              <li><span class="src bp">GO:BP</span><span class="pname">Amyloid-beta formation</span><span class="pend"><span class="pmeta">p = 3.2e-08</span><span class="status ok">✓ pass</span></span></li>
-              <li><span class="src cc">GO:CC</span><span class="pname">Postsynaptic membrane</span><span class="pend"><span class="pmeta">p = 1.1e-05</span><span class="status ok">✓ pass</span></span></li>
-              <li><span class="src kegg">KEGG</span><span class="pname">Alzheimer disease pathway</span><span class="pend"><span class="pmeta">p = 6.7e-06</span><span class="status ok">✓ pass</span></span></li>
-              <li><span class="src mf">GO:MF</span><span class="pname">Amyloid-beta binding</span><span class="pend"><span class="pmeta">p = 0.21</span><span class="status no">✗ fail</span></span></li>
+              <li><span class="src reac">REAC</span><span class="pname">Neuronal System</span><span class="pend"><span class="pmeta">p = 3.4e-15</span><span class="status ok">✓ pass</span></span></li>
+              <li><span class="src cc">GO:CC</span><span class="pname">Postsynaptic membrane</span><span class="pend"><span class="pmeta">p = 6.5e-11</span><span class="status ok">✓ pass</span></span></li>
+              <li><span class="src cc">GO:CC</span><span class="pname">Adherens junction</span><span class="pend"><span class="pmeta">p = 6.5e-07</span><span class="status ok">✓ pass</span></span></li>
+              <li><span class="src kegg">KEGG</span><span class="pname">Axon guidance</span><span class="pend"><span class="pmeta">p = 2.1e-04</span><span class="status ok">✓ pass</span></span></li>
+              <li><span class="src kegg">KEGG</span><span class="pname">Alzheimer disease (generic term)</span><span class="pend"><span class="pmeta">p = 0.12</span><span class="status no">✗ fail</span></span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">G protein-coupled receptor signaling</span><span class="pend"><span class="pmeta">p = 0.25</span><span class="status no">✗ fail</span></span></li>
             </ul>
           </div>
         </div>
         <div class="callout">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9 9 0 016.7 3H21"/><path d="M21 3v5h-5"/></svg>
-          <span><b>Feedback loop.</b> Unvalidated hypotheses are analyzed by the Feedback Agent, which refines the generation prompt (e.g., emphasizing microglial/immune context via <code>TREM2</code>, <code>CR1</code>) before the next iteration.</span>
+          <span><b>Feedback loop.</b> Broad, unvalidated hypotheses (e.g., the generic <code>Alzheimer disease</code> term) are analyzed by the Feedback Agent, which refines the prompt toward the module's specific synaptic and cell-adhesion biology — lifting module 105's GO:CC validation rate from 29% to 71% at iteration 2.</span>
         </div>
       </div>
 
@@ -551,12 +553,13 @@
         </div>
         <div class="io">
           <div class="single">
-            <h4>Validated &amp; ranked pathways (illustrative)</h4>
+            <h4>Validated &amp; ranked pathways (AD module 105) — biological relevance score</h4>
             <ul class="plist">
-              <li><span class="src bp">GO:BP</span><span class="pname">Amyloid-beta formation</span><span class="pend"><span class="pmeta">42 PubMed</span><span class="evbar"><i style="width:96%"></i></span></span></li>
-              <li><span class="src kegg">KEGG</span><span class="pname">Neuroinflammation / microglial activation</span><span class="pend"><span class="pmeta">37 PubMed</span><span class="evbar"><i style="width:88%"></i></span></span></li>
-              <li><span class="src mf">GO:MF</span><span class="pname">Tau protein binding</span><span class="pend"><span class="pmeta">29 PubMed</span><span class="evbar"><i style="width:74%"></i></span></span></li>
-              <li><span class="src reac">REAC</span><span class="pname">Cholesterol / lipid transport (APOE, ABCA7)</span><span class="pend"><span class="pmeta">21 PubMed</span><span class="evbar"><i style="width:61%"></i></span></span></li>
+              <li><span class="src cc">GO:CC</span><span class="pname">Adherens junction</span><span class="pend"><span class="pmeta">score 3.00</span><span class="evbar"><i style="width:100%"></i></span></span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Postsynapse organization</span><span class="pend"><span class="pmeta">score 2.85</span><span class="evbar"><i style="width:95%"></i></span></span></li>
+              <li><span class="src kegg">KEGG</span><span class="pname">Axon guidance</span><span class="pend"><span class="pmeta">score 2.46</span><span class="evbar"><i style="width:82%"></i></span></span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Synapse organization</span><span class="pend"><span class="pmeta">score 2.30</span><span class="evbar"><i style="width:77%"></i></span></span></li>
+              <li><span class="src bp">GO:BP</span><span class="pname">Neuron projection development</span><span class="pend"><span class="pmeta">score 2.19</span><span class="evbar"><i style="width:73%"></i></span></span></li>
             </ul>
           </div>
         </div>
@@ -580,17 +583,17 @@
           <div class="in">
             <h4>Structured insights</h4>
             <p class="kv"><span class="k">Driver genes:</span></p>
-            <div class="genes"><span class="gene">APP</span><span class="gene">PSEN1</span><span class="gene">MAPT</span><span class="gene">APOE</span><span class="gene">TREM2</span></div>
-            <p class="kv" style="margin-top:12px"><span class="k">Cell / tissue context:</span> neurons, microglia, hippocampus &amp; cortex</p>
+            <div class="genes"><span class="gene">L1CAM</span><span class="gene">CHL1</span><span class="gene">CNTN1</span><span class="gene">BACE1</span><span class="gene">PSEN1</span></div>
+            <p class="kv" style="margin-top:12px"><span class="k">Cell / tissue context:</span> neurons, pre/postsynapse, blood–brain barrier</p>
           </div>
           <div>
             <h4>Mechanistic themes</h4>
             <div class="themes">
-              <span class="theme">Amyloid processing</span>
-              <span class="theme">Tau pathology</span>
-              <span class="theme">Neuroinflammation</span>
-              <span class="theme">Lipid metabolism</span>
-              <span class="theme">Synaptic dysfunction</span>
+              <span class="theme">Synaptic organization</span>
+              <span class="theme">Cell–cell adhesion</span>
+              <span class="theme">Axon guidance</span>
+              <span class="theme">Transcriptional regulation</span>
+              <span class="theme">Endocytic trafficking</span>
             </div>
           </div>
         </div>
@@ -618,14 +621,14 @@
             <p class="kv">📊 validation &amp; category plots</p>
           </div>
           <div>
-            <h4>Synthesis (illustrative)</h4>
-            <p style="font-size:14px;color:var(--ink);margin:0">The AD module converges on <b>amyloid-β processing</b> and <b>tau pathology</b> as core drivers, with a strong, literature-backed <b>neuroinflammatory</b> axis (microglial <code style="font-family:var(--mono);font-size:12px">TREM2</code>/<code style="font-family:var(--mono);font-size:12px">CR1</code>) and a <b>lipid-transport</b> theme (<code style="font-family:var(--mono);font-size:12px">APOE</code>/<code style="font-family:var(--mono);font-size:12px">ABCA7</code>) — each traceable to the genes and evidence that support it.</p>
+            <h4>Synthesis</h4>
+            <p style="font-size:14px;color:var(--ink);margin:0">AD module 105 converges on <b>synaptic structure and cell–cell adhesion</b> — adherens junction, postsynapse organization, and axon guidance — implicating <b>synapse loss and network disintegration</b> as its contribution to AD, with an <b>endocytic-trafficking</b> link (<code style="font-family:var(--mono);font-size:12px">BACE1</code>/<code style="font-family:var(--mono);font-size:12px">PICALM</code>/<code style="font-family:var(--mono);font-size:12px">BIN1</code>) to APP processing — each traceable to the genes and enrichment that support it.</p>
           </div>
         </div>
       </div>
 
     </div>
-    <p class="disclaimer">Example data shown for illustration of the workflow; not the output of a specific run.</p>
+    <p class="disclaimer">Real outputs from the Alzheimer's disease run (walktrap module 105, memory-bank external); p-values and scores taken from the run, some values abbreviated for display.</p>
   </div>
 </section>
 
