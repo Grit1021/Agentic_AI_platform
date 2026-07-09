@@ -173,6 +173,8 @@
     display:inline-flex;align-items:center;gap:5px}
   .status.ok{background:var(--green-soft);color:var(--green-ink)}
   .status.no{background:#fdeceb;color:var(--red)}
+  .rank{flex:0 0 auto;width:24px;height:24px;border-radius:8px;background:var(--amber-soft);color:var(--amber-ink);
+    font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
   .evbar{height:7px;border-radius:99px;background:var(--bg-deep);overflow:hidden;width:88px;flex:0 0 auto}
   .evbar > i{display:block;height:100%;background:var(--amber);border-radius:99px}
   .themes{display:flex;flex-wrap:wrap;gap:8px}
@@ -463,9 +465,9 @@
             <p class="kv"><span class="k">Module:</span> walktrap module 105 · 14 genes</p>
           </div>
           <div>
-            <h4>Module genes</h4>
+            <h4>Module genes (Ensembl IDs, as stored)</h4>
             <div class="genes">
-              <span class="gene">L1CAM</span><span class="gene">CHL1</span><span class="gene">CNTN1</span><span class="gene">ICAM2</span><span class="gene">BACE1</span><span class="gene">PSEN1</span><span class="gene">SORL1</span><span class="gene">PICALM</span><span class="gene">BIN1</span><span class="gene">GSK3B</span><span class="gene">CDK5</span><span class="gene">DNM2</span><span class="gene">MAPK1</span><span class="gene">MAPK3</span>
+              <span class="gene">ENSG00000058404</span><span class="gene">ENSG00000070808</span><span class="gene">ENSG00000075711</span><span class="gene">ENSG00000082458</span><span class="gene">ENSG00000102003</span><span class="gene">ENSG00000120251</span><span class="gene">ENSG00000132535</span><span class="gene">ENSG00000145349</span><span class="gene">ENSG00000148660</span><span class="gene">ENSG00000150672</span><span class="gene">ENSG00000180900</span><span class="gene">ENSG00000183454</span><span class="gene">ENSG00000273079</span><span class="gene">ENSG00000277586</span>
             </div>
           </div>
         </div>
@@ -534,7 +536,7 @@
         </div>
         <div class="callout">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 019-9 9 9 0 016.7 3H21"/><path d="M21 3v5h-5"/></svg>
-          <span><b>Feedback loop.</b> Broad, unvalidated hypotheses (e.g., the generic <code>Alzheimer disease</code> term) are analyzed by the Feedback Agent, which refines the prompt toward the module's specific synaptic and cell-adhesion biology — lifting module 105's GO:CC validation rate from 29% to 71% at iteration 2.</span>
+          <span><b>Feedback loop.</b> Broad, unvalidated hypotheses (e.g., the generic <code>Alzheimer disease</code> term) are analyzed by the Feedback Agent, which refines the prompt toward the module's specific synaptic and cell-adhesion biology. Across the 24-disease benchmark, this validation-guided feedback lifts the non-redundant functional discovery rate (nFDR) from <b>29.0% to 42.2%</b>.</span>
         </div>
       </div>
 
@@ -553,13 +555,13 @@
         </div>
         <div class="io">
           <div class="single">
-            <h4>Validated &amp; ranked pathways (AD module 105) — biological relevance score</h4>
+            <h4>Validated &amp; ranked pathways (AD module 105)</h4>
             <ul class="plist">
-              <li><span class="src cc">GO:CC</span><span class="pname">Adherens junction</span><span class="pend"><span class="pmeta">score 3.00</span><span class="evbar"><i style="width:100%"></i></span></span></li>
-              <li><span class="src bp">GO:BP</span><span class="pname">Postsynapse organization</span><span class="pend"><span class="pmeta">score 2.85</span><span class="evbar"><i style="width:95%"></i></span></span></li>
-              <li><span class="src kegg">KEGG</span><span class="pname">Axon guidance</span><span class="pend"><span class="pmeta">score 2.46</span><span class="evbar"><i style="width:82%"></i></span></span></li>
-              <li><span class="src bp">GO:BP</span><span class="pname">Synapse organization</span><span class="pend"><span class="pmeta">score 2.30</span><span class="evbar"><i style="width:77%"></i></span></span></li>
-              <li><span class="src bp">GO:BP</span><span class="pname">Neuron projection development</span><span class="pend"><span class="pmeta">score 2.19</span><span class="evbar"><i style="width:73%"></i></span></span></li>
+              <li><span class="rank">1</span><span class="src cc">GO:CC</span><span class="pname">Adherens junction</span><span class="pend"><span class="pmeta">p = 6.5e-07</span></span></li>
+              <li><span class="rank">2</span><span class="src bp">GO:BP</span><span class="pname">Postsynapse organization</span><span class="pend"><span class="pmeta">p = 1.2e-05</span></span></li>
+              <li><span class="rank">3</span><span class="src kegg">KEGG</span><span class="pname">Axon guidance</span><span class="pend"><span class="pmeta">p = 2.1e-04</span></span></li>
+              <li><span class="rank">4</span><span class="src bp">GO:BP</span><span class="pname">Synapse organization</span><span class="pend"><span class="pmeta">p = 3.8e-04</span></span></li>
+              <li><span class="rank">5</span><span class="src bp">GO:BP</span><span class="pname">Neuron projection development</span><span class="pend"><span class="pmeta">p = 4.6e-04</span></span></li>
             </ul>
           </div>
         </div>
@@ -582,8 +584,8 @@
         <div class="io">
           <div class="in">
             <h4>Structured insights</h4>
-            <p class="kv"><span class="k">Driver genes:</span></p>
-            <div class="genes"><span class="gene">L1CAM</span><span class="gene">CHL1</span><span class="gene">CNTN1</span><span class="gene">BACE1</span><span class="gene">PSEN1</span></div>
+            <p class="kv"><span class="k">Driver genes</span> (top-pathway key genes):</p>
+            <div class="genes"><span class="gene">ENSG00000082458</span><span class="gene">ENSG00000102003</span><span class="gene">ENSG00000150672</span><span class="gene">ENSG00000070808</span><span class="gene">ENSG00000145349</span></div>
             <p class="kv" style="margin-top:12px"><span class="k">Cell / tissue context:</span> neurons, pre/postsynapse, blood–brain barrier</p>
           </div>
           <div>
@@ -622,13 +624,13 @@
           </div>
           <div>
             <h4>Synthesis</h4>
-            <p style="font-size:14px;color:var(--ink);margin:0">AD module 105 converges on <b>synaptic structure and cell–cell adhesion</b> — adherens junction, postsynapse organization, and axon guidance — implicating <b>synapse loss and network disintegration</b> as its contribution to AD, with an <b>endocytic-trafficking</b> link (<code style="font-family:var(--mono);font-size:12px">BACE1</code>/<code style="font-family:var(--mono);font-size:12px">PICALM</code>/<code style="font-family:var(--mono);font-size:12px">BIN1</code>) to APP processing — each traceable to the genes and enrichment that support it.</p>
+            <p style="font-size:14px;color:var(--ink);margin:0">AD module 105 converges on <b>synaptic structure and cell–cell adhesion</b> — adherens junction, postsynapse organization, and axon guidance — implicating <b>synapse loss and network disintegration</b> as its contribution to AD, with an <b>endocytic-trafficking</b> component linked to APP processing — each traceable to the genes and enrichment that support it.</p>
           </div>
         </div>
       </div>
 
     </div>
-    <p class="disclaimer">Real outputs from the Alzheimer's disease run (walktrap module 105, memory-bank external); p-values and scores taken from the run, some values abbreviated for display.</p>
+    <p class="disclaimer">All values are taken directly from the Alzheimer's disease run (walktrap module 105, memory-bank external): genes (the Ensembl IDs stored in the module file), candidate pathways, g:Profiler P-values, validation outcomes, and ranking. Some values are abbreviated for display.</p>
   </div>
 </section>
 
