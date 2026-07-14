@@ -179,6 +179,10 @@
   .evbar > i{display:block;height:100%;background:var(--amber);border-radius:99px}
   .themes{display:flex;flex-wrap:wrap;gap:8px}
   .theme{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--purple-soft);color:var(--purple-ink)}
+  .rsections{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  .rsec{background:var(--bg-alt);border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+  .rsec .rlabel{display:block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--purple-ink);margin-bottom:5px}
+  .rsec .rtext{font-size:13px;color:var(--ink);line-height:1.5}
   .callout{margin:0 24px 22px;padding:13px 16px;border-radius:11px;background:#fff6f4;border:1px solid #f3d5cf;
     color:#8a3226;font-size:13.5px;display:flex;gap:10px;align-items:flex-start}
   .callout svg{flex:0 0 auto;margin-top:2px}
@@ -271,6 +275,7 @@
     .hero{padding:70px 0 54px}
     .tree-map .trow{grid-template-columns:1fr;gap:3px;padding:10px 16px}
     .tree-map .tgroup{padding:10px 16px}
+    .rsections{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -313,10 +318,11 @@
       <span class="tag"><b>24</b> benchmark diseases</span>
       <span class="tag">GO · KEGG · Reactome</span>
       <span class="tag">g:Profiler FDR</span>
-      <span class="tag">PubMed evidence</span>
+      <span class="tag">Cell-type anchoring</span>
+      <span class="tag">Cross-disease memory</span>
     </div>
     <h1 class="reveal">A reliable agentic AI framework for interpretable biological pathway discovery</h1>
-    <p class="sub reveal">A closed-loop, agentic framework for statistically grounded, LLM-driven pathway analysis — turning a <b>gene list</b> and a <b>disease</b> into pathways that are statistically validated and biologically meaningful, each with a transparent reasoning trace.</p>
+    <p class="sub reveal">A closed-loop, agentic framework for statistically grounded, LLM-driven pathway analysis. The LLM becomes reliable only when its reasoning is constrained by <b>statistical validation</b>, <b>explicit feedback</b>, and <b>biological context</b> — yielding pathways that are statistically validated and biologically meaningful.</p>
     <div class="cta reveal">
       <a class="btn primary" href="#example">Explore the walkthrough
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 8h8M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -364,8 +370,8 @@
         <div class="ic" style="background:var(--amber-soft);color:var(--amber)">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>
         </div>
-        <h3>Evidence-grounded ranking</h3>
-        <p>Validated pathways are ranked by synthesizing five evidence sources — pathway description, disease pathology, intersection genes, enrichment P values, and PubMed literature.</p>
+        <h3>Anchored in biology</h3>
+        <p>Validated pathways are ranked by biological evidence, tied to cell and tissue context, and informed by a cross-disease memory bank that transfers recurrent patterns.</p>
       </div>
       <div class="card reveal">
         <div class="ic" style="background:#fdeceb;color:var(--red)">
@@ -490,10 +496,10 @@
         <div class="io">
           <div class="in">
             <h4>Reasoning dimensions</h4>
-            <p class="kv">🧬 <span class="k">Gene set function</span> — shared biology of the module</p>
-            <p class="kv">🔗 <span class="k">Gene–pathway link</span> — which genes drive which term</p>
-            <p class="kv">👥 <span class="k">Supporting genes</span> — overlap that grounds each claim</p>
-            <p class="kv">🩺 <span class="k">Disease mechanism</span> — relevance to AD pathology</p>
+            <p class="kv">🧬 <span class="k">Functional convergence</span> — shared biology across the module genes</p>
+            <p class="kv">🔗 <span class="k">Pathway database overlap</span> — GO / KEGG / Reactome coverage</p>
+            <p class="kv">➕ <span class="k">Mechanistic relationship</span> — how genes connect to each term</p>
+            <p class="kv">🩺 <span class="k">Disease relevance</span> — link to AD biology</p>
           </div>
           <div>
             <h4>Candidate pathways (5 of 50 generated)</h4>
@@ -582,20 +588,17 @@
           </div>
         </div>
         <div class="io">
-          <div class="in">
-            <h4>Structured insights</h4>
-            <p class="kv"><span class="k">Driver genes</span> (top-pathway key genes):</p>
-            <div class="genes"><span class="gene">ENSG00000082458</span><span class="gene">ENSG00000102003</span><span class="gene">ENSG00000150672</span><span class="gene">ENSG00000070808</span><span class="gene">ENSG00000145349</span></div>
-            <p class="kv" style="margin-top:12px"><span class="k">Cell / tissue context:</span> neurons, pre/postsynapse, blood–brain barrier</p>
-          </div>
-          <div>
-            <h4>Mechanistic themes</h4>
-            <div class="themes">
-              <span class="theme">Synaptic organization</span>
-              <span class="theme">Cell–cell adhesion</span>
-              <span class="theme">Axon guidance</span>
-              <span class="theme">Transcriptional regulation</span>
-              <span class="theme">Endocytic trafficking</span>
+          <div class="single">
+            <h4>Reasoning-path decomposition — 8 structured sections</h4>
+            <div class="rsections">
+              <div class="rsec"><span class="rlabel">1 · Overall strategy</span><span class="rtext">Resolve the module genes, retrieve their functional annotations, find the shared compartments and processes, then interpret them in the Alzheimer's-disease context.</span></div>
+              <div class="rsec"><span class="rlabel">2 · Gene analysis</span><span class="rtext">The 14-gene module converges on synaptic-membrane, postsynaptic, and cell-junction components rather than a single dominant hub.</span></div>
+              <div class="rsec"><span class="rlabel">3 · Database focus</span><span class="rtext">GO:CC, GO:BP, KEGG and Reactome together capture synaptic structure, cell adhesion, and neuronal wiring.</span></div>
+              <div class="rsec"><span class="rlabel">4 · Key gene functions</span><span class="rtext">Dominant functions are synaptic scaffolding, cell–cell adhesion, and axon guidance.</span></div>
+              <div class="rsec"><span class="rlabel">5 · Pathway-selection rationale</span><span class="rtext">Adhesion and synapse-organization terms are plausible given the module's convergence on cell junctions and the postsynapse.</span></div>
+              <div class="rsec"><span class="rlabel">6 · Biological evidence</span><span class="rtext">Synapse loss and network disintegration are early, central features of AD, consistent with the validated terms.</span></div>
+              <div class="rsec"><span class="rlabel">7 · Cell context</span><span class="rtext">Neurons and the pre/postsynapse, with junctional links to blood–brain-barrier integrity.</span></div>
+              <div class="rsec"><span class="rlabel">8 · Relevance strength</span><span class="rtext">Medium–High — strong statistical support (adherens junction p = 6.5e-07; postsynapse organization p = 1.2e-05) plus established AD relevance.</span></div>
             </div>
           </div>
         </div>
@@ -731,7 +734,7 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
       <div class="out reveal"><span class="fi">✅</span><div><b>*_gpt_matched_fdr_p005.csv</b><span>Statistical-validation contract (all / FDR / nominal)</span></div></div>
       <div class="out reveal"><span class="fi">📝</span><div><b>*_reasoning.md</b><span>Post-hoc reasoning audit traces per category</span></div></div>
       <div class="out reveal"><span class="fi">📊</span><div><b>summary_pathway_ranking.txt + plots</b><span>Validation and category visualizations</span></div></div>
-      <div class="out reveal"><span class="fi">💊</span><div><b>drug_target_analysis.json</b><span>Optional Phase 3 drug-target analysis</span></div></div>
+      <div class="out reveal"><span class="fi">🧠</span><div><b>memory_bank exports</b><span>Validated pathways + reasoning traces for cross-disease transfer</span></div></div>
     </div>
   </div>
 </section>

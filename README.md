@@ -57,7 +57,7 @@ Across a 24-disease benchmark, zero-shot generation validates only 29.0% of non-
 | 📊 **Biological Ranking** | Ranks validated pathways within each category by synthesizing five evidence sources | [`agents/biological_ranking_agent.py`](agents/biological_ranking_agent.py) |
 | 🧩 **Interpretation** | Decomposes the reasoning path into structured, cross-pathway biological insights | [`predictor.py`](predictor.py) · [`backend/reasoning_parser.py`](backend/reasoning_parser.py) |
 
-All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Phase 1 → Phase 2 iterations → aggregation → Phase 3 drug targets → finalization).
+All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Phase 1 → Phase 2 iterations → aggregation → finalization).
 
 ---
 
@@ -170,7 +170,6 @@ Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP
 - `summary_iterative/summary_pathway_ranking.txt`
 - validation / category plots ([`visualization.py`](visualization.py))
 - memory-bank summary + network exports (when enabled)
-- optional `drug_target_analysis.json`
 
 ---
 
