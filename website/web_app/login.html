@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure sign in | GenePathwayAI</title>
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #1a2e2a;
+            --muted: #60716e;
+            --line: rgba(20, 58, 50, 0.11);
+            --mint: #3bb59a;
+            --mint-dark: #238a72;
+            --surface: rgba(255, 255, 255, 0.9);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 18% 12%, rgba(59, 181, 154, 0.16), transparent 32%),
+                radial-gradient(circle at 86% 78%, rgba(77, 166, 201, 0.12), transparent 30%),
+                #f5f8f7;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .login-shell {
+            width: min(920px, 100%);
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr);
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: 0 24px 70px rgba(24, 59, 52, 0.11);
+            backdrop-filter: blur(18px);
+        }
+
+        .login-context {
+            min-height: 500px;
+            padding: 54px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(145deg, rgba(59, 181, 154, 0.12), rgba(59, 181, 154, 0.025));
+            border-right: 1px solid var(--line);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05rem;
+            font-weight: 750;
+        }
+
+        .brand-mark {
+            font-size: 1.3rem;
+        }
+
+        .brand em {
+            color: var(--mint);
+            font-style: normal;
+        }
+
+        .context-copy {
+            max-width: 430px;
+        }
+
+        .eyebrow {
+            display: block;
+            margin-bottom: 12px;
+            color: var(--mint-dark);
+            font-size: 0.7rem;
+            font-weight: 750;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.15rem);
+            line-height: 1.08;
+            letter-spacing: -0.045em;
+        }
+
+        .context-copy p {
+            margin: 20px 0 0;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.75;
+        }
+
+        .workflow-note {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
+
+        .workflow-note span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            color: var(--mint-dark);
+            background: rgba(59, 181, 154, 0.12);
+            border-radius: 50%;
+            font-weight: 800;
+        }
+
+        .login-panel {
+            padding: 54px 46px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .lock-mark {
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            color: var(--mint-dark);
+            background: rgba(59, 181, 154, 0.1);
+            border: 1px solid rgba(59, 181, 154, 0.18);
+            border-radius: 13px;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.35rem;
+            letter-spacing: -0.02em;
+        }
+
+        .login-panel > p {
+            margin: 10px 0 24px;
+            color: var(--muted);
+            font-size: 0.84rem;
+            line-height: 1.6;
+        }
+
+        .login-button {
+            min-height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--mint), #2d9e84);
+            border: 0;
+            border-radius: 12px;
+            box-shadow: 0 10px 24px rgba(45, 158, 132, 0.2);
+            font-size: 0.86rem;
+            font-weight: 750;
+            text-decoration: none;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 13px 28px rgba(45, 158, 132, 0.26);
+        }
+
+        .access-note {
+            margin-top: 22px;
+            padding: 13px 14px;
+            color: var(--muted);
+            background: #f7faf9;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            font-size: 0.72rem;
+            line-height: 1.55;
+        }
+
+        .error-note {
+            display: none;
+            margin-bottom: 16px;
+            padding: 11px 12px;
+            color: #a23d34;
+            background: #fff5f3;
+            border: 1px solid #f2d2cd;
+            border-radius: 10px;
+            font-size: 0.74rem;
+            line-height: 1.45;
+        }
+
+        .error-note.visible {
+            display: block;
+        }
+
+        @media (max-width: 760px) {
+            .login-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .login-context {
+                min-height: auto;
+                gap: 52px;
+                padding: 36px 30px;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .login-panel {
+                padding: 36px 30px 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-shell">
+        <section class="login-context">
+            <div class="brand">
+                <span class="brand-mark">🧬</span>
+                <span>GenePathway<em>AI</em></span>
+            </div>
+
+            <div class="context-copy">
+                <span class="eyebrow">Private research workspace</span>
+                <h1>Pathway evidence, available to the team.</h1>
+                <p>Access the internal gene-to-pathway analysis workflow, validated results, literature evidence and structured reasoning records.</p>
+            </div>
+
+            <div class="workflow-note">
+                <span>✓</span>
+                Cognito-managed identity · administrator-approved accounts
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <div class="lock-mark" aria-hidden="true">🔒</div>
+            <h2>Secure sign in</h2>
+            <p>Continue to the unified Amazon Cognito sign-in page. Email and connected identity providers are managed in one place.</p>
+
+            <div id="login-error" class="error-note" role="alert"></div>
+
+            <a id="login-button" class="login-button" href="/auth/login">
+                Continue to secure sign in
+                <span aria-hidden="true">→</span>
+            </a>
+
+            <div class="access-note">
+                Public registration is currently closed. Google and Microsoft options will appear automatically after their Cognito connections are enabled.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const messages = {
+            setup: 'Authentication has not been configured in the AWS environment yet.',
+            not_allowed: 'This email is not on the approved team access list.',
+            email_unverified: 'Please verify the email address associated with this account.',
+            login_failed: 'Sign-in could not be completed. Please try again or contact the administrator.'
+        };
+        const params = new URLSearchParams(window.location.search);
+        const error = params.get('error');
+        const next = params.get('next');
+        const errorBox = document.getElementById('login-error');
+        const loginButton = document.getElementById('login-button');
+
+        if (error && messages[error]) {
+            errorBox.textContent = messages[error];
+            errorBox.classList.add('visible');
+        }
+        if (next && next.startsWith('/') && !next.startsWith('//')) {
+            loginButton.href = `/auth/login?next=${encodeURIComponent(next)}`;
+        }
+    </script>
+</body>
+
+</html>

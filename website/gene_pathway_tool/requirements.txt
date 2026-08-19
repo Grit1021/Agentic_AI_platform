@@ -1,0 +1,4 @@
+openai>=1.0
+pandas>=1.5
+gprofiler-official>=1.0
+biopython>=1.80

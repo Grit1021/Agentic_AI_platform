@@ -1,0 +1,115 @@
+{
+  "schema_version": "2.0",
+  "disease": "Alzheimer's Disease",
+  "disease_id": "MeSH:D000544",
+  "module": "Module 6",
+  "input_gene_count": 140,
+  "interpretation_pass_id": "ad-module6-final-pathway-context-20260809-v2",
+  "generated_at": "2026-08-09",
+  "source_type": "dedicated-pathway-interpretation-pass",
+  "evidence_contract": [
+    "official_pathway_definition",
+    "exact_input_intersection_genes",
+    "alzheimer_disease_interpretation",
+    "pathway_attached_pubmed_records"
+  ],
+  "method": "One uniform pathway-level interpretation pass over all 16 final ranked pathways. Every record uses the same evidence contract: the official pathway definition, exact input intersection genes, Alzheimer's disease interpretation and pathway-attached PubMed records.",
+  "records": {
+    "GO:0150076": {
+      "pathway_name": "neuroinflammatory response",
+      "cell_context": "Most relevant to plaque-associated microglia and reactive astrocytes in hippocampal and cortical regions, where sustained innate-immune signaling, cytokine release and oxidative injury can amplify synaptic damage in Alzheimer's disease; infiltrating myeloid cells may contribute, but the resident glial context is primary.",
+      "cell_context_pmids": ["39062547", "31092147"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0001774": {
+      "pathway_name": "microglial cell activation",
+      "cell_context": "Specific to microglia, particularly plaque-associated and disease-associated microglial states in hippocampus and cortex, where phagocytic, lysosomal and inflammatory programs alter amyloid-beta handling and synaptic homeostasis.",
+      "cell_context_pmids": ["38884701", "35054805"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0006954": {
+      "pathway_name": "inflammatory response",
+      "cell_context": "Most relevant to activated microglia and reactive astrocytes in Alzheimer's disease-affected hippocampal and cortical tissue, with possible contribution from peripheral myeloid cells; this broad term is not restricted to a single brain cell type.",
+      "cell_context_pmids": ["35978311", "37416769"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0061900": {
+      "pathway_name": "glial cell activation",
+      "cell_context": "Most relevant to reactive microglia and astrocytes in plaque- and tau-affected hippocampal and cortical regions, where spatially organized glial state changes track neuroinflammatory progression and tissue injury.",
+      "cell_context_pmids": ["38036733", "37452321"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0005515": {
+      "pathway_name": "protein binding",
+      "cell_context": "This broad molecular function spans multiple compartments and has no unique cell-type assignment. In Alzheimer's disease it is most pertinent to neuronal synapses and axons and to glial cells, including microglia, where protein-interaction networks regulate tau and amyloid binding, clearance and inflammatory signaling.",
+      "cell_context_pmids": ["34502116", "40373772"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0005509": {
+      "pathway_name": "calcium ion binding",
+      "cell_context": "Most relevant to excitatory pyramidal neurons and their hippocampal and cortical synapses, where calcium-binding proteins regulate neurotransmitter release, plasticity and stress signaling. In Alzheimer's disease, calcium dyshomeostasis is particularly consequential in vulnerable neuronal populations.",
+      "cell_context_pmids": ["35114922", "40145464"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0005764": {
+      "pathway_name": "lysosome",
+      "cell_context": "Most relevant to cortical and hippocampal neurons, plaque-associated microglia and reactive astrocytes. Neuronal lysosomes clear amyloid-beta, tau and damaged organelles, whereas glial lysosomes support plaque uptake and inflammatory-cargo processing.",
+      "cell_context_pmids": ["40183375", "38881515"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0005783": {
+      "pathway_name": "endoplasmic reticulum",
+      "cell_context": "Most relevant to cortical and hippocampal neurons with high secretory and calcium-handling demands, with additional roles in reactive astrocytes. Chronic endoplasmic-reticulum stress in these cells can couple proteostasis failure and calcium imbalance to inflammatory and apoptotic signaling.",
+      "cell_context_pmids": ["36948230", "29129774"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0005788": {
+      "pathway_name": "endoplasmic reticulum lumen",
+      "cell_context": "Most relevant to cortical and hippocampal pyramidal neurons, where APP, synaptic receptors and neuropeptides impose high secretory-pathway demand. Luminal folding stress in these neurons can compromise proteostasis and increase vulnerability to Alzheimer's disease pathology.",
+      "cell_context_pmids": ["26787453", "41009687"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "KEGG:04142": {
+      "pathway_name": "Lysosome biogenesis",
+      "cell_context": "Most relevant to neurons, microglia and astrocytes in hippocampal and cortical regions. Neuronal lysosome biogenesis supports autophagic clearance of amyloid-beta, tau and damaged organelles, whereas glial lysosomes support plaque uptake and inflammatory-cargo processing.",
+      "cell_context_pmids": ["40183375", "38881515"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "KEGG:04210": {
+      "pathway_name": "Apoptosis",
+      "cell_context": "Most relevant to vulnerable hippocampal and association-cortex neurons undergoing amyloid-, tau-, excitotoxic- and metabolic-stress signaling. Astrocytes and microglia may also engage apoptotic programs during chronic neuroinflammation, but neuronal loss is the principal disease-defining context.",
+      "cell_context_pmids": ["35691251", "37186274"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "REAC:R-HSA-168249": {
+      "pathway_name": "Innate Immune System",
+      "cell_context": "Primarily maps to brain-resident microglia in plaque- and tau-affected cortex and hippocampus, with additional roles for astrocytes and infiltrating monocytes and macrophages. These cells execute pattern recognition, cytokine signaling, phagocytosis and immune-linked cell death in Alzheimer's disease.",
+      "cell_context_pmids": ["35741014", "24557039"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0006979": {
+      "pathway_name": "response to oxidative stress",
+      "cell_context": "Most relevant to vulnerable hippocampal and cortical neurons exposed to mitochondrial and proteotoxic stress, and to astrocytes and microglia that regulate antioxidant support and inflammatory reactive-oxygen-species production in Alzheimer's disease tissue.",
+      "cell_context_pmids": ["41061946", "20966918"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0043065": {
+      "pathway_name": "positive regulation of apoptotic process",
+      "cell_context": "Most relevant to vulnerable neurons in hippocampus and association cortex undergoing amyloid-, tau- and stress-associated death signaling; cerebral pericytes and inflammatory glia may also engage pro-death programs in vascular and neuroinflammatory niches.",
+      "cell_context_pmids": ["39539344", "37633326"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0006457": {
+      "pathway_name": "protein folding",
+      "cell_context": "Most relevant to cortical and hippocampal neurons with high APP, tau and synaptic-protein proteostatic load, with supporting roles in astrocytes and microglia that manage extracellular and intracellular aggregates and cellular stress responses.",
+      "cell_context_pmids": ["32468481", "21776078"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    },
+    "GO:0002526": {
+      "pathway_name": "acute inflammatory response",
+      "cell_context": "Most relevant to acutely activated microglia and reactive astrocytes in injured Alzheimer's disease brain tissue, with additional contributions from infiltrating myeloid cells and circulating acute-phase programs; because the term is broad, it is not specific to resident central-nervous-system cells.",
+      "cell_context_pmids": ["29163531", "32917267"],
+      "source_type": "dedicated-pathway-interpretation-pass"
+    }
+  }
+}

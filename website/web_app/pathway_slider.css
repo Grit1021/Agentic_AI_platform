@@ -1,0 +1,112 @@
+/* Pathway Slider Styling */
+.pathway-slider-container {
+    margin: 20px 0;
+}
+
+.pathway-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: var(--bg-primary, #f8f9fc);
+    border-radius: 8px;
+}
+
+.pathway-counter {
+    font-size: 0.9em;
+    color: var(--text-secondary, #5f6775);
+}
+
+.pathway-counter .current-index {
+    color: var(--accent-primary, #4f6ef7);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.pathway-slider-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: var(--bg-primary, #f8f9fc);
+    border-radius: 8px;
+}
+
+.pathway-slider {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.08);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.pathway-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-primary, #3bb59a);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(59, 181, 154, 0.3);
+}
+
+.pathway-slider::-webkit-slider-thumb:hover {
+    background: #2d9e84;
+    transform: scale(1.2);
+}
+
+.pathway-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-primary, #3bb59a);
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(59, 181, 154, 0.3);
+}
+
+.pathway-slider::-moz-range-thumb:hover {
+    background: #2d9e84;
+    transform: scale(1.2);
+}
+
+.slider-btn {
+    padding: 8px 16px;
+    background: var(--accent-primary, #3bb59a);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.slider-btn:hover:not(:disabled) {
+    background: #2d9e84;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 181, 154, 0.25);
+}
+
+.slider-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.slider-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pathway-tbody {
+    transition: opacity 0.2s ease;
+}
+
+.pathway-tbody.updating {
+    opacity: 0.5;
+}

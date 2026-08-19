@@ -1,0 +1,11 @@
+Authlib>=1.6,<2
+biopython>=1.86,<2
+boto3>=1.40,<2
+Flask>=3.1,<4
+Flask-Cors>=6.0,<7
+gprofiler-official>=1.0,<2
+gunicorn>=23,<24
+openai>=2.20,<3
+pandas>=3.0,<4
+requests>=2.32,<3
+reportlab>=4.4,<5

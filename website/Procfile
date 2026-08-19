@@ -1,0 +1,1 @@
+web: gunicorn --chdir web_app --bind :8000 --workers 1 --threads 8 --timeout 180 --access-logfile - --error-logfile - server:app

@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "gene-pathway-tool"
+version = "1.0.0"
+description = "AI-powered gene pathway analysis tool combining GPT prediction, g:Profiler enrichment, and PubMed literature search"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "GenePathwayAI Team"}
+]
+keywords = [
+    "bioinformatics", "pathway-analysis", "gene-enrichment",
+    "gprofiler", "openai", "pubmed", "drug-targets",
+    "go-enrichment", "kegg", "reactome"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "openai>=1.0",
+    "pandas>=1.5",
+]
+
+[project.optional-dependencies]
+full = [
+    "openai>=1.0",
+    "pandas>=1.5",
+    "gprofiler-official>=1.0",
+    "biopython>=1.80",
+]
+tooluniverse = [
+    "openai>=1.0",
+    "pandas>=1.5",
+    "gprofiler-official>=1.0",
+    "biopython>=1.80",
+    "tooluniverse>=1.0",
+]
+biomni = [
+    "openai>=1.0",
+    "pandas>=1.5",
+    "gprofiler-official>=1.0",
+    "biopython>=1.80",
+    "biomni>=0.0.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/GenePathwayAI/gene-pathway-tool"
+Documentation = "https://github.com/GenePathwayAI/gene-pathway-tool#readme"
+
+[tool.setuptools.packages.find]
+include = ["gene_pathway_tool*"]
