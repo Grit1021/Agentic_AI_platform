@@ -213,7 +213,7 @@ def display_iteration_stats(session, iteration, category_stats, retained_count,
     
     # Generate HTML table
     stats_html = f'''<div class="stats-container">
-    <h4>📊 Iteration {iteration} Statistics</h4>
+    <h4><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-chart-bar"></use></svg> Iteration {iteration} Statistics</h4>
     <table class="pathway-table stats-table">
         <thead>
             <tr>

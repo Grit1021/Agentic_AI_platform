@@ -4,7 +4,9 @@ This directory contains the user-facing web application for the agentic pathway-
 
 ## Directory layout
 
-- `web_app/` — Flask server, browser interface, authentication, quota controls and the archived demo.
+- `web_app/` — Flask server, componentized browser interface, authentication, admin quota controls and archived examples.
+- `web_app/components/` — shared header, workflow, input, runtime, results, history, documentation, tour and footer fragments.
+- `web_app/examples/` — downloadable HGNC, Ensembl and mixed-identifier input examples.
 - `gene_pathway_tool/` — pathway analysis clients and pipeline adapters.
 - `demo_sources/` — source records used to reproduce the bundled Alzheimer’s disease example.
 - `.ebextensions/`, `Procfile` and `.ebignore` — AWS Elastic Beanstalk deployment configuration.
@@ -20,7 +22,7 @@ cd web_app
 AUTH_ENABLED=false python server.py
 ```
 
-Then open `http://127.0.0.1:8768/`. The completed example is available at `http://127.0.0.1:8768/?demo=1`.
+Then open `http://127.0.0.1:5000/`. The completed Alzheimer’s disease example is available at `http://127.0.0.1:5000/?demo=1&example=AD`.
 
 ## Configuration
 
@@ -39,7 +41,15 @@ See `DEPLOY_AWS.md` for the complete AWS setup.
 
 ```bash
 python validate_demo_output.py
-python -m pytest web_app/test_quota_manager.py web_app/test_server_limits.py web_app/test_validation_metrics.py
+cd web_app
+python -m unittest test_server_limits.py
+python -m unittest test_quota_manager.py
+python -m unittest test_validation_metrics.py
+python -m unittest test_admin_dashboard.py
+python -m unittest test_external_evidence.py
+python -m unittest test_open_targets_gene_import.py
+cd ..
+python -m unittest test_archive_lock.py test_backfill_narrative_clusters.py
 ```
 
 Runtime history, logs, caches, local environments, credentials and debug-only artifacts are intentionally excluded from version control.

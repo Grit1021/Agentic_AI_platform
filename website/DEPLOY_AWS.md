@@ -51,12 +51,14 @@ COGNITO_USER_POOL_ID=us-east-1_EXAMPLE
 COGNITO_CLIENT_ID=YOUR_APP_CLIENT_ID
 COGNITO_DOMAIN=https://genepathway-team.auth.us-east-1.amazoncognito.com
 ALLOWED_EMAILS=bingxin-full-email@example.com
+ADMIN_EMAILS=admin-full-email@example.com
 ENTREZ_EMAIL=team-contact@example.com
 GPT_MODEL=gpt-5.1
 QUOTA_ENABLED=true
 QUOTA_BACKEND=dynamodb
 QUOTA_TABLE_NAME=GenePathwayAI-Usage
 USER_DAILY_JOB_LIMIT=3
+MAX_USER_DAILY_JOB_LIMIT=200
 GLOBAL_DAILY_JOB_LIMIT=30
 MAX_CONCURRENT_JOBS=1
 ```
@@ -92,6 +94,11 @@ ALLOWED_EMAILS=bingxin@example.com,second.member@example.com
    `dynamodb:UpdateItem` 权限。应用调用 `TransactWriteItems` API，但 IAM
    按事务中实际使用的底层 `UpdateItem` 动作授权。
 4. 默认限制为每用户 3 次、全站 30 次、同一时间 1 个分析任务。
+
+`ADMIN_EMAILS` 中的用户会在登录后的账户区域看到隐藏的 Admin 入口。管理页可以查看
+当天的个人/全站用量，并为 `ALLOWED_EMAILS` 中的用户设置 1–200 次的独立每日上限；
+重置后恢复 `USER_DAILY_JOB_LIMIT`。入口隐藏只是界面层，`/admin` 与 `/api/admin/*`
+同时有服务端管理员校验。
 
 Google 登录使用 Cognito 的 Google social provider；Microsoft 登录使用 Cognito
 OIDC provider。两者都复用当前 `/auth/callback`，外部平台回调地址则是 Cognito

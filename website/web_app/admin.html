@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | GenePathwayAI</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400..700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css?v=20260903a">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-header__inner">
+            <a class="admin-logo" href="/" aria-label="Return to GenePathwayAI">
+                <span class="admin-logo__mark" aria-hidden="true">G</span>
+                <span>GenePathway<span>AI</span></span>
+            </a>
+            <nav class="admin-header__nav" aria-label="Account">
+                <a href="/">Analysis</a>
+                <span id="admin-user-email" class="admin-user-email"></span>
+                <a href="/auth/logout">Sign out</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="admin-title-row">
+            <div>
+                <p class="admin-eyebrow">Administration</p>
+                <h1>User limits</h1>
+            </div>
+            <button id="admin-refresh" class="admin-button admin-button--secondary" type="button">Refresh</button>
+        </div>
+
+        <div id="admin-status" class="admin-status" role="status" aria-live="polite">Loading…</div>
+
+        <section class="admin-summary" aria-label="Daily quota summary">
+            <article class="admin-summary-card">
+                <span>Managed users</span>
+                <strong id="admin-managed-users">—</strong>
+            </article>
+            <article class="admin-summary-card">
+                <span>Site-wide today</span>
+                <strong id="admin-global-usage">—</strong>
+            </article>
+            <article class="admin-summary-card">
+                <span>Active analyses</span>
+                <strong id="admin-active-jobs">—</strong>
+            </article>
+            <article class="admin-summary-card">
+                <span>Default user limit</span>
+                <strong id="admin-default-limit">—</strong>
+            </article>
+        </section>
+
+        <section class="admin-panel" aria-labelledby="admin-users-heading">
+            <div class="admin-panel__heading">
+                <h2 id="admin-users-heading">Users</h2>
+                <span id="admin-quota-day"></span>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">User</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Used today</th>
+                            <th scope="col">Daily limit</th>
+                            <th scope="col">Remaining</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-user-rows"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <site-footer></site-footer>
+    <script src="components/site-footer.js?v=20260903a"></script>
+    <script src="admin.js?v=20260831a"></script>
+</body>
+</html>

@@ -24,3 +24,7 @@ replit.md
 .replit
 uv.lock
 gene_pathway_tool/test_integration.py
+
+# Local virtualenv and generated deployment bundles must never enter the bundle.
+.venv/
+*.zip

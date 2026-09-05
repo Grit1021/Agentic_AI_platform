@@ -13,8 +13,20 @@ const state = {
     isAnalyzing: false,
     pollingInterval: null,
     lastMessageCount: 0,
-    quota: null
+    quota: null,
+    analysisStartedAt: null
 };
+
+const frontendDataState = {
+    geneLists: {},
+    completedExamples: null,
+    resultCache: new Map(),
+    ready: false,
+};
+
+const HOSTED_APP_URL = String(
+    document.querySelector('meta[name="hosted-app-url"]')?.content || ''
+).replace(/\/$/, '');
 
 // Collected reasoning traces from messages (populated during analysis)
 const collectedReasoning = [];
@@ -80,9 +92,16 @@ const elements = {
     queryPanel: document.getElementById('query-panel'),
     queryInput: document.getElementById('query-input'),
     querySubmit: document.getElementById('query-submit'),
+    analysisProgress: document.getElementById('analysis-progress'),
+    analysisProgressBar: document.getElementById('analysis-progress-bar'),
+    analysisProgressStage: document.getElementById('analysis-progress-stage'),
+    analysisProgressPercent: document.getElementById('analysis-progress-percent'),
+    analysisProgressDetail: document.getElementById('analysis-progress-detail'),
+    analysisProgressElapsed: document.getElementById('analysis-progress-elapsed'),
 
     // Results View Elements
     backToProcess: document.getElementById('back-to-process'),
+    retryNarrativesBtn: document.getElementById('retry-narratives-btn'),
     exportBtn: document.getElementById('export-btn'),
     diseaseNameDisplay: document.getElementById('disease-name-display'),
     geneCountDisplay: document.getElementById('gene-count-display'),
@@ -95,6 +114,7 @@ const elements = {
 
 // Store current results data
 let currentResults = null;
+let pathwayDisplayLimit = 5;
 
 
 // ============================================================================
@@ -103,16 +123,27 @@ let currentResults = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initAuthUserMenu();
+    initAnalysisSettings();
+    initWorkflowNavigation();
+    initProductTour();
+    initFeaturedExamplesMenu();
+
+    // Disease context is the first, equally weighted input.
+    const contextGrid = document.querySelector('.analysis-context-grid');
+    const diseaseGroup = contextGrid?.querySelector('.input-workspace-group--disease');
+    const geneGroup = contextGrid?.querySelector('.input-workspace-group--genes');
+    if (contextGrid && diseaseGroup && geneGroup) contextGrid.insertBefore(diseaseGroup, geneGroup);
 
     // Gene count tracking
     elements.geneInput.addEventListener('input', updateGeneCount);
+    elements.geneInput.addEventListener('input', clearOpenTargetsGeneImportState);
     initGeneQueryAutocomplete();
     initGeneSearch();
     initGeneFileUpload();
     updateGeneCount();
 
-    // Load curated gene lists from backend
-    initGeneListLoader();
+    // Load all homepage reference data from the backend-owned data contract.
+    initializeFrontendData();
     loadQuotaStatus();
 
     // Start analysis
@@ -142,19 +173,336 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Results View Navigation
     elements.backToProcess?.addEventListener('click', hideResultsView);
+    elements.retryNarrativesBtn?.addEventListener('click', retryFallbackNarratives);
+    document.getElementById('pathways-per-database')?.addEventListener('change', event => {
+        pathwayDisplayLimit = event.target.value === 'all' ? Infinity : Number(event.target.value) || 5;
+        if (currentResults?.pathways) renderEvidenceSectionsView(currentResults.pathways);
+    });
+    document.querySelectorAll('[data-report-view]').forEach(button => {
+        button.addEventListener('click', () => setReportView(button.dataset.reportView));
+    });
 
-    // A direct file preview or localhost URL with ?demo=1 loads the bundled
-    // completed run immediately. The default localhost root remains available
-    // for testing the input and navigation screens.
-    const demoRequested = new URLSearchParams(window.location.search).get('demo') === '1';
-    if ((window.location.protocol === 'file:' || demoRequested) && window.OFFLINE_DEMO_RESULT) {
-        showBundledDemoResult();
-    }
 });
+
+function getFeaturedExamplesMenuItems() {
+    return [...document.querySelectorAll('#featured-examples-menu [role="menuitem"]')];
+}
+
+function setFeaturedExamplesMenuOpen(open, { focusItem = null } = {}) {
+    const trigger = document.getElementById('featured-examples-menu-button');
+    const menu = document.getElementById('featured-examples-menu');
+    if (!trigger || !menu) return;
+    trigger.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+    if (!open) return;
+
+    const items = getFeaturedExamplesMenuItems();
+    const target = focusItem === 'last' ? items.at(-1) : focusItem === 'first' ? items[0] : null;
+    target?.focus({ preventScroll: true });
+}
+
+function openNavigationCompletedExample(event, diseaseCode) {
+    event?.preventDefault();
+    setFeaturedExamplesMenuOpen(false);
+
+    const baseUrl = window.location.protocol === 'file:'
+        ? HOSTED_APP_URL
+        : window.location.origin;
+    if (!baseUrl) {
+        alert('The hosted completed examples are not configured for this preview.');
+        return false;
+    }
+
+    const targetUrl = new URL('/', baseUrl);
+    targetUrl.searchParams.set('demo', '1');
+    targetUrl.searchParams.set('example', diseaseCode);
+    window.location.assign(targetUrl.toString());
+    return false;
+}
+
+function initFeaturedExamplesMenu() {
+    const wrapper = document.querySelector('.nav-featured-menu');
+    const trigger = document.getElementById('featured-examples-menu-button');
+    const menu = document.getElementById('featured-examples-menu');
+    if (!wrapper || !trigger || !menu) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const currentCode = String(params.get('example') || '').toUpperCase();
+    getFeaturedExamplesMenuItems().forEach(item => {
+        const selected = item.dataset.exampleCode === currentCode;
+        item.classList.toggle('is-current', selected);
+        if (selected) item.setAttribute('aria-current', 'page');
+        item.addEventListener('click', event => {
+            openNavigationCompletedExample(event, item.dataset.exampleCode);
+        });
+    });
+
+    trigger.addEventListener('click', event => {
+        event.stopPropagation();
+        setFeaturedExamplesMenuOpen(trigger.getAttribute('aria-expanded') !== 'true');
+    });
+    trigger.addEventListener('keydown', event => {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            setFeaturedExamplesMenuOpen(true, {
+                focusItem: event.key === 'ArrowUp' ? 'last' : 'first',
+            });
+        }
+    });
+    menu.addEventListener('keydown', event => {
+        const items = getFeaturedExamplesMenuItems();
+        const currentIndex = items.indexOf(document.activeElement);
+        let nextIndex = null;
+        if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % items.length;
+        if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + items.length) % items.length;
+        if (event.key === 'Home') nextIndex = 0;
+        if (event.key === 'End') nextIndex = items.length - 1;
+        if (nextIndex !== null) {
+            event.preventDefault();
+            items[nextIndex]?.focus();
+        }
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            setFeaturedExamplesMenuOpen(false);
+            trigger.focus();
+        }
+        if (event.key === 'Tab') setFeaturedExamplesMenuOpen(false);
+    });
+    document.addEventListener('click', event => {
+        if (!wrapper.contains(event.target)) setFeaturedExamplesMenuOpen(false);
+    });
+}
+
+function getModelOptionLabel(model) {
+    return ({
+        'gpt-5.1': 'GPT-5.1 (recommended)',
+        'gpt-5-mini': 'GPT-5 mini (faster)',
+        'gpt-4.1': 'GPT-4.1 (non-reasoning)',
+    })[model] || model;
+}
+
+async function loadAnalysisSettingsConfig() {
+    if (window.location.protocol === 'file:') return;
+    try {
+        const response = await fetch('/api/status', {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        const select = document.getElementById('openai-model-select');
+        const allowedModels = Array.isArray(payload.allowed_gpt_models)
+            ? payload.allowed_gpt_models.filter(Boolean)
+            : [];
+        if (!select || !allowedModels.length) return;
+        select.replaceChildren(...allowedModels.map(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = getModelOptionLabel(model);
+            return option;
+        }));
+        select.value = allowedModels.includes(payload.gpt_model)
+            ? payload.gpt_model
+            : allowedModels[0];
+    } catch (_) {
+        // Static previews intentionally keep the bundled model choices.
+    }
+}
+
+function initAnalysisSettings() {
+    loadAnalysisSettingsConfig();
+}
+
+const WORKFLOW_STEP_LABELS = {
+    input: 'Input is ready',
+    hypothesize: 'Candidate pathway generation',
+    validate: 'Statistical validation',
+    rank: 'Evidence-based ranking',
+    interpret: 'Biological interpretation',
+};
+
+function setActiveWorkflowStep(step) {
+    document.querySelectorAll('.workflow-rail-step').forEach(button => {
+        const active = button.dataset.workflowStep === step;
+        button.classList.toggle('is-active', active);
+        if (active) button.setAttribute('aria-current', 'step');
+        else button.removeAttribute('aria-current');
+    });
+    const status = document.getElementById('workflow-navigation-status');
+    if (status) status.textContent = WORKFLOW_STEP_LABELS[step] || '';
+}
+
+function getWorkflowScrollTarget(step) {
+    const resultsVisible = elements.resultsSection && !elements.resultsSection.classList.contains('hidden');
+    const chatVisible = elements.chatSection && !elements.chatSection.classList.contains('hidden');
+
+    if (step === 'input') return document.querySelector('.analysis-context-grid');
+    if (chatVisible) {
+        const stageMap = { hypothesize: 1, validate: 2, rank: 3, interpret: 4 };
+        const stage = stageMap[step];
+        return document.querySelector(`[data-pipeline-stage="${stage}"]`) || elements.analysisProgress;
+    }
+    if (resultsVisible) {
+        return {
+            hypothesize: document.querySelector('.database-reasoning-details'),
+            validate: document.querySelector('.summary-ranked-table-wrap') || document.querySelector('.summary-card'),
+            rank: document.querySelector('.evidence-register-card'),
+            interpret: document.querySelector('.overall-interpretation-card'),
+        }[step];
+    }
+    return document.querySelector('.analysis-context-grid');
+}
+
+function navigateToWorkflowStep(step) {
+    if (step === 'input') showAnalysisView();
+    const target = getWorkflowScrollTarget(step);
+    setActiveWorkflowStep(step);
+    if (!target) return;
+    let ancestor = target.parentElement;
+    while (ancestor) {
+        if (ancestor.tagName === 'DETAILS') ancestor.open = true;
+        ancestor = ancestor.parentElement;
+    }
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    window.requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    });
+}
+
+function initWorkflowNavigation() {
+    document.querySelectorAll('.workflow-rail-step').forEach(button => {
+        button.addEventListener('click', () => navigateToWorkflowStep(button.dataset.workflowStep));
+    });
+    setActiveWorkflowStep('input');
+}
+
+const PRODUCT_TOUR_STORAGE_KEY = 'genepathway-tour-20260903';
+const PRODUCT_TOUR_STEPS = [
+    {
+        target: '.input-workspace-group--disease',
+        title: 'Choose the disease context',
+        copy: 'Search for a disease or phenotype. An ontology match enables Open Targets gene import.',
+    },
+    {
+        target: '.input-workspace-group--genes',
+        title: 'Add the gene list',
+        copy: 'Paste identifiers, upload a file, or download the tested example files beside Upload list.',
+    },
+    {
+        target: '.analysis-options',
+        title: 'Control the analysis',
+        copy: 'Multiple runs is enabled by default. You can switch it off or select another available model.',
+    },
+    {
+        target: '#featured-examples',
+        title: 'Review a finished example',
+        copy: 'Open a completed disease analysis before starting a new run.',
+    },
+];
+
+let productTourIndex = 0;
+
+function setProductTourSeen() {
+    try { window.localStorage.setItem(PRODUCT_TOUR_STORAGE_KEY, '1'); } catch (_) {}
+}
+
+function hideProductTour({ remember = true } = {}) {
+    const tour = document.getElementById('product-tour');
+    document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
+    tour?.classList.add('hidden');
+    if (remember) setProductTourSeen();
+}
+
+function renderProductTourStep() {
+    const tour = document.getElementById('product-tour');
+    const step = PRODUCT_TOUR_STEPS[productTourIndex];
+    if (!tour || !step) return;
+    document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
+    const target = document.querySelector(step.target);
+    target?.classList.add('tour-highlight');
+    target?.scrollIntoView({ behavior: 'auto', block: 'center' });
+    document.getElementById('product-tour-count').textContent = `${productTourIndex + 1} of ${PRODUCT_TOUR_STEPS.length}`;
+    document.getElementById('product-tour-title').textContent = step.title;
+    document.getElementById('product-tour-copy').textContent = step.copy;
+    const back = document.getElementById('product-tour-back');
+    const next = document.getElementById('product-tour-next');
+    if (back) back.disabled = productTourIndex === 0;
+    if (next) next.textContent = productTourIndex === PRODUCT_TOUR_STEPS.length - 1 ? 'Finish' : 'Next';
+}
+
+function showProductTour({ force = false } = {}) {
+    const tour = document.getElementById('product-tour');
+    if (!tour) return;
+    const params = new URLSearchParams(window.location.search);
+    if (!force && (params.get('demo') === '1' || window.location.hash.startsWith('#docs/'))) return;
+    if (!force) {
+        try {
+            if (window.localStorage.getItem(PRODUCT_TOUR_STORAGE_KEY) === '1') return;
+        } catch (_) {}
+    }
+    productTourIndex = 0;
+    tour.classList.remove('hidden');
+    renderProductTourStep();
+    document.getElementById('product-tour-next')?.focus();
+}
+
+function initProductTour() {
+    document.getElementById('tour-replay-button')?.addEventListener('click', () => {
+        showAnalysisView();
+        showProductTour({ force: true });
+    });
+    document.getElementById('product-tour-close')?.addEventListener('click', () => hideProductTour());
+    document.getElementById('product-tour-skip')?.addEventListener('click', () => hideProductTour());
+    document.getElementById('product-tour-back')?.addEventListener('click', () => {
+        productTourIndex = Math.max(0, productTourIndex - 1);
+        renderProductTourStep();
+    });
+    document.getElementById('product-tour-next')?.addEventListener('click', () => {
+        if (productTourIndex >= PRODUCT_TOUR_STEPS.length - 1) {
+            hideProductTour();
+            return;
+        }
+        productTourIndex += 1;
+        renderProductTourStep();
+    });
+    document.getElementById('product-tour')?.addEventListener('keydown', event => {
+        if (event.key === 'Escape') hideProductTour();
+    });
+    window.setTimeout(() => showProductTour(), 250);
+}
+
+const UNSAFE_BIOMEDICAL_TEXT_PATTERNS = [
+    /\b(?:how\s+to|steps?\s+to|instructions?\s+(?:for|to)|help\s+me)\b.{0,80}\b(?:kill|murder|shoot|stab|bomb|explosive|poison|weapon|attack)\b/is,
+    /\b(?:i\s+will|we\s+will|i(?:'m|\s+am)\s+going\s+to)\s+(?:kill|murder|shoot|stab|bomb|attack|hurt)\b/i,
+    /\b(?:kill\s+myself|suicide\s+method|how\s+to\s+die)\b/i,
+    /\b(?:ignore|override)\s+(?:all\s+)?(?:previous|system|developer)\s+instructions?\b/i,
+    /\b(?:reveal|print|return)\b.{0,40}\b(?:api\s*key|secret|environment\s+variables?|system\s+prompt)\b/i,
+];
+
+function getBiomedicalTextError(value, fieldName = 'This field') {
+    const text = String(value || '').trim();
+    if (!text) return '';
+    if (/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(text)) {
+        return `${fieldName} contains unsupported control characters.`;
+    }
+    if (UNSAFE_BIOMEDICAL_TEXT_PATTERNS.some(pattern => pattern.test(text))) {
+        return `${fieldName} only accepts biomedical research context. Remove violent, threatening or unrelated instructions.`;
+    }
+    return '';
+}
+
+function showInputValidationError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    element.textContent = message || '';
+    element.classList.toggle('hidden', !message);
+}
 
 async function initAuthUserMenu() {
     const menu = document.getElementById('auth-user-menu');
     const emailEl = document.getElementById('auth-user-email');
+    const adminLink = document.getElementById('admin-dashboard-link');
+    if (adminLink) adminLink.hidden = true;
     try {
         const response = await fetch('/api/auth/me', {
             headers: { 'Accept': 'application/json' }
@@ -165,18 +513,205 @@ async function initAuthUserMenu() {
         if (menu && emailEl && data.authenticated && data.email) {
             emailEl.textContent = data.email;
             menu.classList.remove('hidden');
+            if (adminLink) adminLink.hidden = !data.is_admin;
         }
     } catch (_) {
         // The read-only localhost preview has no authentication endpoint.
     }
 }
 
-function showBundledDemoResult() {
-    const bundledResult = window.OFFLINE_DEMO_RESULT;
-    if (!bundledResult) {
-        alert('The completed example data is not available.');
+async function initializeFrontendData() {
+    if (window.location.protocol === 'file:') {
+        console.info('Backend data is available when the application is served over HTTP.');
+        updateFeaturedExampleButtons();
         return;
     }
+
+    try {
+        const response = await fetch('/api/frontend-data', {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || `Reference data returned HTTP ${response.status}`);
+
+        frontendDataState.geneLists = payload.gene_lists || {};
+        frontendDataState.completedExamples = payload.completed_examples || null;
+        frontendDataState.ready = true;
+
+        await initGeneListLoader(frontendDataState.geneLists);
+        initCompletedExampleLauncher();
+        updateFeaturedExampleButtons();
+
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('demo') === '1') {
+            const requested = String(params.get('example') || '').toUpperCase();
+            const select = document.getElementById('completed-example-select');
+            if (requested && select && [...select.options].some(option => option.value === requested)) {
+                select.value = requested;
+                updateCompletedExampleMeta();
+            }
+            await showBundledDemoResult();
+        }
+    } catch (error) {
+        console.warn('Backend reference data is unavailable:', error);
+        const exampleSelect = document.getElementById('gene-list-disease-select');
+        if (exampleSelect) exampleSelect.innerHTML = '<option value="">Examples unavailable</option>';
+        updateFeaturedExampleButtons();
+    }
+}
+
+/** Backend-provided completed-result catalog. Full results are loaded on demand. */
+function getCompletedExampleArchive() {
+    const archive = frontendDataState.completedExamples;
+    if (!archive || typeof archive !== 'object') return null;
+    const examples = archive.examples;
+    if (!examples || typeof examples !== 'object') return null;
+    const codes = Object.keys(examples).filter(code => examples[code]);
+    if (!codes.length) return null;
+    return {
+        codes,
+        examples,
+        defaultCode: codes.includes(archive.default) ? archive.default : codes[0]
+    };
+}
+
+function describeCompletedExample(example) {
+    if (!example) return '';
+    const parts = [];
+    const geneCount = Number(example.gene_count) || (example.result?.input_genes || []).length;
+    if (geneCount) parts.push(`${geneCount} input genes`);
+    const pathwayCount = Number(example.pathway_count) || (example.result?.pathways || []).length;
+    if (pathwayCount) parts.push(`${pathwayCount} validated pathways`);
+    return parts.join(', ');
+}
+
+function toggleMoreFeaturedExamples(button) {
+    const panel = document.getElementById('featured-more-examples');
+    if (!panel) return;
+    const opening = panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', !opening);
+    button?.setAttribute('aria-expanded', String(opening));
+}
+
+function setReportView(view = 'summary') {
+    const detailed = view === 'detailed';
+    elements.resultsSection?.classList.toggle('report-view--detailed', detailed);
+    document.querySelectorAll('[data-report-view]').forEach(button => {
+        const active = button.dataset.reportView === (detailed ? 'detailed' : 'summary');
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+    });
+}
+
+function updateCompletedExampleMeta() {
+    const archive = getCompletedExampleArchive();
+    const meta = document.getElementById('completed-example-meta');
+    const select = document.getElementById('completed-example-select');
+    if (!archive || !meta || !select) return;
+    meta.textContent = describeCompletedExample(archive.examples[select.value])
+        || 'Archived completed analysis';
+}
+
+function initCompletedExampleLauncher() {
+    const select = document.getElementById('completed-example-select');
+    const launcher = document.querySelector('.completed-example-launcher');
+    const archive = getCompletedExampleArchive();
+    if (!select) return;
+    if (!archive) {
+        // No archive bundled: keep the plain button, drop the picker.
+        launcher?.classList.add('completed-example-launcher--bare');
+        select.remove();
+        return;
+    }
+    // The markup ships a single placeholder option; the real list comes from
+    // whatever the archive actually contains.
+    select.innerHTML = archive.codes.map(code => {
+        const example = archive.examples[code];
+        const label = example.title || example.disease || code;
+        return `<option value="${escapeHtml(code)}">${escapeHtml(label)}</option>`;
+    }).join('');
+    select.value = archive.defaultCode;
+    select.addEventListener('change', updateCompletedExampleMeta);
+    updateCompletedExampleMeta();
+}
+
+async function fetchCompletedExample(code) {
+    const archive = getCompletedExampleArchive();
+    if (!archive) return null;
+    const resolvedCode = archive.examples[code] ? code : archive.defaultCode;
+    if (frontendDataState.resultCache.has(resolvedCode)) {
+        return frontendDataState.resultCache.get(resolvedCode);
+    }
+    const response = await fetch(`/api/completed-examples/${encodeURIComponent(resolvedCode)}`, {
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store',
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error || `Completed example returned HTTP ${response.status}`);
+    frontendDataState.resultCache.set(resolvedCode, payload);
+    return payload;
+}
+
+async function showCompletedExample(code) {
+    const example = await fetchCompletedExample(code);
+    if (!example || !example.result) return false;
+    renderCompletedRun(example.result, example.title || example.disease || 'Completed result');
+    return true;
+}
+
+async function openFeaturedCompletedExample(code) {
+    if (window.location.protocol === 'file:') {
+        if (!HOSTED_APP_URL) {
+            alert('The hosted completed examples are not configured for this preview.');
+            return false;
+        }
+        const hostedUrl = new URL(HOSTED_APP_URL);
+        hostedUrl.searchParams.set('demo', '1');
+        hostedUrl.searchParams.set('example', code);
+        window.location.assign(hostedUrl.toString());
+        return true;
+    }
+
+    const archive = getCompletedExampleArchive();
+    if (!archive || !archive.examples[code]) {
+        await loadFeaturedInput(code);
+        return false;
+    }
+
+    const select = document.getElementById('completed-example-select');
+    if (select) {
+        select.value = code;
+        updateCompletedExampleMeta();
+    }
+
+    try {
+        if (!await showCompletedExample(code)) return false;
+    } catch (error) {
+        alert(`Unable to open this completed example: ${error.message}`);
+        return false;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('demo', '1');
+    url.searchParams.set('example', code);
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return true;
+}
+
+async function showBundledDemoResult() {
+    const select = document.getElementById('completed-example-select');
+    try {
+        if (await showCompletedExample(select ? select.value : undefined)) return;
+    } catch (error) {
+        console.warn('Completed example could not be opened:', error);
+    }
+    alert('The completed example data is not available.');
+}
+
+function renderCompletedRun(bundledResult, statusLabel) {
+    if (!bundledResult) return;
 
     const demoPathwayIds = {
         'neuroinflammatory response': 'GO:0150076',
@@ -261,10 +796,13 @@ function showBundledDemoResult() {
 
     const analysisStatus = document.getElementById('analysis-status');
     if (analysisStatus) {
-        analysisStatus.textContent = window.location.protocol === 'file:'
-            ? '✓ Offline demo'
-            : '✓ Result demo';
-        analysisStatus.title = 'Bundled completed analysis; no analysis backend required';
+        const label = window.location.protocol === 'file:'
+            ? 'Offline demo'
+            : (statusLabel || 'Result demo');
+        analysisStatus.innerHTML =
+            '<svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-check"></use></svg> '
+            + escapeHtml(label);
+        analysisStatus.title = 'Archived completed analysis; no analysis backend required';
     }
 }
 
@@ -329,7 +867,7 @@ function renderPathwayNameLink(pathway, name, className = '') {
     const label = escapeHtml(name || pathway?.name || pathway?.pathway_name || 'Unknown pathway');
     const url = getPathwayOfficialUrl(pathway);
     if (!url) return `<span${className ? ` class="${className}"` : ''}>${label}</span>`;
-    return `<a class="pathway-official-link${className ? ` ${className}` : ''}" href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open the original database record">${label}<span aria-hidden="true">↗</span></a>`;
+    return `<a class="pathway-official-link${className ? ` ${className}` : ''}" href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open the original database record">${label}<span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span></a>`;
 }
 
 function getGeneOfficialUrl(gene) {
@@ -342,7 +880,7 @@ function getGeneOfficialUrl(gene) {
 function renderGeneOfficialLink(gene, className) {
     const symbol = String(gene || '').trim();
     const sourceName = /^ENSG\d+(?:\.\d+)?$/i.test(symbol) ? 'Ensembl' : 'HGNC';
-    return `<a class="${className}" href="${escapeHtml(getGeneOfficialUrl(symbol))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open ${escapeHtml(symbol)} in ${sourceName}">${escapeHtml(symbol)}<span class="external-link-mark" aria-hidden="true">↗</span></a>`;
+    return `<a class="${className}" href="${escapeHtml(getGeneOfficialUrl(symbol))}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open ${escapeHtml(symbol)} in ${sourceName}">${escapeHtml(symbol)}<span class="external-link-mark" aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span></a>`;
 }
 
 const CELL_TYPE_PATTERNS = [
@@ -379,6 +917,17 @@ const CELL_TYPE_PATTERNS = [
     ['Cortex', /\bcort(?:ex|ical)\b/i],
     ['Synapses', /\bsynaps(?:e|es|tic)\b/i]
 ];
+
+// The pathway context layer also carries anatomy and subcellular-site terms.
+// Keep those visible on each pathway, but do not let Hippocampus/Cortex/Synapses
+// displace actual cell types from the run-level "Top cell types" ranking.
+const NON_CELL_TYPE_CONTEXT_LABELS = new Set([
+    'Hippocampus',
+    'Association cortex',
+    'Entorhinal cortex',
+    'Cortex',
+    'Synapses'
+]);
 
 const CELL_CONTEXT_ONTOLOGY_TERMS = {
     'Pyramidal neurons': { ontology: 'cl', id: 'CL:0000598', source: 'Cell Ontology' },
@@ -429,7 +978,25 @@ function renderCellContextOfficialLink(label, className = '') {
     const url = getCellContextOfficialUrl(label);
     if (!url) return `<span${className ? ` class="${className}"` : ''}>${escapeHtml(label)}</span>`;
     const classes = [className, 'cell-context-official-link'].filter(Boolean).join(' ');
-    return `<a class="${classes}" href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open ${escapeHtml(label)} in ${escapeHtml(term.source)}">${escapeHtml(label)}<span class="external-link-mark" aria-hidden="true">↗</span></a>`;
+    return `<a class="${classes}" href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Open ${escapeHtml(label)} in ${escapeHtml(term.source)}">${escapeHtml(label)}<span class="external-link-mark" aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span></a>`;
+}
+
+function renderCellContextFrequencyLink(entry, className = '', showPercent = false) {
+    if (!entry?.label || !entry?.total) return '';
+    const label = String(entry.label);
+    const count = Number(entry.count) || 0;
+    const total = Number(entry.total) || 0;
+    const percent = Math.round((count / total) * 100);
+    const frequency = `${count}/${total}${showPercent ? ` (${percent}%)` : ''}`;
+    const title = `${label}: present in ${count} of ${total} validated pathways (${percent}%). Frequency counts each pathway once.`;
+    const valueMarkup = `<span class="cell-context-frequency-count" aria-label="${escapeHtml(title)}">${escapeHtml(frequency)}</span>`;
+    const term = CELL_CONTEXT_ONTOLOGY_TERMS[label];
+    const url = getCellContextOfficialUrl(label);
+    const classes = [className, 'cell-context-frequency-chip'].filter(Boolean).join(' ');
+    if (!url) {
+        return `<span${classes ? ` class="${classes}"` : ''} title="${escapeHtml(title)}"><span>${escapeHtml(label)}</span>${valueMarkup}</span>`;
+    }
+    return `<a class="${classes} cell-context-official-link" href="${escapeHtml(url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="${escapeHtml(title)} Open ${escapeHtml(label)} in ${escapeHtml(term.source)}"><span>${escapeHtml(label)}</span>${valueMarkup}<span class="external-link-mark" aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span></a>`;
 }
 
 function extractCellTypeLabels(text) {
@@ -449,26 +1016,14 @@ function extractCellTypeLabels(text) {
 // GENE LIST LOADER
 // ============================================================================
 
-async function initGeneListLoader() {
+async function initGeneListLoader(backendGeneLists = {}) {
     try {
-        // Include genes in the initial authenticated request. The curated
-        // collection is small enough for the internal app, and keeping the
-        // selected list client-side avoids a second, failure-prone request
-        // when the user clicks "Add this set" through CloudFront.
-        let res = await fetch('/api/gene-lists?include_genes=1', {
-            headers: { 'Accept': 'application/json' },
-            cache: 'no-store'
-        });
-        // The static localhost demo has no API routes. The same project data is
-        // bundled as JSON so featured inputs remain usable in that preview.
-        if (!res.ok) {
-            res = await fetch('gene_lists.json', {
-                headers: { 'Accept': 'application/json' },
-                cache: 'no-store'
-            });
+        geneListState.allLists = backendGeneLists && typeof backendGeneLists === 'object'
+            ? backendGeneLists
+            : {};
+        if (!Object.keys(geneListState.allLists).length) {
+            throw new Error('No backend gene-list examples were available');
         }
-        if (!res.ok) throw new Error(`Gene list index returned HTTP ${res.status}`);
-        geneListState.allLists = await res.json();
         extendGeneSearchIndexFromCuratedLists();
         updateFeaturedExampleButtons();
 
@@ -483,19 +1038,21 @@ async function initGeneListLoader() {
 
         const diseaseSelect = document.getElementById('gene-list-disease-select');
         if (!diseaseSelect) return;
-        diseaseSelect.innerHTML = '<option value="">— Select disease —</option>';
+        diseaseSelect.innerHTML = '<option value="">Select an example</option>';
         DISEASE_OPTIONS.forEach(({ value, label }) => {
             const opt = document.createElement('option');
             opt.value = value;
-            opt.textContent = label;
+            const topModule = getTopExampleModule(value);
+            const count = Number(topModule?.gene_count ?? topModule?.genes?.length);
+            opt.textContent = Number.isFinite(count)
+                ? `${label.replace(/\s+\([^)]+\)$/, '')}, ${count} genes`
+                : label;
             diseaseSelect.appendChild(opt);
         });
 
-        // Default AD (and any later main-combobox choice) is reflected in the
-        // example selector immediately, without waiting for a gene set load.
-        syncCuratedDiseaseSelect(getDiseaseHidden()?.value || 'AD', { forceRefresh: true });
+        diseaseSelect.value = '';
     } catch (e) {
-        console.warn('Gene list loader: could not fetch lists', e);
+        console.warn('Gene list loader: backend data could not be loaded', e);
     }
 }
 
@@ -507,11 +1064,25 @@ function getTopExampleModule(diseaseCode) {
 }
 
 function updateFeaturedExampleButtons() {
+    const archive = getCompletedExampleArchive();
     document.querySelectorAll('.featured-example-button[data-disease]').forEach(button => {
+        if (window.location.protocol === 'file:' && HOSTED_APP_URL) {
+            const detail = button.querySelector('span');
+            if (detail) detail.textContent = 'View example';
+            button.disabled = false;
+            button.title = 'Open the completed analysis on GenePathwayAI';
+            return;
+        }
+        const archived = archive?.examples?.[button.dataset.disease];
+        const detail = button.querySelector('span');
+        if (archived) {
+            if (detail) detail.textContent = 'View example';
+            button.disabled = false;
+            return;
+        }
         const module = getTopExampleModule(button.dataset.disease);
         const count = Number(module?.gene_count ?? module?.genes?.length);
-        const detail = button.querySelector('span');
-        if (detail && Number.isFinite(count)) detail.textContent = `Top network module · ${count} genes`;
+        if (detail && Number.isFinite(count)) detail.textContent = 'Load example';
         button.disabled = !module;
     });
 }
@@ -520,7 +1091,9 @@ function showFeaturedExamples(event) {
     event?.preventDefault();
     showAnalysisView();
     requestAnimationFrame(() => {
-        document.getElementById('featured-examples')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const launcher = document.getElementById('featured-examples');
+        launcher?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        launcher?.querySelector('button')?.focus({ preventScroll: true });
     });
 }
 
@@ -538,7 +1111,7 @@ async function loadFeaturedInput(diseaseCode) {
         button.classList.add('is-loaded');
         const original = button.querySelector('span')?.textContent;
         const detail = button.querySelector('span');
-        if (detail) detail.textContent = `Loaded · ${module.genes.length} genes`;
+        if (detail) detail.textContent = `Loaded ${module.genes.length} genes`;
         setTimeout(() => {
             button.classList.remove('is-loaded');
             if (detail && original) detail.textContent = original;
@@ -555,8 +1128,8 @@ function toggleGeneListPanel() {
     panel.classList.toggle('hidden', !isHidden);
     if (btn) {
         btn.innerHTML = isHidden
-            ? 'Close <span aria-hidden="true">⌃</span>'
-            : 'Browse <span aria-hidden="true">⌄</span>';
+            ? 'Close <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
+            : 'Browse <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
     }
 }
 
@@ -567,7 +1140,7 @@ function onGeneListDiseaseChange({ syncContext = true } = {}) {
     const metaPanel = document.getElementById('gene-list-meta');
 
     // reset
-    moduleSelect.innerHTML = '<option value="">— Select list —</option>';
+    moduleSelect.innerHTML = '<option value="">Select a list</option>';
     metaPanel.classList.add('hidden');
     geneListState.selectedDisease = diseaseCode;
     geneListState.selectedListId = null;
@@ -582,23 +1155,16 @@ function onGeneListDiseaseChange({ syncContext = true } = {}) {
         setDiseaseCombobox(diseaseCode, { syncCurated: false });
     }
 
-    const lists = geneListState.allLists[diseaseCode].lists || [];
-    lists.forEach(lst => {
-        const opt = document.createElement('option');
-        const geneCount = Number.isFinite(lst.gene_count)
-            ? lst.gene_count
-            : (Array.isArray(lst.genes) ? lst.genes.length : 0);
-        opt.value = lst.id;
-        opt.textContent = `${lst.label} (n=${geneCount})`;
-        moduleSelect.appendChild(opt);
-    });
-    moduleGroup.style.display = '';
-
-    // If only one list, auto-select it
-    if (lists.length === 1) {
-        moduleSelect.value = lists[0].id;
-        onGeneListModuleChange();
-    }
+    // One choice only: each disease resolves to its compact module-level list.
+    const selected = getTopExampleModule(diseaseCode);
+    moduleGroup.style.display = 'none';
+    if (!selected) return;
+    const opt = document.createElement('option');
+    opt.value = selected.id;
+    opt.textContent = selected.label || diseaseCode;
+    moduleSelect.appendChild(opt);
+    moduleSelect.value = selected.id;
+    onGeneListModuleChange();
 }
 
 function onGeneListModuleChange() {
@@ -705,6 +1271,10 @@ const diseaseContextState = {
     selectedMatch: null,
     searchTimer: null,
     searchController: null,
+    openTargetsImportController: null,
+    openTargetsImportLoading: false,
+    openTargetsImportContextId: '',
+    lastGeneImport: null,
 };
 
 function getDiseaseInput()        { return document.getElementById('disease-input'); }
@@ -712,6 +1282,220 @@ function getDiseaseHidden()       { return document.getElementById('disease-sele
 function getDiseasePresetSelect() { return document.getElementById('disease-preset-select'); }
 function getDiseaseStatus()       { return document.getElementById('disease-context-status'); }
 function getDiseaseSuggestions()  { return document.getElementById('disease-suggestions'); }
+
+function getSelectedOpenTargetsDisease() {
+    const selected = diseaseContextState.selectedMatch;
+    const curated = getDiseaseAuthority(getDiseaseHidden()?.value);
+    const rawId = selected?.openTargetsId || selected?.databaseId ||
+        curated?.openTargetsId || curated?.databaseId || getDiseaseHidden()?.value;
+    const id = String(rawId || '').trim().replace(':', '_');
+    if (!/^[A-Za-z][A-Za-z0-9]*_[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(id)) return null;
+
+    return {
+        id,
+        name: selected?.canonicalName || selected?.label || curated?.canonicalName ||
+            getDiseaseInput()?.value.trim() || id,
+        url: selected?.authorityUrl ||
+            `https://platform.opentargets.org/disease/${encodeURIComponent(id)}/associations`,
+    };
+}
+
+function renderOpenTargetsGeneImportStatus(message, {
+    state = 'info',
+    sourceUrl = '',
+} = {}) {
+    const status = document.getElementById('open-targets-gene-import-status');
+    if (!status) return;
+    status.replaceChildren();
+    status.className = `open-targets-gene-import-status is-${state}`;
+
+    const copy = document.createElement('span');
+    copy.textContent = message;
+    status.appendChild(copy);
+
+    if (/^https:\/\/platform\.opentargets\.org\//.test(sourceUrl)) {
+        const link = document.createElement('a');
+        link.href = sourceUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = 'Open Targets';
+        status.appendChild(link);
+    }
+}
+
+function clearOpenTargetsGeneImportState() {
+    if (!diseaseContextState.lastGeneImport) return;
+    diseaseContextState.lastGeneImport = null;
+    const status = document.getElementById('open-targets-gene-import-status');
+    status?.classList.add('hidden');
+}
+
+function updateOpenTargetsGeneImportAvailability() {
+    const disease = getSelectedOpenTargetsDisease();
+    const contextId = disease?.id || '';
+    if (diseaseContextState.openTargetsImportContextId !== contextId) {
+        diseaseContextState.openTargetsImportController?.abort();
+        diseaseContextState.openTargetsImportContextId = contextId;
+        diseaseContextState.lastGeneImport = null;
+        const status = document.getElementById('open-targets-gene-import-status');
+        status?.classList.add('hidden');
+    }
+
+    document.querySelectorAll('[data-open-targets-limit]').forEach(button => {
+        button.disabled = !disease || diseaseContextState.openTargetsImportLoading;
+        button.title = disease
+            ? `Import genes associated with ${disease.name}, ranked by Open Targets overall association score`
+            : 'Select an ontology-backed disease or phenotype first';
+    });
+}
+
+async function requestOpenTargetsAssociatedGenes(diseaseId, limit, signal) {
+    const endpoint = `/api/open-targets/associated-genes?disease_id=${encodeURIComponent(diseaseId)}&limit=${limit}`;
+    const staticPreview = window.location.protocol === 'file:' ||
+        ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+    try {
+        const response = await fetch(endpoint, {
+            headers: { 'Accept': 'application/json' },
+            cache: 'no-store',
+            signal,
+        });
+        const contentType = response.headers.get('content-type') || '';
+        const payload = contentType.includes('application/json') ? await response.json() : {};
+        if (response.ok) return payload;
+        if (!staticPreview || [400, 404].includes(response.status)) {
+            throw new Error(payload.error || `Open Targets import returned HTTP ${response.status}`);
+        }
+    } catch (error) {
+        if (error?.name === 'AbortError') throw error;
+        if (!staticPreview) throw error;
+    }
+
+    const graphqlQuery = `
+      query DiseaseTopTargets($efoId: String!, $size: Int!) {
+        disease(efoId: $efoId) {
+          id
+          name
+          associatedTargets(page: {index: 0, size: $size}, orderByScore: "score") {
+            count
+            rows {
+              score
+              target { id approvedSymbol approvedName }
+            }
+          }
+        }
+      }
+    `;
+    const response = await fetch('https://api.platform.opentargets.org/api/v4/graphql', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            query: graphqlQuery,
+            variables: { efoId: diseaseId, size: limit },
+        }),
+        signal,
+    });
+    if (!response.ok) throw new Error(`Open Targets returned HTTP ${response.status}`);
+    const upstream = await response.json();
+    const disease = upstream?.data?.disease;
+    if (!disease) throw new Error('Disease or phenotype was not found in Open Targets');
+    const associations = disease.associatedTargets || {};
+    const seen = new Set();
+    const genes = (associations.rows || [])
+        .filter(row => row?.target?.approvedSymbol && row?.target?.id)
+        .map(row => ({
+            symbol: String(row.target.approvedSymbol).toUpperCase(),
+            ensembl_id: row.target.id,
+            name: row.target.approvedName || '',
+            association_score: Number(row.score),
+        }))
+        .filter(gene => {
+            if (seen.has(gene.symbol)) return false;
+            seen.add(gene.symbol);
+            return true;
+        })
+        .sort((a, b) => b.association_score - a.association_score)
+        .slice(0, limit);
+    return {
+        disease: { id: disease.id, name: disease.name },
+        genes,
+        requested_limit: limit,
+        returned_count: genes.length,
+        total_associations: Number(associations.count) || 0,
+        source: 'Open Targets Platform',
+        source_url: `https://platform.opentargets.org/disease/${encodeURIComponent(disease.id)}/associations`,
+        ranking: 'overall association score',
+    };
+}
+
+async function importOpenTargetsAssociatedGenes(limit) {
+    const disease = getSelectedOpenTargetsDisease();
+    if (!disease || ![100, 200].includes(limit)) {
+        renderOpenTargetsGeneImportStatus('Select an ontology-backed disease or phenotype first.', {
+            state: 'error',
+        });
+        return;
+    }
+
+    diseaseContextState.openTargetsImportController?.abort();
+    const controller = new AbortController();
+    diseaseContextState.openTargetsImportController = controller;
+    diseaseContextState.openTargetsImportLoading = true;
+    updateOpenTargetsGeneImportAvailability();
+    renderOpenTargetsGeneImportStatus(`Loading Top ${limit} for ${disease.name}…`, {
+        state: 'loading',
+    });
+
+    try {
+        const payload = await requestOpenTargetsAssociatedGenes(disease.id, limit, controller.signal);
+        if (getSelectedOpenTargetsDisease()?.id !== disease.id) return;
+        const imported = (payload.genes || [])
+            .map(gene => String(gene?.symbol || '').trim().toUpperCase())
+            .filter(isSupportedGeneIdentifier);
+        if (!imported.length) throw new Error('No associated genes were returned for this disease');
+
+        const currentGenes = parseGenes(elements.geneInput.value);
+        const currentSet = new Set(currentGenes);
+        const addedCount = imported.filter(gene => !currentSet.has(gene)).length;
+        setSelectedGenes([...currentGenes, ...imported], { preserveOpenTargetsImport: true });
+        diseaseContextState.lastGeneImport = {
+            disease_id: payload.disease?.id || disease.id,
+            disease_name: payload.disease?.name || disease.name,
+            requested_limit: limit,
+            returned_count: imported.length,
+            source: 'Open Targets Platform',
+            ranking: 'overall association score',
+        };
+        const message = addedCount
+            ? `Added ${addedCount} of ${imported.length} Top ${limit} genes for ${payload.disease?.name || disease.name}.`
+            : `All ${imported.length} Top ${limit} genes are already in the input.`;
+        renderOpenTargetsGeneImportStatus(message, {
+            state: 'success',
+            sourceUrl: payload.source_url || disease.url,
+        });
+    } catch (error) {
+        if (error?.name !== 'AbortError') {
+            renderOpenTargetsGeneImportStatus(error?.message || 'Open Targets import failed.', {
+                state: 'error',
+            });
+        }
+    } finally {
+        if (diseaseContextState.openTargetsImportController === controller) {
+            diseaseContextState.openTargetsImportController = null;
+            diseaseContextState.openTargetsImportLoading = false;
+            updateOpenTargetsGeneImportAvailability();
+        }
+    }
+}
+
+function initOpenTargetsGeneImport() {
+    document.querySelectorAll('[data-open-targets-limit]').forEach(button => {
+        button.addEventListener('click', () => {
+            importOpenTargetsAssociatedGenes(Number(button.dataset.openTargetsLimit));
+        });
+    });
+    updateOpenTargetsGeneImportAvailability();
+}
 
 function buildDiseaseOptionsFromCuratedLists(allLists) {
     return Object.entries(allLists || {}).map(([rawCode, data]) => {
@@ -865,7 +1649,7 @@ function renderDiseasePresetOptions() {
 
     const placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = '— Select disease example —';
+    placeholder.textContent = 'Select a disease example';
     placeholder.disabled = true;
     select.appendChild(placeholder);
 
@@ -895,12 +1679,13 @@ function syncCuratedDiseaseSelect(code, { forceRefresh = false } = {}) {
 function updateDiseaseContextStatus() {
     const status = getDiseaseStatus();
     const customDisease = getDiseaseInput()?.value.trim();
+    updateOpenTargetsGeneImportAvailability();
     if (!status) return;
 
     const selected = diseaseContextState.selectedMatch;
     if (selected) {
         const authorityLink = selected.authorityUrl
-            ? `<a href="${escapeHtml(selected.authorityUrl)}" target="_blank" rel="noopener">${escapeHtml(selected.databaseId || selected.database || 'Matched term')} ↗</a>`
+            ? `<a href="${escapeHtml(selected.authorityUrl)}" target="_blank" rel="noopener">${escapeHtml(selected.databaseId || selected.database || 'Matched term')} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>`
             : `<small>${escapeHtml(selected.databaseId || selected.database || 'Matched disease term')}</small>`;
         status.innerHTML = `
             <span>Selected disease</span>
@@ -931,7 +1716,7 @@ function updateDiseaseContextStatus() {
         findDiseaseOption(getDiseaseHidden()?.value);
     const authority = getDiseaseAuthority(preset) || {};
     status.innerHTML = preset
-        ? `<span>Selected disease</span><strong>${escapeHtml(authority.canonicalName || preset.label)}</strong><div class="disease-selection-meta"><a href="https://platform.opentargets.org/disease/${escapeHtml(authority.openTargetsId || '')}/associations" target="_blank" rel="noopener">${escapeHtml(authority.databaseId || '')} ↗</a><small>Alias: ${escapeHtml(preset.value)}</small></div>${authority.description ? `<p>${escapeHtml(authority.description)}</p>` : ''}`
+        ? `<span>Selected disease</span><strong>${escapeHtml(authority.canonicalName || preset.label)}</strong><div class="disease-selection-meta"><a href="https://platform.opentargets.org/disease/${escapeHtml(authority.openTargetsId || '')}/associations" target="_blank" rel="noopener">${escapeHtml(authority.databaseId || '')} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a><small>Alias: ${escapeHtml(preset.value)}</small></div>${authority.description ? `<p>${escapeHtml(authority.description)}</p>` : ''}`
         : '<span>Disease context</span><strong>Search for a disease or phenotype</strong>';
     status.classList.remove('is-custom');
 }
@@ -943,9 +1728,10 @@ function setDiseaseCombobox(value, { syncCurated = true } = {}) {
     const hidden = getDiseaseHidden();
     const presetSelect = getDiseasePresetSelect();
     if (!input || !hidden || !presetSelect) return;
+    let selectedPreset = null;
 
     if (match || !normalizedValue) {
-        const selectedPreset = match || findDiseaseOption(diseaseContextState.lastPresetCode) || DISEASE_OPTIONS[0];
+        selectedPreset = match || findDiseaseOption(diseaseContextState.lastPresetCode) || DISEASE_OPTIONS[0];
         diseaseContextState.lastPresetCode = selectedPreset?.value || 'AD';
         const authority = getDiseaseAuthority(selectedPreset);
         diseaseContextState.selectedMatch = authority ? {
@@ -957,7 +1743,7 @@ function setDiseaseCombobox(value, { syncCurated = true } = {}) {
                 : ''
         } : null;
         presetSelect.value = selectedPreset?.value || '';
-        input.value = '';
+        input.value = authority?.canonicalName || selectedPreset?.label.replace(/\s+\([^)]+\)$/, '') || '';
         hidden.value = selectedPreset?.value || '';
     } else {
         diseaseContextState.selectedMatch = null;
@@ -969,7 +1755,7 @@ function setDiseaseCombobox(value, { syncCurated = true } = {}) {
     updateDiseaseContextStatus();
     hideDiseaseSuggestions();
     if (syncCurated) {
-        syncCuratedDiseaseSelect(input.value.trim() ? '' : presetSelect.value);
+        syncCuratedDiseaseSelect(selectedPreset?.value || '');
     }
 }
 
@@ -990,7 +1776,7 @@ function onDiseasePresetChange() {
             ? `https://platform.opentargets.org/disease/${authority.openTargetsId}/associations`
             : ''
     } : null;
-    input.value = '';
+    input.value = authority?.canonicalName || match.label.replace(/\s+\([^)]+\)$/, '');
     hidden.value = match.value;
     updateDiseaseContextStatus();
     hideDiseaseSuggestions();
@@ -1076,6 +1862,12 @@ function renderDiseaseSuggestionItems(query, matches, {
         option.type = 'button';
         option.className = 'disease-suggestion-option';
         if (entry.isTopHit) option.classList.add('is-top-hit');
+        const selectedMatch = diseaseContextState.selectedMatch;
+        const isSelected = (entry.curatedCode && entry.curatedCode === getDiseaseHidden()?.value) ||
+            (entry.databaseId && selectedMatch?.databaseId && entry.databaseId === selectedMatch.databaseId) ||
+            (!entry.curatedCode && normalizeDiseaseSearchText(entry.canonicalName || entry.label) ===
+                normalizeDiseaseSearchText(selectedMatch?.canonicalName || selectedMatch?.label));
+        if (isSelected) option.classList.add('is-selected');
         option.dataset.disease = entry.canonicalName || entry.label.replace(/\s+\([^)]+\)$/, '');
         if (entry.curatedCode) option.dataset.curatedCode = entry.curatedCode;
         option._diseaseRecord = entry;
@@ -1095,8 +1887,14 @@ function renderDiseaseSuggestionItems(query, matches, {
             topHit.textContent = 'Top match';
             titleRow.appendChild(topHit);
         }
+        if (isSelected) {
+            const selectedBadge = document.createElement('span');
+            selectedBadge.className = 'disease-suggestion-selected';
+            selectedBadge.textContent = 'Selected';
+            titleRow.appendChild(selectedBadge);
+        }
         const description = document.createElement('small');
-        description.textContent = entry.description || `${getDiseaseMatchLabel(match)}${entry.curatedCode ? ' · project example available' : ''}`;
+        description.textContent = entry.description || `${getDiseaseMatchLabel(match)}${entry.curatedCode ? ', completed example available' : ''}`;
         copy.append(titleRow, description);
         if (entry.matchContext) {
             const matchContext = document.createElement('small');
@@ -1291,7 +2089,7 @@ function selectDiseaseSuggestion(option) {
             description: ''
         };
         getDiseasePresetSelect().value = '';
-        getDiseaseInput().value = '';
+        getDiseaseInput().value = disease;
         getDiseaseHidden().value = disease;
         syncCuratedDiseaseSelect('');
         updateDiseaseContextStatus();
@@ -1307,6 +2105,12 @@ function initDiseaseSearch() {
 
     input.addEventListener('input', () => {
         onCustomDiseaseInput();
+        const error = getBiomedicalTextError(input.value, 'Disease context');
+        showInputValidationError('disease-input-error', error);
+        if (error) {
+            hideDiseaseSuggestions();
+            return;
+        }
         renderDiseaseSuggestions(input.value);
     });
 
@@ -1336,11 +2140,17 @@ function initDiseaseSearch() {
             return;
         }
 
-        if (event.key === 'Enter' && input.value.trim()) {
+        if (event.key === 'Enter' && input.value.trim() && options.length > 0) {
             event.preventDefault();
             const active = options[diseaseContextState.activeSuggestionIndex] || options[0];
             if (active) selectDiseaseSuggestion(active);
             else hideDiseaseSuggestions();
+            return;
+        }
+
+        if (event.key === 'Tab' && input.value.trim() && options.length > 0) {
+            const active = options[diseaseContextState.activeSuggestionIndex] || options[0];
+            if (active) selectDiseaseSuggestion(active);
             return;
         }
 
@@ -1362,6 +2172,7 @@ function initDiseaseSearch() {
 document.addEventListener('DOMContentLoaded', () => {
     renderDiseasePresetOptions();
     initDiseaseSearch();
+    initOpenTargetsGeneImport();
     setDiseaseCombobox('AD');
 });
 
@@ -1375,6 +2186,8 @@ window.onGeneListModuleChange = onGeneListModuleChange;
 window.loadSelectedGeneList = loadSelectedGeneList;
 window.showFeaturedExamples = showFeaturedExamples;
 window.loadFeaturedInput = loadFeaturedInput;
+window.openFeaturedCompletedExample = openFeaturedCompletedExample;
+window.toggleMoreFeaturedExamples = toggleMoreFeaturedExamples;
 
 async function loadSelectedGeneList() {
     const { selectedDisease, selectedListId } = geneListState;
@@ -1407,10 +2220,10 @@ async function loadSelectedGeneList() {
         // Sync disease combobox to match
         setDiseaseCombobox(selectedDisease);
 
-        btn.textContent = `✓ Added ${loadedGenes.length} genes`;
+        btn.innerHTML = `<svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-check"></use></svg> Added ${loadedGenes.length} genes`;
         btn.removeAttribute('title');
         setTimeout(() => {
-            btn.textContent = 'Add this set';
+            btn.textContent = 'Load example';
             btn.disabled = false;
         }, 2000);
 
@@ -1420,12 +2233,12 @@ async function loadSelectedGeneList() {
             const toggleBtn = document.getElementById('gene-list-toggle');
             if (panel && !panel.classList.contains('hidden')) {
                 panel.classList.add('hidden');
-                toggleBtn.innerHTML = 'Browse <span aria-hidden="true">⌄</span>';
+                toggleBtn.innerHTML = 'Browse <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
             }
         }, 2200);
 
     } catch (e) {
-        btn.textContent = 'Could not add — retry';
+        btn.textContent = 'Could not add. Retry';
         btn.title = e?.message || 'The example gene set could not be loaded';
         btn.disabled = false;
         console.error('Gene list load error:', e);
@@ -1855,7 +2668,7 @@ function initGeneFileUpload() {
             const genes = parseGenes(content);
             setSelectedGenes(genes);
             if (elements.geneInputQuality) {
-                elements.geneInputQuality.textContent = `${file.name} · ${genes.length} recognized identifiers`;
+                elements.geneInputQuality.textContent = `${file.name}: ${genes.length} recognized identifiers`;
             }
         } catch (_) {
             if (elements.geneInputQuality) {
@@ -1963,7 +2776,8 @@ function hideGeneSuggestions() {
     geneSearchState.activeIndex = -1;
 }
 
-function setSelectedGenes(genes) {
+function setSelectedGenes(genes, { preserveOpenTargetsImport = false } = {}) {
+    if (!preserveOpenTargetsImport) clearOpenTargetsGeneImportState();
     const uniqueGenes = [...new Set((genes || [])
         .map(gene => String(gene).trim().toUpperCase())
         .filter(isSupportedGeneIdentifier))];
@@ -2044,7 +2858,7 @@ function updateGeneCount() {
     if (elements.geneInputQuality) {
         elements.geneInputQuality.textContent = invalidCount
             ? `${invalidCount} unrecognized token${invalidCount === 1 ? '' : 's'} will be excluded`
-            : `${genes.length - ensemblCount} gene symbol${genes.length - ensemblCount === 1 ? '' : 's'} · ${ensemblCount} Ensembl ID${ensemblCount === 1 ? '' : 's'}`;
+            : `${genes.length - ensemblCount} gene symbol${genes.length - ensemblCount === 1 ? '' : 's'}, ${ensemblCount} Ensembl ID${ensemblCount === 1 ? '' : 's'}`;
     }
     elements.clearGenesBtn?.classList.toggle('hidden', genes.length === 0);
     renderSelectedGeneChips(genes);
@@ -2111,7 +2925,7 @@ function updateQuotaStatus(quota) {
         const globalRemaining = Math.max(0, Number(quota.global_remaining) || 0);
         const globalLimit = Math.max(0, Number(quota.global_limit) || 0);
         const concurrency = Math.max(1, Number(quota.max_concurrent_jobs) || 1);
-        box.textContent = `${userRemaining} of ${userLimit} personal jobs remaining today · ${globalRemaining} of ${globalLimit} site-wide · ${concurrency} analysis at a time`;
+        box.textContent = `${userRemaining} of ${userLimit} personal jobs remaining today; ${globalRemaining} of ${globalLimit} site-wide; ${concurrency} analysis at a time`;
         if (headerBox) {
             headerBox.textContent = `Daily usage ${userUsed}/${userLimit}`;
             headerBox.title = `${userRemaining} personal jobs remaining today; ${globalRemaining} of ${globalLimit} site-wide jobs remaining.`;
@@ -2144,6 +2958,18 @@ async function startAnalysis() {
     const disease = elements.diseaseSelect.value;
     const selectedDisease = diseaseContextState.selectedMatch;
     const useIterative = document.getElementById('iterative-checkbox').checked;
+    const selectedModel = document.getElementById('openai-model-select')?.value || 'gpt-5.1';
+    const diseaseError = getBiomedicalTextError(
+        document.getElementById('disease-input')?.value || disease,
+        'Disease context'
+    );
+
+    if (diseaseError) {
+        showInputValidationError('disease-input-error', diseaseError);
+        document.getElementById('disease-input')?.focus();
+        return;
+    }
+    showInputValidationError('disease-input-error', '');
 
     if (genes.length < 3) {
         alert('Please enter at least 3 genes');
@@ -2152,9 +2978,10 @@ async function startAnalysis() {
 
     // Update UI
     state.isAnalyzing = true;
+    state.analysisStartedAt = Date.now();
     elements.startBtn.disabled = true;
-    const btnText = useIterative ? 'Starting (Prompt Refinement)...' : 'Starting...';
-    elements.startBtn.innerHTML = `<span class="btn-icon">⏳</span><span class="btn-text">${btnText}</span>`;
+    const btnText = useIterative ? 'Starting multiple runs...' : 'Starting...';
+    elements.startBtn.innerHTML = `<span class="btn-icon"><svg class="ph ph-spin" aria-hidden="true" focusable="false"><use href="#ph-circle-notch"></use></svg></span><span class="btn-text">${btnText}</span>`;
 
     try {
         const response = await fetch('/api/analyze', {
@@ -2172,7 +2999,8 @@ async function startAnalysis() {
                     description: selectedDisease.description || '',
                     url: selectedDisease.authorityUrl || ''
                 } : null,
-                use_iterative: useIterative
+                use_iterative: useIterative,
+                model: selectedModel
             })
         });
 
@@ -2187,9 +3015,18 @@ async function startAnalysis() {
         state.sessionId = data.session_id;
 
         // Switch to chat view
+        document.body.classList.add('analysis-running-view');
         elements.heroSection.classList.add('hidden');
         elements.inputSection.classList.add('hidden');
         elements.chatSection.classList.remove('hidden');
+        setActiveWorkflowStep('hypothesize');
+        updateAnalysisProgress({
+            percent: 1,
+            stage: 'Queued',
+            detail: 'The analysis request was accepted.',
+            state: 'queued',
+            elapsed_seconds: 0,
+        });
 
         // Show typing indicator
         showTyping(true);
@@ -2199,14 +3036,20 @@ async function startAnalysis() {
 
     } catch (error) {
         console.error('Analysis start failed:', error);
-        alert('Failed to start analysis: ' + error.message);
+        const message = error.message || 'Analysis could not be started.';
+        if (/biomedical research context|violent|threatening|unrelated instructions/i.test(message)) {
+            showInputValidationError('disease-input-error', message);
+        } else {
+            alert('Failed to start analysis: ' + message);
+        }
         resetStartButton();
     }
 }
 
 function resetStartButton() {
     state.isAnalyzing = false;
-    elements.startBtn.innerHTML = '<span class="btn-icon">🚀</span><span class="btn-text">Start Analysis</span>';
+    document.body.classList.remove('analysis-running-view');
+    elements.startBtn.innerHTML = '<span class="btn-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-play"></use></svg></span><span class="btn-text">Start Analysis</span>';
     loadQuotaStatus();
     syncStartButtonAvailability();
 }
@@ -2216,6 +3059,8 @@ function resetStartButton() {
 // ============================================================================
 
 function startPolling() {
+    stopPolling();
+    pollProgress();
     state.pollingInterval = setInterval(pollProgress, 1000);
 }
 
@@ -2240,6 +3085,7 @@ async function pollProgress() {
 
         // Update messages
         updateMessages(data.messages);
+        updateAnalysisProgress(data.progress, data.status, data.waiting_for_user);
 
         // Handle waiting state - show query panel for query-enabled checkpoints
         if (data.waiting_for_user) {
@@ -2266,6 +3112,41 @@ async function pollProgress() {
     }
 }
 
+function formatElapsedTime(totalSeconds) {
+    const seconds = Math.max(0, Number(totalSeconds) || 0);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainder = Math.floor(seconds % 60);
+    if (hours > 0) return `${hours}:${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+    return `${minutes}:${String(remainder).padStart(2, '0')}`;
+}
+
+function updateAnalysisProgress(progress = {}, status = 'running', waitingForUser = false) {
+    if (!elements.analysisProgress || !elements.analysisProgressBar) return;
+
+    const percent = Math.max(0, Math.min(100, Number(progress.percent) || 0));
+    const progressState = waitingForUser ? 'waiting' : (progress.state || status || 'running');
+    const fallbackElapsed = state.analysisStartedAt
+        ? Math.floor((Date.now() - state.analysisStartedAt) / 1000)
+        : 0;
+    const elapsed = Number.isFinite(Number(progress.elapsed_seconds))
+        ? Number(progress.elapsed_seconds)
+        : fallbackElapsed;
+
+    elements.analysisProgressBar.value = percent;
+    elements.analysisProgressBar.textContent = `${Math.round(percent)}%`;
+    elements.analysisProgressStage.textContent = progress.stage || 'Analysis in progress';
+    elements.analysisProgressPercent.textContent = `${Math.round(percent)}%`;
+    elements.analysisProgressDetail.textContent = progress.detail || 'Waiting for the next pipeline update.';
+    elements.analysisProgressElapsed.textContent = `Elapsed ${formatElapsedTime(elapsed)}`;
+    elements.analysisProgress.dataset.state = progressState;
+    const workflowStep = percent >= 82 ? 'interpret'
+        : percent >= 58 ? 'rank'
+            : percent >= 30 ? 'validate'
+                : 'hypothesize';
+    setActiveWorkflowStep(workflowStep);
+}
+
 // ============================================================================
 // MESSAGES
 // ============================================================================
@@ -2280,8 +3161,6 @@ function updateMessages(messages) {
 
     state.lastMessageCount = messages.length;
 
-    // Scroll to bottom
-    elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
 }
 
 // ============================================================================
@@ -2291,7 +3170,7 @@ function updateMessages(messages) {
 const STAGE_DEFS = {
     1: {
         name: 'Hypothesis Generation',
-        desc: 'GPT-5.1 reasons over the gene list and disease label to propose candidate pathways across GO:BP, GO:MF, GO:CC, KEGG, and Reactome. For each prompt pass, one standardized 14-section reasoning record is captured per database category.'
+        desc: 'Candidate pathways are proposed across GO:BP, GO:MF, GO:CC, KEGG and Reactome. A structured method record is retained for each database and prompt pass.'
     },
     2: {
         name: 'Statistical Validation',
@@ -2299,13 +3178,28 @@ const STAGE_DEFS = {
     },
     3: {
         name: 'Evidence-Based Ranking',
-        desc: 'Validated hypotheses are ranked within each database by integrating pathway descriptions, NCBI MeSH disease pathology, intersection genes, enrichment significance, and dynamically retrieved PubMed literature.'
+        desc: 'Validated pathways are ranked within each database using pathway definitions, disease pathology, intersection genes, enrichment strength and PubMed literature.'
     },
     4: {
-        name: 'Hindsight Feedback',
-        desc: 'A feedback agent synthesizes validation outcomes — retained pathway IDs, failed pathway families, category-specific bottlenecks — into a structured refinement prompt for a second hypothesis pass.'
+        name: 'Multiple-run Feedback',
+        desc: 'Validation outcomes, retained pathway IDs and database-specific gaps are summarized for an optional second hypothesis pass.'
     }
 };
+
+/**
+ * Backend progress messages are authored with emoji prefixes (and occasional
+ * box-drawing rules) for terminal logs. The web interface carries its own icon
+ * set, so those glyphs are stripped before a message is classified or rendered.
+ * Classification matches on wording, never on the emoji, so this is lossless.
+ */
+const MESSAGE_GLYPH_PREFIX = /^(?:[\u2190-\u21FF\u2300-\u27BF\u2B00-\u2BFF\uFE0F\u200D]|[\uD83C-\uDBFF][\uDC00-\uDFFF])+\s*/;
+const MESSAGE_RULE_SUFFIX = /[\s\u2500-\u257F]*[\u2500-\u257F]{3,}[\s\u2500-\u257F]*$/;
+
+function stripMessageGlyphs(content) {
+    if (typeof content !== 'string') return content;
+    if (content.includes('<table') || content.includes('stats-container')) return content;
+    return content.replace(MESSAGE_GLYPH_PREFIX, '').replace(MESSAGE_RULE_SUFFIX, '').trim();
+}
 
 function classifySystemMsg(content) {
     const c = content;
@@ -2322,7 +3216,7 @@ function classifySystemMsg(content) {
     if (/filtered \d+ matches.*fdr|→.*fdr-significant|enrichment-record gate/i.test(c)) return 'fdr-note';
     if (/step 4.*ranking|gpt.*ranking \d+|ranking \d+ pathways/i.test(c)) return 'stage4-start';
     if (/ranking complete/i.test(c))                                     return 'stage4-done';
-    if (/prompt refinement.*round/i.test(c))                            return 'refinement-round';
+    if (/(?:prompt refinement|multiple runs).*round/i.test(c))          return 'refinement-round';
     if (/final step.*merging|merging.*ranking/i.test(c))                return 'merge-step';
     if (/no pathways|no pathway enrichment|no gpt predictions|no matched pathways/i.test(c)) return 'warn';
     return 'default';
@@ -2332,10 +3226,10 @@ function renderPipelineStageCard(num, status, customDesc) {
     const def = STAGE_DEFS[num] || {};
     const desc = customDesc !== undefined ? customDesc : def.desc;
     const statusHtml = status === 'done'
-        ? '<span class="ps-status ps-status--done">✓ Complete</span>'
+        ? '<span class="ps-status ps-status--done"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-check"></use></svg> Complete</span>'
         : '<span class="ps-status ps-status--running"><span class="ps-spinner"></span>Running</span>';
     return `
-      <div class="pipeline-stage-card">
+      <div class="pipeline-stage-card" data-pipeline-stage="${num}">
         <div class="ps-header">
           <div class="ps-left">
             <span class="ps-num">${num}</span>
@@ -2350,7 +3244,13 @@ function renderPipelineStageCard(num, status, customDesc) {
 }
 
 function renderPipelineOutputNote(icon, html) {
-    const icons = { check: '✓', trace: '◈', filter: '⊘', warn: '⚠', info: '→' };
+    const icons = {
+        check: phIcon('check'),
+        trace: phIcon('git-branch'),
+        filter: phIcon('funnel'),
+        warn: phIcon('warning'),
+        info: phIcon('info')
+    };
     return `<div class="pipeline-output-note">
       <span class="pon-icon pon-${icon}">${icons[icon] || '·'}</span>
       <span>${html}</span>
@@ -2363,7 +3263,7 @@ function renderValidationStageWrapper(tableHtml) {
         <div class="pvc-header">
           <span class="ps-num">2</span>
           <div>
-            <span class="ps-name">Statistical Validation · Per-Category Results</span>
+            <span class="ps-name">Statistical validation by database</span>
             <span class="pvc-subtitle">Generated, matched and statistically validated hypotheses by database</span>
           </div>
         </div>
@@ -2375,16 +3275,16 @@ function renderRefinementRoundCard(content) {
     const m = content.match(/Round (\d+)\/(\d+)/);
     const roundNum = m ? parseInt(m[1]) : 2;
     if (roundNum <= 1) return renderPipelineStageCard(4, 'running');
-    return renderPipelineStageCard(4, 'running', 'Structured feedback applied — running refined hypothesis generation pass with retained pathway IDs, failed pathway families, and category-specific guidance.');
+    return renderPipelineStageCard(4, 'running', 'Validation feedback applied. A refined hypothesis pass is running with retained pathway IDs and database-specific guidance.');
 }
 
 function renderSystemMessage(content) {
     const type = classifySystemMsg(content);
     switch (type) {
         case 'analysis-start':
-            return `<div class="ps-analysis-start">${content.replace(/^🔬\s*/, '')}</div>`;
+            return `<div class="ps-analysis-start">${content}</div>`;
         case 'context-info':
-            return `<div class="ps-context-note">${content.replace(/^📋\s*/, '')}</div>`;
+            return `<div class="ps-context-note">${content}</div>`;
         case 'pipeline-info':
             return `<div class="ps-context-note">${content}</div>`;
         case 'stage1-start':
@@ -2392,7 +3292,7 @@ function renderSystemMessage(content) {
         case 'stage1-done': {
             const m = content.match(/(\d+) pathways/);
             const n = m ? m[1] : '?';
-            return renderPipelineOutputNote('check', `<strong>${n}</strong> pathway hypotheses proposed across GO:BP · GO:MF · GO:CC · KEGG · Reactome`);
+            return renderPipelineOutputNote('check', `<strong>${n}</strong> pathway hypotheses proposed across GO:BP, GO:MF, GO:CC, KEGG and Reactome`);
         }
         case 'stage1-reasoning': {
             const m = content.match(/(\d+) categor/);
@@ -2403,11 +3303,11 @@ function renderSystemMessage(content) {
             return renderPipelineStageCard(2, 'running');
         case 'stage2-done': {
             const m = content.match(/(\d+) pathways.*?(\d+) significant/);
-            if (m) return renderPipelineOutputNote('check', `Enrichment analysis returned <strong>${m[1]}</strong> terms · <strong>${m[2]}</strong> pass the corrected significance threshold`);
-            return renderPipelineOutputNote('check', content.replace(/^✅\s*/, ''));
+            if (m) return renderPipelineOutputNote('check', `Enrichment analysis returned <strong>${m[1]}</strong> terms; <strong>${m[2]}</strong> pass the corrected significance threshold`);
+            return renderPipelineOutputNote('check', content);
         }
         case 'stage3-start':
-            return `<div class="ps-section-divider"><span>Cross-Validation · Matching Hypotheses with Enrichment Results</span></div>`;
+            return `<div class="ps-section-divider"><span>Matching hypotheses to enrichment results</span></div>`;
         case 'stats-table':
             return renderValidationStageWrapper(content);
         case 'fdr-note': {
@@ -2417,18 +3317,18 @@ function renderSystemMessage(content) {
             if (m) return renderPipelineOutputNote('filter', `Statistical gate: <strong>${m[1]}</strong> matched hypotheses → <strong>${m[2]}</strong> pass the corrected threshold → proceed to ranking`);
             const m2 = content.match(/(\d+) matches.*?(\d+) fdr-significant/i);
             if (m2) return renderPipelineOutputNote('filter', `Statistical gate: <strong>${m2[1]}</strong> matches → <strong>${m2[2]}</strong> supported pathways advance`);
-            return renderPipelineOutputNote('filter', content.replace(/^📉\s*/, ''));
+            return renderPipelineOutputNote('filter', content);
         }
         case 'stage4-start':
             return renderPipelineStageCard(3, 'running');
         case 'stage4-done':
-            return renderPipelineOutputNote('check', content.replace(/^✅\s*/, ''));
+            return renderPipelineOutputNote('check', content);
         case 'refinement-round':
             return renderRefinementRoundCard(content);
         case 'merge-step':
             return `<div class="ps-section-divider"><span>Merging &amp; Finalising All Iterations</span></div>`;
         case 'warn':
-            return renderPipelineOutputNote('warn', content.replace(/^[⚠️\s]+/, ''));
+            return renderPipelineOutputNote('warn', content);
         default:
             return content;
     }
@@ -2444,6 +3344,10 @@ function addMessage(msg) {
             category: msg.data.category || null,
             iteration: msg.data.iteration || 1
         });
+    }
+
+    if (typeof msg.content === 'string' && msg.type !== 'user') {
+        msg = { ...msg, content: stripMessageGlyphs(msg.content) };
     }
 
     switch (msg.type) {
@@ -2502,6 +3406,7 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
     if (!hasContent) return '';
 
     const isRecordView = options.recordView === true;
+    const isEmbeddedDatabaseView = options.embeddedDatabase === true;
     const panelId = `reasoning-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
 
     // Determine relevance level from the text
@@ -2535,12 +3440,12 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
     const recordHeader = `
         <div class="reasoning-record-header">
             <div>
-                <span class="reasoning-record-eyebrow">Selected reasoning record</span>
+                <span class="reasoning-record-eyebrow">Database record</span>
                 <div class="reasoning-record-title">
                     ${categoryBadge}
                     <h3>${escapeHtml(categoryName)}</h3>
                 </div>
-                <p>Supporting database-level generation rationale for this prompt pass. Pathway-level cell and tissue context is shown in the ranked evidence above.</p>
+                <p>Generation rationale and validation notes for this database. Pathway-level cell and tissue context appears with each ranked pathway.</p>
             </div>
             ${relevanceText ? `
                 <span class="reasoning-record-relevance ${relevanceLevel}">
@@ -2549,40 +3454,41 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         </div>`;
 
     let html = `
-        <div class="reasoning-panel${isRecordView ? ' reasoning-panel--record expanded' : ''}" id="${panelId}">
-            ${isRecordView ? recordHeader : `
+        <div class="reasoning-panel${isRecordView ? ' reasoning-panel--record expanded' : ''}${isEmbeddedDatabaseView ? ' reasoning-panel--embedded-database' : ''}" id="${panelId}">
+            ${isRecordView && !isEmbeddedDatabaseView ? recordHeader : !isRecordView ? `
             <div class="reasoning-header" onclick="toggleReasoningPanel('${panelId}')">
                 <div class="reasoning-header-left">
-                    <span class="reasoning-icon">🧠</span>
+                    <span class="reasoning-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-clipboard-text"></use></svg></span>
                     <div>
                         <div class="reasoning-title">
-                            ${categoryBadge}AI Reasoning Path${iterationBadge}
+                            ${categoryBadge}Database reasoning record${iterationBadge}
                         </div>
-                        <div class="reasoning-subtitle">Click to expand GPT's decision-making process</div>
+                        <div class="reasoning-subtitle">Generation rationale and validation notes</div>
                     </div>
                 </div>
-                <span class="reasoning-toggle">▼</span>
-            </div>`}
-            ${isRecordView ? `
+                <span class="reasoning-toggle"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>
+            </div>` : ''}
+            ${isRecordView && !isEmbeddedDatabaseView ? `
             <details class="reasoning-full-record">
                 <summary>
                     <span>
-                        <strong>Supporting reasoning</strong>
-                        <small>Recorded biological context and feedback fields</small>
+                        <strong>Method record</strong>
+                        <small>Recorded biological context and validation feedback</small>
                     </span>
-                    <span class="reasoning-full-record-toggle" aria-hidden="true">⌄</span>
+                    <span class="reasoning-full-record-toggle" aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>
                 </summary>` : ''}
             <div class="reasoning-content">
                 <div class="reasoning-body">`;
 
-    // Overall Strategy (iteration 1 uses overall_strategy, iteration 2 uses strategy)
-    const strategyText = reasoning.overall_strategy || reasoning.strategy;
+    // Prefer the refined field when initial and feedback reasoning have been
+    // consolidated into one reader-facing database record.
+    const strategyText = reasoning.strategy || reasoning.overall_strategy;
     if (strategyText && strategyText !== 'Not provided' && strategyText !== 'N/A') {
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🎯</span>
-                    Overall Strategy
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-target"></use></svg></span>
+                    Selection approach
                 </div>
                 <div class="reasoning-section-content strategy">${formatReasoningText(strategyText)}</div>
             </div>`;
@@ -2593,8 +3499,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🧪</span>
-                    Gene Analysis
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-flask"></use></svg></span>
+                    Gene signals
                 </div>
                 <div class="reasoning-section-content gene-analysis">${formatReasoningText(reasoning.gene_analysis)}</div>
             </div>`;
@@ -2605,8 +3511,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🗄️</span>
-                    Database Focus
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-database"></use></svg></span>
+                    Database scope
                 </div>
                 <div class="reasoning-section-content database-focus">${formatReasoningText(reasoning.database_focus)}</div>
             </div>`;
@@ -2617,8 +3523,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🔑</span>
-                    Key Gene Functions
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-key"></use></svg></span>
+                    Key gene functions
                 </div>
                 <div class="reasoning-section-content key-gene-functions">${formatReasoningText(reasoning.key_gene_functions)}</div>
             </div>`;
@@ -2629,8 +3535,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🛤️</span>
-                    Pathway Selection Rationale
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-path"></use></svg></span>
+                    Selection rationale
                 </div>
                 <div class="reasoning-section-content pathway-rationale">${formatReasoningText(reasoning.pathway_selection_rationale)}</div>
             </div>`;
@@ -2642,15 +3548,15 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
             <div class="reasoning-separator"></div>
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">📖</span>
-                    Biological Evidence
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-book-open"></use></svg></span>
+                    Biological support
                 </div>
                 <div class="reasoning-section-content biological-evidence">${formatReasoningText(reasoning.biological_evidence)}</div>
             </div>`;
     }
 
     // Learned from Validation Feedback (iter 1: learned_from_previous_iteration, iter 2: learned_from_feedback)
-    const learnedText = reasoning.learned_from_previous_iteration || reasoning.learned_from_feedback;
+    const learnedText = reasoning.learned_from_feedback || reasoning.learned_from_previous_iteration;
     if (learnedText &&
         learnedText !== 'Not provided' &&
         learnedText !== 'N/A' &&
@@ -2658,8 +3564,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">📚</span>
-                    Learned from Validation Feedback
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-books"></use></svg></span>
+                    Validation feedback
                 </div>
                 <div class="reasoning-section-content learned">${formatReasoningText(learnedText)}</div>
             </div>`;
@@ -2672,23 +3578,23 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🧭</span>
-                    Pathway Guidance
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-compass"></use></svg></span>
+                    Refinement guidance
                 </div>
                 <div class="reasoning-section-content">${formatReasoningText(reasoning.pathway_guidance)}</div>
             </div>`;
     }
 
     // Category Adjustments (iter 1: category_specific_adjustments, iter 2: category_adjustments)
-    const categoryAdjText = reasoning.category_specific_adjustments || reasoning.category_adjustments;
+    const categoryAdjText = reasoning.category_adjustments || reasoning.category_specific_adjustments;
     if (categoryAdjText &&
         categoryAdjText !== 'Not provided' &&
         categoryAdjText !== 'N/A') {
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">📊</span>
-                    Category-Specific Adjustments
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-chart-bar"></use></svg></span>
+                    Database-specific adjustments
                 </div>
                 <div class="reasoning-section-content category-adjustments">${formatReasoningText(categoryAdjText)}</div>
             </div>`;
@@ -2702,8 +3608,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
             <div class="reasoning-separator"></div>
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🔬</span>
-                    Validation Reflection
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-microscope"></use></svg></span>
+                    Validation review
                 </div>
                 <div class="reasoning-section-content validation">${formatReasoningText(reasoning.validation_reflection)}</div>
             </div>`;
@@ -2717,8 +3623,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
             <div class="reasoning-separator"></div>
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">⚠️</span>
-                    Failed Pathway Analysis
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-warning"></use></svg></span>
+                    Unsupported hypotheses
                 </div>
                 <div class="reasoning-section-content failure">${formatReasoningText(reasoning.failure_analysis)}</div>
             </div>`;
@@ -2731,8 +3637,8 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
         html += `
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🔍</span>
-                    Bottleneck Diagnosis
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-magnifying-glass"></use></svg></span>
+                    Coverage gaps
                 </div>
                 <div class="reasoning-section-content bottleneck">${formatReasoningText(reasoning.bottleneck_diagnosis)}</div>
             </div>`;
@@ -2740,13 +3646,13 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
 
     // Relevance Strength
     if (relevanceText && relevanceText !== 'Not provided' && relevanceText !== 'N/A') {
-        const badgeIcon = relevanceLevel === 'high' ? '✓' : (relevanceLevel === 'low' ? '✗' : '~');
+        const badgeIcon = relevanceLevel === 'high' ? phIcon('check') : (relevanceLevel === 'low' ? phIcon('x') : '~');
         html += `
             <div class="reasoning-separator"></div>
             <div class="reasoning-section">
                 <div class="reasoning-section-header">
-                    <span class="reasoning-section-icon">🔗</span>
-                    Disease Relevance
+                    <span class="reasoning-section-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-link-simple"></use></svg></span>
+                    Disease context
                 </div>
                 <div class="reasoning-section-content">
                     <span class="relevance-badge ${relevanceLevel}">
@@ -2761,7 +3667,7 @@ function renderReasoningPanel(reasoning, category = null, iteration = null, opti
     html += `
                 </div>
             </div>
-            ${isRecordView ? '</details>' : ''}
+            ${isRecordView && !isEmbeddedDatabaseView ? '</details>' : ''}
         </div>`;
 
     return html;
@@ -2808,7 +3714,7 @@ function enhanceReasoningSectionToggles(container) {
         const toggle = document.createElement('span');
         toggle.className = 'reasoning-section-toggle';
         toggle.setAttribute('aria-hidden', 'true');
-        toggle.textContent = '⌄';
+        toggle.innerHTML = '<svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>';
         header.appendChild(toggle);
 
         const toggleSection = () => {
@@ -2840,7 +3746,7 @@ function renderResultMessage(msg) {
 
     if (msg.data && msg.data.report) {
         html += `<div class="result-report">
-            <h3>📝 ${msg.content}</h3>
+            <h3><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-note-pencil"></use></svg> ${msg.content}</h3>
             <div class="report-preview">${formatMarkdown(msg.data.report)}</div>
         </div>`;
         return html;
@@ -2856,8 +3762,8 @@ function renderResultMessage(msg) {
         const formattedContent = formatMarkdown(msg.content);
         html += `<div class="qa-response">
             <div class="qa-response-header">
-                <span class="qa-icon">🧬</span>
-                <span class="qa-title">AI Analysis</span>
+                <span class="qa-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-dna"></use></svg></span>
+                <span class="qa-title">Analysis response</span>
                 <span class="qa-model-badge">${msg.data.model || 'GPT'}</span>
             </div>
             <div class="qa-response-body">
@@ -2879,7 +3785,7 @@ function renderCheckpointMessage(msg) {
 
     let html = `
         <div class="checkpoint-header">
-            <span class="checkpoint-icon">🔔</span>
+            <span class="checkpoint-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-bell"></use></svg></span>
             <span class="checkpoint-title">${data.name || 'Checkpoint'}</span>
         </div>
         <div class="checkpoint-description">${msg.content}</div>
@@ -2901,10 +3807,10 @@ function renderCheckpointMessage(msg) {
     // Add suggested questions (clickable to auto-submit)
     if (questions.length > 0) {
         html += `<div class="checkpoint-questions">
-            <h4>💡 SUGGESTED QUESTIONS</h4>
+            <h4><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-lightbulb"></use></svg> SUGGESTED QUESTIONS</h4>
             <ul>
                 ${questions.map(q => `<li class="suggested-question clickable-question" data-question="${escapeHtml(q)}" onclick="selectAndSubmitQuestion(this)">
-                    <span class="question-icon">💡</span> ${q}
+                    <span class="question-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-lightbulb"></use></svg></span> ${q}
                 </li>`).join('')}
             </ul>
         </div>`;
@@ -2914,19 +3820,19 @@ function renderCheckpointMessage(msg) {
     html += `<div class="checkpoint-actions">`;
 
     if (actions.includes('approve')) {
-        html += `<button class="action-btn action-btn-approve" data-action="approve">✅ Approve</button>`;
+        html += `<button class="action-btn action-btn-approve" data-action="approve"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-check-circle"></use></svg> Approve</button>`;
     }
     if (actions.includes('modify')) {
-        html += `<button class="action-btn action-btn-modify" data-action="modify">✏️ Modify</button>`;
+        html += `<button class="action-btn action-btn-modify" data-action="modify"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-pencil-simple"></use></svg> Modify</button>`;
     }
     if (actions.includes('skip')) {
-        html += `<button class="action-btn action-btn-skip" data-action="skip">⏭️ Skip</button>`;
+        html += `<button class="action-btn action-btn-skip" data-action="skip"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-skip-forward"></use></svg> Skip</button>`;
     }
     if (actions.includes('query')) {
-        html += `<button class="action-btn action-btn-query" data-action="query">💬 Ask Question</button>`;
+        html += `<button class="action-btn action-btn-query" data-action="query"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-chat-circle"></use></svg> Ask Question</button>`;
     }
     if (actions.includes('quit')) {
-        html += `<button class="action-btn action-btn-quit" data-action="quit">❌ Quit</button>`;
+        html += `<button class="action-btn action-btn-quit" data-action="quit"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-x-circle"></use></svg> Quit</button>`;
     }
 
     html += `</div>`;
@@ -2939,6 +3845,11 @@ function setupCheckpointHandlers(container, data) {
     container.querySelectorAll('.action-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const action = btn.dataset.action;
+            if (action === 'query') {
+                showQueryPanel(true);
+                elements.queryInput.focus();
+                return;
+            }
             handleCheckpointAction(action);
         });
     });
@@ -2987,12 +3898,43 @@ async function handleCheckpointAction(action) {
 // QUERIES
 // ============================================================================
 
+function setQuerySubmissionState(pending) {
+    elements.queryInput.disabled = pending;
+    elements.querySubmit.disabled = pending;
+    elements.querySubmit.setAttribute('aria-busy', String(pending));
+    const label = elements.querySubmit.querySelector('span');
+    if (label) label.textContent = pending ? 'Answering...' : 'Ask';
+}
+
+function markActiveCheckpointResolved() {
+    const checkpoints = [...elements.chatMessages.querySelectorAll('.message-checkpoint')];
+    const checkpoint = checkpoints.at(-1);
+    if (!checkpoint || checkpoint.classList.contains('checkpoint-resolved')) return;
+
+    checkpoint.classList.add('checkpoint-resolved');
+    const actions = checkpoint.querySelector('.checkpoint-actions');
+    if (!actions) return;
+    actions.innerHTML = `
+        <span class="checkpoint-resume-status" role="status">
+            <svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrow-right"></use></svg>
+            Question answered. Continuing analysis.
+        </span>`;
+}
+
 async function submitQuery() {
     const query = elements.queryInput.value.trim();
     if (!query || !state.sessionId) return;
+    const queryError = getBiomedicalTextError(query, 'Question');
+    if (queryError) {
+        showInputValidationError('query-input-error', queryError);
+        elements.queryInput.focus();
+        return;
+    }
+    showInputValidationError('query-input-error', '');
 
     elements.queryInput.value = '';
     showTyping(true);
+    setQuerySubmissionState(true);
 
     try {
         const response = await fetch(`/api/query/${state.sessionId}`, {
@@ -3007,13 +3949,33 @@ async function submitQuery() {
             throw new Error(data.error);
         }
 
-        // Response will be added via polling
-        showTyping(false);
+        // The response is added via polling. A successful checkpoint query
+        // now advances the workflow without requiring a separate Skip click.
+        if (data.auto_advanced) {
+            showQueryPanel(false);
+            markActiveCheckpointResolved();
+            updateAnalysisProgress({
+                percent: elements.analysisProgressBar?.value || 0,
+                stage: 'Continuing analysis',
+                detail: 'Question answered. Starting the next analysis step.',
+                state: 'running',
+            }, 'running', false);
+            await pollProgress();
+        } else {
+            showTyping(false);
+        }
+        setQuerySubmissionState(false);
 
     } catch (error) {
         console.error('Query failed:', error);
         showTyping(false);
-        addMessage({ type: 'error', content: 'Query failed: ' + error.message });
+        setQuerySubmissionState(false);
+        if (/biomedical research context|violent|threatening|unrelated instructions/i.test(error.message || '')) {
+            showInputValidationError('query-input-error', error.message);
+            elements.queryInput.value = query;
+        } else {
+            addMessage({ type: 'error', content: 'Query failed: ' + error.message });
+        }
     }
 }
 
@@ -3099,22 +4061,30 @@ function hydrateReasoningTraces(entries) {
 function showResults(results) {
     if (!results) return;
 
+    state.isAnalyzing = false;
+    resetStartButton();
+
     // Store results globally for filtering
     currentResults = results;
+    setReportView('summary');
 
     // Prepare data
     const disease = results.disease || document.getElementById('disease-input')?.value || elements.diseaseSelect.value || 'Disease';
     const geneCount = results.gene_count || parseGenes(elements.geneInput.value).length;
     const pathways = results.pathways || [];
+    updateRetryNarrativesButton(pathways);
 
     // Update hero section
     if (elements.diseaseNameDisplay) elements.diseaseNameDisplay.textContent = disease;
-    if (elements.geneCountDisplay) elements.geneCountDisplay.textContent = `${geneCount} Genes`;
+    if (elements.geneCountDisplay) elements.geneCountDisplay.textContent = `${geneCount} genes`;
     const resultDate = results.completed_at || results.analysis_date || results.created_at;
     if (elements.analysisDate) {
         elements.analysisDate.textContent = resultDate
             ? new Date(resultDate).toLocaleDateString()
             : new Date().toLocaleDateString();
+    }
+    if (elements.modelVersion) {
+        elements.modelVersion.textContent = results.model || 'GPT-5.1';
     }
 
     if (Array.isArray(results.reasoning_traces)) {
@@ -3124,12 +4094,9 @@ function showResults(results) {
     // Render overview summary (initial hypotheses vs statistically validated output)
     renderOverviewSummary(pathways, results);
 
-    // Render complete evidence rankings directly in Overview
+    // Each database now owns its validated pathways, pathway interpretations,
+    // and consolidated reasoning details in that order.
     renderEvidenceSectionsView(pathways);
-
-    // Keep database-level cell context and supporting reasoning below the
-    // pathway evidence. Its disclosure remains collapsed by default.
-    renderDatabaseReasoningAudit(results);
 
     // Show results view, hide others
     elements.heroSection?.classList.add('hidden');
@@ -3138,14 +4105,18 @@ function showResults(results) {
     document.getElementById('history-section').style.display = 'none';
     document.getElementById('docs-section').style.display = 'none';
     elements.resultsSection.classList.remove('hidden');
+    document.body.classList.remove('analysis-running-view');
+    setActiveWorkflowStep('rank');
 
 }
 
 function hideResultsView() {
+    document.body.classList.remove('analysis-running-view');
     elements.resultsSection.classList.add('hidden');
     elements.heroSection?.classList.remove('hidden');
     elements.inputSection?.classList.remove('hidden');
-    elements.chatSection?.classList.remove('hidden');
+    elements.chatSection?.classList.add('hidden');
+    setActiveWorkflowStep('input');
 }
 
 function renderMetricCards(pathways, results) {
@@ -3166,14 +4137,14 @@ function renderMetricCards(pathways, results) {
     elements.metricCards.innerHTML = `
         <div class="metric-card">
             <div class="metric-card-header">
-                <span class="metric-card-title">Statistically Validated Pathways</span>
+                <span class="metric-card-title">Validated pathways</span>
             </div>
             <div class="metric-card-value">${comparison.statisticallyValidated}</div>
-            <div class="metric-card-subtitle">retained after corrected enrichment testing</div>
+            <div class="metric-card-subtitle">retained after multiple-testing correction</div>
         </div>
         <div class="metric-card">
             <div class="metric-card-header">
-                <span class="metric-card-title">Databases with Output</span>
+                <span class="metric-card-title">Databases represented</span>
             </div>
             <div class="metric-card-value">${activeDbs.length}<span class="metric-card-denom">/5</span></div>
             <div class="metric-card-subtitle metric-db-chips">${
@@ -3182,14 +4153,14 @@ function renderMetricCards(pathways, results) {
         </div>
         <div class="metric-card">
             <div class="metric-card-header">
-                <span class="metric-card-title">Driver Genes</span>
+                <span class="metric-card-title">Intersection genes</span>
             </div>
             <div class="metric-card-value">${driverGenes.size}</div>
             <div class="metric-card-subtitle">intersection genes carried into interpretation</div>
         </div>
         <div class="metric-card">
             <div class="metric-card-header">
-                <span class="metric-card-title">Literature Retrieved</span>
+                <span class="metric-card-title">Literature records</span>
             </div>
             <div class="metric-card-value">${litCount}</div>
             <div class="metric-card-subtitle">PubMed references via dynamic retrieval</div>
@@ -3330,11 +4301,26 @@ function getRunDiseaseContext(results) {
 }
 
 function getRunCellTypes(pathways) {
-    const labels = new Set();
+    return getRunCellTypeFrequencies(pathways).map(entry => entry.label);
+}
+
+function getRunCellTypeFrequencies(pathways) {
+    const total = (pathways || []).length;
+    const counts = new Map();
     (pathways || []).forEach(pathway => {
-        extractCellTypeLabels(getPathwayCellContext(pathway)).forEach(label => labels.add(label));
+        const pathwayLabels = new Set(extractCellTypeLabels(getPathwayCellContext(pathway)));
+        pathwayLabels.forEach(label => counts.set(label, (counts.get(label) || 0) + 1));
     });
-    return [...labels];
+    const ontologyOrder = new Map(CELL_TYPE_PATTERNS.map(([label], index) => [label, index]));
+    return [...counts.entries()]
+        .map(([label, count]) => ({
+            label,
+            count,
+            total,
+            percent: total ? Math.round((count / total) * 100) : 0,
+            order: ontologyOrder.get(label) ?? Number.MAX_SAFE_INTEGER
+        }))
+        .sort((a, b) => b.count - a.count || a.order - b.order || a.label.localeCompare(b.label));
 }
 
 function getUniqueLiteratureCount(pathways) {
@@ -3359,20 +4345,13 @@ function renderOverviewSummary(pathways, results) {
     const comparison = getValidationComparison(pathways, results);
     const mapping = getRunMappingSummary(pathways, results);
     const diseaseContext = getRunDiseaseContext(results);
-    const cellTypes = getRunCellTypes(pathways);
+    const cellTypeFrequencies = getRunCellTypeFrequencies(pathways);
+    const rankedCellTypes = cellTypeFrequencies.filter(entry => !NON_CELL_TYPE_CONTEXT_LABELS.has(entry.label));
+    const topCellTypes = rankedCellTypes.slice(0, 5);
     const pathwaysWithCellContext = pathways.filter(pathway => getPathwayCellContext(pathway)).length;
     const literatureCount = getUniqueLiteratureCount(pathways);
     const databasesRepresented = DB_ORDER.filter(db => comparison.byDatabase[db].statisticallyValidated > 0).length;
-    const initialDisplay = comparison.initialHypotheses === null ? '—' : comparison.initialHypotheses;
-    const pathwaysByDatabase = Object.fromEntries(DB_ORDER.map(db => [db, []]));
-    pathways.forEach(pathway => {
-        const source = pathway.source || pathway.category || '';
-        const category = DB_ORDER.find(db => source.includes(db));
-        if (category) pathwaysByDatabase[category].push(pathway);
-    });
-    DB_ORDER.forEach(db => pathwaysByDatabase[db].sort((a, b) =>
-        Number(a.gpt_rank ?? Number.MAX_SAFE_INTEGER) - Number(b.gpt_rank ?? Number.MAX_SAFE_INTEGER)
-    ));
+    const initialDisplay = comparison.initialHypotheses === null ? 'Not available' : comparison.initialHypotheses;
     const sourceProfileMarkup = DB_ORDER.map(db => {
         const counts = comparison.byDatabase[db];
         const denominator = counts.initialHypotheses || comparison.initialHypotheses || 1;
@@ -3384,24 +4363,10 @@ function renderOverviewSummary(pathways, results) {
                     <strong>${counts.statisticallyValidated}</strong>
                 </div>
                 <span>${DB_LABELS[db] || db}</span>
-                <small>${counts.initialHypotheses === null ? 'final ranked pathways' : `${counts.initialHypotheses} initial hypotheses`}</small>
+                <small>${counts.initialHypotheses === null ? 'validated pathways' : `${counts.initialHypotheses} hypotheses tested`}</small>
                 <i aria-hidden="true"><b style="width:${retainedWidth}%"></b></i>
             </div>`;
     }).join('');
-    const finalRegisterMarkup = DB_ORDER.filter(db => pathwaysByDatabase[db].length).map(db => `
-        <div class="final-register-group">
-            <div class="final-register-group-heading">
-                <span class="category-badge ${db.replace(':', '-')}">${db}</span>
-                <strong>${pathwaysByDatabase[db].length} final pathway${pathwaysByDatabase[db].length === 1 ? '' : 's'}</strong>
-            </div>
-            <div class="final-register-pathways">
-                ${pathwaysByDatabase[db].map(pathway => `
-                    <span class="final-register-pathway">
-                        ${renderPathwayNameLink(pathway, pathway.name || pathway.pathway_name || 'Unknown pathway')}
-                        ${renderPathwayId(pathway)}
-                    </span>`).join('')}
-            </div>
-        </div>`).join('');
     const inputAlias = diseaseContext.inputLabel && normalizeDiseaseSearchText(diseaseContext.inputLabel) !== normalizeDiseaseSearchText(diseaseContext.name)
         ? diseaseContext.inputLabel
         : '';
@@ -3411,40 +4376,33 @@ function renderOverviewSummary(pathways, results) {
         <span>Disease match</span>
         <strong>${escapeHtml(diseaseContext.name)}</strong>
         ${diseaseContext.url
-            ? `<a href="${escapeHtml(diseaseContext.url)}" target="_blank" rel="noopener">${escapeHtml(diseaseContext.database)} ${escapeHtml(diseaseContext.databaseId)} ↗</a>`
+            ? `<a href="${escapeHtml(diseaseContext.url)}" target="_blank" rel="noopener">${escapeHtml(diseaseContext.database)} ${escapeHtml(diseaseContext.databaseId)} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>`
             : '<small>Custom disease context</small>'}
         ${inputAlias ? `<small class="evidence-summary-alias">Input: ${escapeHtml(inputAlias)}</small>` : ''}
       </div>
 
       <div class="evidence-summary-strip">
-        <div><strong>${mapping.mappedCount}<small>/${mapping.inputCount}</small></strong><span>Recognized genes</span><small>${mapping.failedCount} unresolved</small></div>
-        <div><strong>${initialDisplay}</strong><span>Initial hypotheses</span><small>first prompt pass</small></div>
-        <div class="evidence-summary-strip--highlight"><strong>${comparison.statisticallyValidated}</strong><span>Ranked pathways</span><small>${databasesRepresented} source databases</small></div>
-        <div><strong>${literatureCount}</strong><span>PubMed articles</span><small>unique records</small></div>
-        <div><strong>${pathwaysWithCellContext}</strong><span>Cell-context pathways</span><small>of ${comparison.statisticallyValidated} final</small></div>
+        <div><strong>${mapping.mappedCount}<small> of ${mapping.inputCount}</small></strong><span>Recognized genes</span><small>${mapping.failedCount} unresolved</small></div>
+        <div><strong>${initialDisplay}</strong><span>Initial hypotheses</span><small>prompt pass 1</small></div>
+        <div class="evidence-summary-strip--highlight"><strong>${comparison.statisticallyValidated}</strong><span>Validated pathways</span><small>across ${databasesRepresented} databases</small></div>
+        <div><strong>${literatureCount}</strong><span>Literature records</span><small>unique PubMed IDs</small></div>
+        <div><strong>${pathwaysWithCellContext}</strong><span>Cell-context records</span><small>of ${comparison.statisticallyValidated} pathways</small></div>
       </div>
 
       <div class="source-profile">
         <div class="source-profile-heading">
-          <span>Final pathways by source</span>
+          <span>Validated pathways by database</span>
           <strong>${comparison.statisticallyValidated} pathways</strong>
         </div>
         <div class="source-profile-grid">${sourceProfileMarkup}</div>
       </div>
 
-      ${cellTypes.length ? `
+      ${topCellTypes.length ? `
         <div class="summary-cell-context summary-cell-context--compact">
-          <span class="summary-cell-context-label">Cell/tissue contexts</span>
-          <div class="summary-cell-tags">${cellTypes.slice(0, 10).map(label => renderCellContextOfficialLink(label)).join('')}</div>
+          <span class="summary-cell-context-label">Frequently mapped cell types</span>
+          <div class="summary-cell-tags">${topCellTypes.map(entry => renderCellContextFrequencyLink(entry, '', true)).join('')}</div>
+          <small class="summary-cell-frequency-note">Top ${topCellTypes.length} of ${rankedCellTypes.length} detected cell types. Counts show how many validated pathways contain each cell type.</small>
         </div>` : ''}
-
-      <details class="final-register-provenance">
-        <summary>
-          <span>View all ${comparison.statisticallyValidated} pathway names and IDs</span>
-          <strong>${DB_ORDER.filter(db => pathwaysByDatabase[db].length).map(db => `${db} ${pathwaysByDatabase[db].length}`).join(' · ')}</strong>
-        </summary>
-        <div class="final-register-groups">${finalRegisterMarkup}</div>
-      </details>
     `;
 }
 
@@ -3683,7 +4641,7 @@ function renderLegacyAssessmentData(assessment, results) {
                             <span class="dimension-dot" style="background:${dimension.color}"></span>
                             <span>
                                 <strong>${escapeHtml(dimension.label)}</strong>
-                                <small>${escapeHtml(dimension.abbr)} · ${dimension.count} supporting pathways</small>
+                                <small>${escapeHtml(dimension.abbr)}, ${dimension.count} supporting pathways</small>
                             </span>
                         </span>
                         <span class="dimension-score">${dimension.score.toFixed(1)}<small>/6</small></span>
@@ -3868,7 +4826,7 @@ function renderEvidenceAssessment(results) {
     }
     if (description) {
         description.textContent = hasValidatedOutput
-            ? `${summary.significant_pathways} statistically validated pathways are available for this gene-list–disease context.`
+            ? `${summary.significant_pathways} statistically validated pathways are available for this gene-disease context.`
             : 'No statistically validated pathway is available for this run.';
     }
 
@@ -3901,7 +4859,7 @@ function renderEvidenceAssessment(results) {
             code: 'LITERATURE',
             value: summary.literature_records,
             label: 'PubMed records',
-            detail: 'Linked pathway–disease evidence'
+            detail: 'Linked pathway-disease evidence'
         }
     ];
 
@@ -3940,7 +4898,7 @@ function renderEvidenceAssessment(results) {
                                 <span class="dimension-dot"></span>
                                 <span>
                                     <strong>${escapeHtml(entry.category)}</strong>
-                                    <small>Interpretation record · ${escapeHtml(relevance)}</small>
+                                    <small>Interpretation record, ${escapeHtml(relevance)}</small>
                                 </span>
                             </span>
                             <span class="dimension-record-pass">Prompt ${Number(entry.iteration || 1)}</span>
@@ -4056,18 +5014,28 @@ function renderInlineEvidenceLiterature(records) {
             ${records.map(record => `
                 <a href="https://pubmed.ncbi.nlm.nih.gov/${record.pmid}/"
                    target="_blank" rel="noopener"
-                   title="${escapeHtml(record.title || `PubMed ${record.pmid}`)}">PMID:${record.pmid} ↗</a>`).join('')}
+                   title="${escapeHtml(record.title || `PubMed ${record.pmid}`)}">PMID:${record.pmid} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>`).join('')}
         </div>`;
 }
 
-function renderLiteratureRecord(record) {
-    const metadata = [record.year, record.journal].filter(Boolean).join(' · ');
+function getLiteratureRecordDomId(evidenceScopeId, pmid) {
+    const normalizedPmid = String(pmid || '').replace(/\D/g, '');
+    return evidenceScopeId && normalizedPmid
+        ? `${evidenceScopeId}-literature-${normalizedPmid}`
+        : '';
+}
+
+function renderLiteratureRecord(record, evidenceScopeId = '') {
+    const metadata = [record.year, record.journal].filter(Boolean).join(', ');
+    const recordId = getLiteratureRecordDomId(evidenceScopeId, record.pmid);
     return `
         <a class="evidence-literature-record"
+           ${recordId ? `id="${escapeHtml(recordId)}"` : ''}
+           data-pmid="${escapeHtml(record.pmid)}"
            href="https://pubmed.ncbi.nlm.nih.gov/${record.pmid}/"
            target="_blank" rel="noopener">
             <strong>${escapeHtml(record.title || `PubMed record ${record.pmid}`)}</strong>
-            <span>PMID:${record.pmid}${metadata ? ` · ${escapeHtml(metadata)}` : ''} ↗</span>
+            <span>PMID:${record.pmid}${metadata ? `, ${escapeHtml(metadata)}` : ''} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span>
         </a>`;
 }
 
@@ -4139,7 +5107,7 @@ function getPathwayGeneEvidence(pathway) {
             source: 'gprofiler-intersection',
             label: 'Intersection genes',
             note: isReplaySnapshot
-                ? 'Exact query–term intersection regenerated from the archived input using the bundled enrichment snapshot.'
+                ? 'Exact query-term intersection regenerated from the archived input using the bundled enrichment snapshot.'
                 : 'Input genes annotated to this pathway in the enrichment result.'
         };
     }
@@ -4150,7 +5118,7 @@ function getPathwayGeneEvidence(pathway) {
             genes: legacyIntersections,
             source: 'legacy-intersection',
             label: 'Intersection genes',
-            note: 'Structured pathway–input overlap retained by a legacy result.'
+            note: 'Structured pathway-input overlap retained by a legacy result.'
         };
     }
 
@@ -4161,7 +5129,7 @@ function getPathwayGeneEvidence(pathway) {
         label: mentionedGenes.length > 0 ? 'Genes mentioned in interpretation' : 'Intersection genes',
         note: mentionedGenes.length > 0
             ? 'Historical fallback extracted from narrative text; not treated as a statistical intersection.'
-            : 'No structured query–term intersection was stored for this result.'
+            : 'No structured query-term intersection was stored for this result.'
     };
 }
 
@@ -4201,11 +5169,23 @@ function getDiseaseInterpretationPoints(pathway) {
 
     const narrative = cleanEvidenceDescription(pathway);
     if (narrative) {
-        const labeled = narrative.split(/\n+/).map(line => {
-            const match = line.match(/^([^:]{3,45}):\s*(.+)$/);
-            return match ? { label: match[1].trim(), text: match[2].trim() } : null;
-        }).filter(point => point && !/^cell(?:\s*\/\s*tissue)?\s+context$/i.test(point.label));
-        if (labeled.length >= 2) return labeled;
+        // Labels may open a line or follow the previous statement inline. Splitting
+        // on newlines alone collapsed a four-part interpretation into one block.
+        const LABELS = /(?:^|[\r\n]|(?<=[.;!?])\s+)\s*(?:\*\*)?(Pathway description|Biological context|Intersection[-\s]gene interpretation|Gene-level support|Disease pathology(?: and relevance)?|Disease relevance|PubMed literature synthesis|Cell(?:\s*\/\s*tissue)?\s*context)(?:\*\*)?\s*:\s*/gi;
+        const hits = [...narrative.matchAll(LABELS)];
+        const labeled = [];
+        if (hits.length && hits[0].index > 0) {
+            const preamble = narrative.slice(0, hits[0].index).trim();
+            if (preamble) labeled.push({ label: 'Disease pathology and relevance', text: preamble });
+        }
+        hits.forEach((hit, index) => {
+            const start = hit.index + hit[0].length;
+            const end = index + 1 < hits.length ? hits[index + 1].index : narrative.length;
+            const text = narrative.slice(start, end).trim();
+            if (text) labeled.push({ label: hit[1].trim(), text });
+        });
+        const filtered = labeled.filter(point => !/^cell(?:\s*\/\s*tissue)?\s*context$/i.test(point.label));
+        if (filtered.length >= 2) return filtered;
         return [{ label: 'Biological interpretation', text: narrative }];
     }
 
@@ -4252,6 +5232,377 @@ function getPathwayCellContext(pathway) {
     return /^not resolved\b/i.test(structuredText) ? '' : structuredText;
 }
 
+/**
+ * Pathway narrative.
+ *
+ * The narrative is prose written per the manuscript interpretation
+ * specification: an opening overlap statement, notable-protein paragraphs, a
+ * functional-cluster paragraph, and a closing summary naming the driving
+ * proteins. It is produced server-side (see generate_pathway_narratives) and
+ * carried on the record as `pathway_narrative`.
+ *
+ * Older runs and history entries carry no narrative, so the caller supplies a
+ * record-level fallback sentence.
+ */
+function normalizeNarrativePmids(value) {
+    const values = Array.isArray(value) ? value : (value ? [value] : []);
+    return values
+        .map(item => {
+            const raw = item && typeof item === 'object'
+                ? item.pmid || item.PMID || item.id
+                : item;
+            return String(raw || '').replace(/\D/g, '');
+        })
+        .filter(Boolean)
+        .filter((pmid, index, pmids) => pmids.indexOf(pmid) === index);
+}
+
+function sanitizeNarrativeText(value) {
+    let text = String(value || '').trim();
+    if (!text) return '';
+    const protocolLeak = /```|driver_genes\s*(?:["'(:]|\[)|"clusters"\s*:|incorrectly formatted|constraints in this environment|correctly formatted\s+(?:an?\s+)?response/i;
+    const marker = protocolLeak.exec(text);
+    if (marker) text = text.slice(0, marker.index).replace(/[\s`{}\[\],:;]+$/g, '').trim();
+    text = text
+        .replace(/\b(?:a\s+)?non-intersection pathway component\b/gi, 'pathway component')
+        .replace(/\bsubmitted ([^.!?]{0,100}?)-associated proteins\b/gi, 'submitted $1-associated genes')
+        .replace(/\bproteins enriched in\b/gi, 'genes enriched in')
+        .replace(/\bremaining proteins\b/gi, 'remaining genes')
+        .replace(/\bthese proteins\b/gi, 'these genes')
+        .replace(/\bthese (\d+) proteins\b/gi, 'these $1 genes')
+        .replace(/\bassociated proteins\b/gi, 'associated genes')
+        .replace(/\benriched proteins\b/gi, 'enriched genes')
+        .replace(/\bintersection proteins\b/gi, 'intersection genes')
+        .replace(/\bprotein module\b/gi, 'gene module')
+        .replace(/\bthe proteins listed for this record\b/gi, 'the genes listed for this record')
+        .replace(/\s+/g, ' ')
+        .trim();
+    // Older narratives often end with a formulaic transition instead of a
+    // direct scientific statement.  Remove it at presentation time so archived
+    // examples and newly generated runs follow the same editorial style.
+    text = text
+        .replace(/^(?:(?:overall|taken together|collectively)\s*,?\s*)+/i, '')
+        .replace(
+            /^Exactly\s+(\d+)\s+[^.!?]{1,140}?\s+associated genes were significantly enriched in the\s+([^.!?]+?)\s+pathway\s*(\([^)]+\))?\./i,
+            (_, count, pathwayName, pathwayId) => `${count} input genes map to ${pathwayName.trim()}${pathwayId ? ` ${pathwayId}` : ''}.`
+        )
+        .replace(/\bIn the context of ([^,]{2,80}),\s*/gi, 'In $1, ')
+        .replace(/\bThe association appears to be primarily driven by\b/g, 'The principal driver genes are')
+        .replace(/\bindicates that this term captures a substantial component of\b/gi, 'highlights')
+        .replace(/([.!?]\s+)(?:overall|taken together|collectively)\s*,?\s*([a-z])/gi,
+            (_, boundary, letter) => `${boundary}${letter.toUpperCase()}`)
+        .trim();
+    if (text) text = `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+    return text.length >= 24 ? text : '';
+}
+
+function getPathwayNarrative(pathway) {
+    const narrative = pathway?.pathway_narrative;
+    if (!narrative || typeof narrative !== 'object') return null;
+    const paragraphPmidMap = Array.isArray(narrative.paragraph_pmids)
+        ? narrative.paragraph_pmids
+        : (Array.isArray(narrative.paragraph_citations) ? narrative.paragraph_citations : []);
+    const paragraphs = (Array.isArray(narrative.paragraphs) ? narrative.paragraphs : [])
+        .map((paragraph, index) => {
+            const isStructured = paragraph && typeof paragraph === 'object';
+            const text = sanitizeNarrativeText(
+                isStructured
+                    ? paragraph.text || paragraph.paragraph || paragraph.content || ''
+                    : paragraph || ''
+            );
+            const pmids = normalizeNarrativePmids(
+                isStructured
+                    ? paragraph.pmids || paragraph.citations || paragraph.literature
+                    : paragraphPmidMap[index]
+            );
+            return { text, pmids };
+        })
+        .filter(paragraph => paragraph.text);
+    if (!paragraphs.length) return null;
+    return {
+        paragraphs,
+        driverGenes: (Array.isArray(narrative.driver_genes) ? narrative.driver_genes : [])
+            .map(gene => String(gene || '').trim())
+            .filter(Boolean),
+        clusters: (Array.isArray(narrative.clusters) ? narrative.clusters : [])
+            .filter(cluster => cluster && String(cluster.label || '').trim())
+            .map(cluster => ({
+                label: String(cluster.label).trim(),
+                genes: (Array.isArray(cluster.genes) ? cluster.genes : [])
+                    .map(gene => String(gene || '').trim())
+                    .filter(Boolean)
+            }))
+            .filter(cluster => cluster.genes.length)
+    };
+}
+
+function getNarrativeParagraphLiterature(paragraph, literature, limit = 2, queryTerms = '') {
+    if (!paragraph || !literature.length) return [];
+
+    // Newer server payloads can provide an exact paragraph-to-PMID map. Honor
+    // that mapping before considering the compatibility path for old archives.
+    const explicitPmids = new Set(paragraph.pmids || []);
+    if (explicitPmids.size) {
+        return literature.filter(record => explicitPmids.has(record.pmid)).slice(0, limit);
+    }
+
+    // Historical archives only persisted a pathway-level literature list. For
+    // those records, expose a jump only when the paragraph and paper title have
+    // real lexical or protein-symbol overlap; never rotate an unrelated PMID in
+    // merely to make every paragraph clickable.
+    const ignored = new Set([
+        'about', 'after', 'among', 'associated', 'context', 'disease', 'evidence',
+        'from', 'into', 'multiple', 'pathway', 'process', 'related', 'relevant',
+        'sclerosis', 'support', 'that', 'their', 'these', 'this', 'through', 'where',
+        'with'
+    ]);
+    // The PubMed query for these records was literally "<pathway>" AND "<disease>",
+    // so every attached title repeats those words. Matching on them scores the
+    // opening count-statement as well as a real mechanistic claim, which is how
+    // a sentence carrying no biological assertion ended up citing two papers.
+    String(queryTerms || '').toLowerCase().match(/[a-zβ][a-z0-9β+-]{3,}/g)?.forEach(
+        token => ignored.add(token)
+    );
+    const paragraphText = String(paragraph.text || '');
+    const paragraphTokens = new Set(
+        (paragraphText.toLowerCase().match(/[a-zβ][a-z0-9β+-]{3,}/g) || [])
+            .filter(token => !ignored.has(token))
+    );
+    const paragraphSymbols = new Set(
+        paragraphText.match(/\b[A-Z][A-Z0-9-]{2,}\b/g) || []
+    );
+    return literature
+        .map((record, index) => {
+            const title = String(record.title || '');
+            const titleTokens = title.toLowerCase().match(/[a-zβ][a-z0-9β+-]{3,}/g) || [];
+            const titleSymbols = title.match(/\b[A-Z][A-Z0-9-]{2,}\b/g) || [];
+            const lexicalScore = titleTokens.reduce(
+                (score, token) => score + (!ignored.has(token) && paragraphTokens.has(token) ? 1 : 0),
+                0
+            );
+            const symbolScore = titleSymbols.reduce(
+                (score, symbol) => score + (paragraphSymbols.has(symbol) ? 4 : 0),
+                0
+            );
+            return { record, index, score: lexicalScore + symbolScore };
+        })
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.index - b.index)
+        .slice(0, limit)
+        .map(item => item.record);
+}
+
+function conciseTakeawayText(value, maxLength = 700) {
+    let text = sanitizeNarrativeText(value) || String(value || '').trim();
+    if (!text) return '';
+    text = text.replace(/^(?:(?:overall|taken together|collectively)\s*,?\s*)+/i, '').trim();
+    if (text) text = `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+    text = text.split(/(?<=[.!?])\s+/).slice(0, 2).join(' ').trim();
+    if (text.length > maxLength) {
+        text = `${text.slice(0, maxLength - 3).replace(/\s+\S*$/, '')}...`;
+    }
+    return text;
+}
+
+function renderNarrativeParagraphs(narrative, literature, evidenceScopeId, queryTerms = '') {
+    if (!narrative) return '';
+    const rendered = narrative.paragraphs.map((paragraph, index) => {
+        const isTakeaway = index === narrative.paragraphs.length - 1;
+        const paragraphClass = `narrative-paragraph${isTakeaway ? ' narrative-paragraph--takeaway' : ''}`;
+        const paragraphCopy = isTakeaway
+            ? `<span class="summary-takeaway-copy">${escapeHtml(conciseTakeawayText(paragraph.text))}</span><span class="detailed-takeaway-copy">${escapeHtml(paragraph.text)}</span>`
+            : escapeHtml(paragraph.text);
+        const related = getNarrativeParagraphLiterature(paragraph, literature, 2, queryTerms);
+        const targetIds = related
+            .map(record => getLiteratureRecordDomId(evidenceScopeId, record.pmid))
+            .filter(Boolean);
+        if (!targetIds.length) return `<p class="${paragraphClass}">${paragraphCopy}</p>`;
+        const paperLabel = `${related.length} related paper${related.length === 1 ? '' : 's'}`;
+        return `
+            <button type="button"
+                    class="narrative-evidence-jump ${paragraphClass}"
+                    data-evidence-targets="${escapeHtml(targetIds.join(' '))}"
+                    aria-pressed="false"
+                    onclick="jumpToNarrativeEvidence(this)">
+                <span class="narrative-evidence-copy">${paragraphCopy}</span>
+                <span class="narrative-evidence-cue">
+                    <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                    ${paperLabel}
+                </span>
+            </button>`;
+    });
+    const hasTargets = rendered.some(markup => markup.includes('narrative-evidence-jump'));
+    return `${hasTargets ? '<span class="narrative-evidence-guide">Related literature is linked from the supported passages.</span>' : ''}${rendered.join('')}`;
+}
+
+function renderNarrativeDriverGenes(driverGenes) {
+    if (!driverGenes.length) return '';
+    return `<div class="narrative-meta-row">
+        <span class="narrative-meta-label">Driving genes</span>
+        <span class="narrative-gene-row">${driverGenes
+            .map(gene => renderGeneOfficialLink(gene, 'evidence-gene-chip evidence-gene-chip--driver'))
+            .join('')}</span>
+    </div>`;
+}
+
+function renderNarrativeClusters(clusters) {
+    if (!clusters.length) return '';
+    return `<div class="narrative-meta-row">
+        <span class="narrative-meta-label">Functional clusters</span>
+        <div class="narrative-cluster-list">${clusters.map(cluster => `
+            <span class="narrative-cluster">
+                <strong>${escapeHtml(cluster.label)}</strong>
+                <span class="narrative-gene-row">${cluster.genes
+                    .map(gene => renderGeneOfficialLink(gene, 'evidence-gene-chip'))
+                    .join('')}</span>
+            </span>`).join('')}</div>
+    </div>`;
+}
+
+/**
+ * Ontology-graph note.
+ *
+ * GO is a directed acyclic graph, so a broad parent term and one of its
+ * children can both clear the significance threshold off largely the same
+ * genes. When that happens inside one report, saying so is what keeps a reader
+ * from counting one signal twice.
+ */
+function renderNarrativeHierarchyNote(pathway) {
+    const hierarchy = pathway?.hierarchy;
+    if (!hierarchy || typeof hierarchy !== 'object') return '';
+    const parents = (hierarchy.parent_names_in_set || []).filter(Boolean);
+    const children = (hierarchy.child_names_in_set || []).filter(Boolean);
+    if (!parents.length && !children.length) return '';
+    const parts = [];
+    if (parents.length) {
+        parts.push(`Broader term${parents.length === 1 ? '' : 's'} also retained: ${parents.join(', ')}.`);
+    }
+    if (children.length) {
+        parts.push(`More specific term${children.length === 1 ? '' : 's'} also retained: ${children.join(', ')}.`);
+    }
+    parts.push('These share much of the same intersection and are one signal read at different resolutions.');
+    return `<p class="narrative-hierarchy-note">${escapeHtml(parts.join(' '))}</p>`;
+}
+
+function renderNarrativeTierBadge(pathway) {
+    const tier = String(pathway?.reporting_tier || '').trim().toLowerCase();
+    if (tier !== 'supporting') return '';
+    return '<span class="narrative-tier-badge" title="Not among the leading terms for its database">Supporting term</span>';
+}
+
+/**
+ * Cell/tissue context belongs to the interpretation, not to the ranking audit
+ * trail, so it renders as a closing line of the narrative card.
+ */
+function renderNarrativeCellContext(cell) {
+    if (!cell || !cell.cellContext) return '';
+    const labels = cell.cellLabels || [];
+    const evidence = cell.cellEvidence || [];
+    const evidenceMarkup = evidence.length
+        ? `<div class="cell-context-claim-evidence">
+            <span class="cell-context-evidence-title">References</span>
+            ${evidence.map(item => `<div class="cell-context-evidence-item">
+                ${item.labels?.length || item.genes?.length ? `<span class="cell-context-evidence-labels">${[
+                    ...(item.labels || []),
+                    ...(item.genes?.length ? [item.genes.join(', ')] : [])
+                ].map(escapeHtml).join(', ')}</span>` : ''}
+                ${item.claim ? `<span class="cell-context-evidence-claim">${escapeHtml(item.claim)}</span>` : ''}
+                ${(item.citations || []).map(citation => `
+                    <a class="cell-context-reference-link"
+                       href="https://pubmed.ncbi.nlm.nih.gov/${citation.pmid}/"
+                       target="_blank" rel="noopener">
+                        <strong>${escapeHtml(citation.title || `PubMed record ${citation.pmid}`)}</strong>
+                        <span>PMID:${escapeHtml(citation.pmid)}${citation.year ? `, ${escapeHtml(citation.year)}` : ''}${citation.journal ? `, ${escapeHtml(citation.journal)}` : ''} <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></span>
+                    </a>`).join('')}
+            </div>`).join('')}
+        </div>`
+        : '';
+    return `<div class="narrative-meta-row">
+        <span class="narrative-meta-label">Cell / tissue context</span>
+        ${labels.length ? `<div class="pathway-cell-context-tags" aria-label="Pathway-level cell and tissue context">
+            ${labels.map(label => renderCellContextOfficialLink(label)).join('')}
+        </div>` : ''}
+        <p class="narrative-cell-copy">${escapeHtml(cell.cellContext)}</p>
+        ${evidenceMarkup}
+    </div>`;
+}
+
+function getCellContextClaimEvidence(pathway, literature) {
+    const raw = pathway?.cell_context_evidence ?? pathway?.cell_context_claims;
+    let entries = Array.isArray(raw) ? raw : (Array.isArray(raw?.claims) ? raw.claims : []);
+    if (!entries.length && raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        entries = Object.entries(raw)
+            .filter(([key]) => key !== 'claims')
+            .map(([label, value]) => ({
+                labels: [label],
+                ...(value && typeof value === 'object' ? value : { pmids: value })
+            }));
+    }
+    const contextLiterature = Array.isArray(pathway?.cell_context_literature)
+        ? pathway.cell_context_literature
+        : [];
+    const recordsByPmid = new Map([...contextLiterature, ...(literature || [])].map(record => [
+        String(record?.pmid || record?.PMID || ''),
+        {
+            pmid: String(record?.pmid || record?.PMID || ''),
+            title: String(record?.title || '').trim(),
+            journal: String(record?.journal || '').trim(),
+            year: String(record?.year || '').trim()
+        }
+    ]));
+    return entries.map(entry => {
+        if (!entry || typeof entry !== 'object') return null;
+        const labels = (Array.isArray(entry.labels) ? entry.labels : (entry.label ? [entry.label] : []))
+            .map(label => String(label || '').trim())
+            .filter(Boolean);
+        const claim = String(entry.claim || entry.text || entry.context || '').trim();
+        const genes = (Array.isArray(entry.genes) ? entry.genes : [])
+            .map(gene => String(gene || '').trim())
+            .filter(Boolean);
+        const pmids = normalizeNarrativePmids(entry.pmids || entry.citations || entry.literature);
+        const citations = pmids.map(pmid => recordsByPmid.get(pmid) || { pmid, title: '' });
+        // A PMID list without a specific claim or label is still pathway-level
+        // evidence and must not be presented as if it supported every chip.
+        return pmids.length && (claim || labels.length) ? { labels, genes, claim, citations } : null;
+    }).filter(Boolean);
+}
+
+function renderOverallInterpretation(pathway, fallbackText, statisticsText, citations, cell, literature, evidenceScopeId) {
+    const narrative = getPathwayNarrative(pathway);
+    const body = narrative
+        ? renderNarrativeParagraphs(
+            narrative,
+            literature,
+            evidenceScopeId,
+            `${pathway?.name || ''} ${getRunDiseaseContext(currentResults || {}).name || ''}`
+        )
+        : `<p>${escapeHtml(fallbackText)}</p>`;
+    return `
+        <section class="overall-interpretation-card${narrative ? ' overall-interpretation-card--narrative' : ''}">
+            <span class="overall-interpretation-label">Overall interpretation${renderNarrativeTierBadge(pathway)}</span>
+            ${body}
+            ${renderNarrativeHierarchyNote(pathway)}
+            ${narrative ? renderNarrativeDriverGenes(narrative.driverGenes) : ''}
+            ${narrative ? renderNarrativeClusters(narrative.clusters) : ''}
+            ${renderNarrativeCellContext(cell)}
+            ${narrative && statisticsText ? `<p class="narrative-record-line">${escapeHtml(statisticsText)}</p>` : ''}
+            ${renderInlineEvidenceLiterature(citations)}
+        </section>`;
+}
+
+/**
+ * The pathway-linked literature section below the card already lists every
+ * record with its title, year and journal. Some archived literature summaries
+ * additionally enumerate the same records inline, so the reader meets each
+ * paper twice. The enumeration is dropped and the summary sentence kept.
+ */
+function trimDuplicatedRecordList(text) {
+    const value = String(text || '').trim();
+    if (!value) return value;
+    const trimmed = value.replace(/\s*Representative records?:.*$/is, '').trim();
+    return trimmed || value;
+}
+
 function renderDiseaseInterpretation(pathway, rankingContext = {}) {
     const points = getDiseaseInterpretationPoints(pathway);
     const findPoint = label => points.find(point => point.label.toLowerCase() === label.toLowerCase())?.text || '';
@@ -4263,9 +5614,9 @@ function renderDiseaseInterpretation(pathway, rankingContext = {}) {
     const geneText = findPoint('Intersection-gene interpretation')
         || findPoint('Gene-level support')
         || (shownGenes.length
-        ? `The input–pathway intersection contains ${genes.length} gene${genes.length === 1 ? '' : 's'}: ${shownGenes.join(', ')}${genes.length > shownGenes.length ? ` and ${genes.length - shownGenes.length} additional genes` : ''}.`
-        : 'No structured input–pathway intersection is available for this record.');
-    const diseaseText = findPoint('Disease pathology and relevance')
+        ? `The input-pathway intersection contains ${genes.length} gene${genes.length === 1 ? '' : 's'}: ${shownGenes.join(', ')}${genes.length > shownGenes.length ? ` and ${genes.length - shownGenes.length} additional genes` : ''}.`
+        : 'No structured input-pathway intersection is available for this record.');
+    const diseaseText = trimDuplicatedRecordList(findPoint('Disease pathology and relevance'))
         || findPoint('Disease relevance')
         || points.find(point => /disease/i.test(point.label))?.text
         || cleanEvidenceDescription(pathway)
@@ -4273,108 +5624,93 @@ function renderDiseaseInterpretation(pathway, rankingContext = {}) {
     const pathwayCellContext = getPathwayCellContext(pathway);
     const cellLabels = extractCellTypeLabels(pathwayCellContext);
     const literature = getPathwayLiteratureRecords(pathway);
-    const contextPmidSet = new Set(
-        (Array.isArray(pathway?.cell_context_pmids) ? pathway.cell_context_pmids : [])
-            .map(pmid => String(pmid || '').replace(/\D/g, ''))
-            .filter(Boolean)
-    );
-    const explicitCellLiterature = literature.filter(record => contextPmidSet.has(record.pmid));
+    const cellEvidence = getCellContextClaimEvidence(pathway, literature);
     const overlapSize = genes.length || Number(pathway?.intersection_size) || null;
     const pathwaySize = getPathwayTermSize(pathway);
     const pValue = formatPValue(pathway?.p_value ?? pathway?.pvalue);
     const statisticalText = `Adjusted enrichment P-value ${pValue}; ${overlapSize ?? 'an unavailable number of'} input genes overlap ${pathwaySize ? `the ${pathwaySize}-gene pathway annotation` : 'the pathway annotation'}.`;
-    const literatureText = findPoint('PubMed literature synthesis') || (literature.length
-        ? `${literature.length} pathway–disease PubMed record${literature.length === 1 ? '' : 's'} support the biological interpretation and gene–disease connections summarized above.`
-        : 'No pathway–disease PubMed record was retrieved for this pathway, so the literature component was unavailable for ranking review.');
+    const literatureText = trimDuplicatedRecordList(findPoint('PubMed literature synthesis')) || (literature.length
+        ? `${literature.length} pathway-disease PubMed record${literature.length === 1 ? '' : 's'} support the biological interpretation and gene-disease connections summarized above.`
+        : 'No pathway-disease PubMed record was retrieved for this pathway, so the literature component was unavailable for ranking review.');
     const dimensions = [
         {
             label: 'Pathway description',
             text: pathwayDescription,
             supportingText: biologyText !== pathwayDescription ? biologyText : '',
-            source: 'Ranking source · official pathway definition',
+            source: 'Official pathway definition',
             citations: selectRelatedLiterature(literature, `${pathwayDescription} ${biologyText}`, 0, Math.min(2, literature.length))
         },
         {
             label: 'Disease pathology',
             text: diseaseText,
-            source: 'Ranking source · disease pathology and pathway relevance',
+            source: 'Disease pathology and pathway relevance',
             citations: selectRelatedLiterature(literature, diseaseText, 1, Math.min(2, literature.length))
         },
         {
             label: 'Intersection genes',
             text: geneText,
-            source: 'Ranking source · input–pathway intersection',
+            source: 'Input-pathway intersection',
             citations: selectRelatedLiterature(literature, geneText, 2, Math.min(2, literature.length))
         },
         {
             label: 'Enrichment strength',
             text: statisticalText,
-            source: 'Ranking source · adjusted enrichment result'
+            source: 'Adjusted enrichment result'
         },
         {
             label: 'PubMed literature',
             text: literatureText,
             citations: selectRelatedLiterature(literature, `${diseaseText} ${biologyText}`, 0, Math.min(3, literature.length)),
-            source: 'Ranking source · live pathway–disease PubMed retrieval'
+            source: 'Pathway-disease PubMed retrieval'
         }
     ];
     const rank = Number(rankingContext.rank) || Number(pathway?.gpt_rank) || null;
     const category = rankingContext.category || pathway?.source || pathway?.category || 'this database';
     const categoryTotal = Number(rankingContext.total) || null;
     const diseaseName = getRunDiseaseContext(currentResults || {}).name;
-    const overallText = `${pathway?.name || pathway?.pathway_name || 'This pathway'} ranks${rank ? ` #${rank} within ${category}` : ''} for ${diseaseName}. ${overlapSize ?? 'Available'} input gene${overlapSize === 1 ? '' : 's'} overlap${overlapSize === 1 ? 's' : ''} ${pathwaySize ? `the ${pathwaySize}-gene pathway annotation` : 'the pathway annotation'}, with ${literature.length} linked publication${literature.length === 1 ? '' : 's'}.${cellLabels.length ? ` Cell/tissue context: ${cellLabels.slice(0, 3).join(', ')}${cellLabels.length > 3 ? ', and related contexts' : ''}.` : ''}`;
+    const overallText = `Enrichment of ${pathway?.name || pathway?.pathway_name || 'this pathway'} in ${diseaseName} links ${overlapSize ?? 'the submitted'} input gene${overlapSize === 1 ? '' : 's'} to the annotated biological process.${cellLabels.length ? ` The mapped context emphasizes ${cellLabels.slice(0, 3).join(', ')}${cellLabels.length > 3 ? ', and related contexts' : ''}.` : ''}`;
     const rankText = rank === 1
         ? `Highest combined biological-evidence position among ${categoryTotal || 'the'} validated ${category} pathways.`
-        : `Rank #${rank || '—'} of ${categoryTotal || 'the validated'} ${category} pathways after five-source evidence review.`;
+        : `Rank ${rank || 'not available'} of ${categoryTotal || 'the validated'} ${category} pathways after five-source evidence review.`;
     const overallCitations = selectRelatedLiterature(
         literature,
         `${pathwayDescription} ${diseaseText} ${geneText}`,
         0,
         Math.min(3, literature.length)
     );
-    return `
-        <section class="overall-interpretation-card">
-            <span class="overall-interpretation-label">Overall interpretation</span>
-            <p>${escapeHtml(overallText)}</p>
-            ${renderInlineEvidenceLiterature(overallCitations)}
-        </section>
-        <section class="why-ranked-card">
-            <span class="why-ranked-index">#${rank || '—'}</span>
-            <div>
-                <strong>Why this rank?</strong>
-                <p>${escapeHtml(rankText)}</p>
-            </div>
-        </section>
-        <ol class="disease-interpretation-list evidence-dimension-list">
-            ${dimensions.map((dimension, index) => `
-                <li>
-                    <span class="evidence-dimension-number">${index + 1}</span>
-                    <strong>${escapeHtml(dimension.label)}</strong>
-                    <div class="evidence-dimension-body">
-                        <span>${escapeHtml(dimension.text)}</span>
-                        ${dimension.supportingText ? `<span class="interpretation-supporting-text"><b>Pathway-level interpretation:</b> ${escapeHtml(dimension.supportingText)}</span>` : ''}
-                        ${renderInlineEvidenceLiterature(dimension.citations || [])}
-                    </div>
-                </li>`).join('')}
-            <li class="pathway-cell-context-point${pathwayCellContext ? '' : ' pathway-cell-context-point--empty'}">
-                <span class="evidence-dimension-number">+1</span>
-                <strong>Cell/tissue context</strong>
-                <div class="pathway-cell-context-body">
-                    ${cellLabels.length ? `
-                        <div class="pathway-cell-context-tags" aria-label="Pathway-level cell and tissue context">
-                            ${cellLabels.map(label => renderCellContextOfficialLink(label)).join('')}
-                        </div>` : ''}
-                    <span class="pathway-cell-context-copy">${escapeHtml(pathwayCellContext || 'Not available in the archived pathway-level context for this result.')}</span>
-                    ${renderInlineEvidenceLiterature(
-                        pathwayCellContext
-                            ? (explicitCellLiterature.length
-                                ? explicitCellLiterature
-                                : selectRelatedLiterature(literature, pathwayCellContext, Math.max(literature.length - 1, 0), Math.min(2, literature.length)))
-                            : []
-                    )}
-                </div>
-            </li>
-        </ol>`;
+    // One citation, one place. The same two PMIDs were previously repeated under
+    // every dimension and again in the literature section below, which made the
+    // card look far better sourced than it is. Each PMID is now shown once, at
+    // the first dimension that actually rests on it.
+    const shownPmids = new Set(
+        (overallCitations || []).map(record => String(record?.pmid || '')).filter(Boolean)
+    );
+    dimensions.forEach(dimension => {
+        const fresh = (dimension.citations || []).filter(record => {
+            const pmid = String(record?.pmid || '');
+            if (!pmid || shownPmids.has(pmid)) return false;
+            shownPmids.add(pmid);
+            return true;
+        });
+        dimension.citations = fresh;
+    });
+
+    // Keep the pathway page focused on a take-away-ready interpretation. The
+    // supplementary reasoning is available once, at report level, rather
+    // than repeated as an internal provenance block beneath every pathway.
+    return renderOverallInterpretation(
+            pathway,
+            overallText,
+            statisticalText,
+            overallCitations,
+            {
+                cellContext: pathwayCellContext,
+                cellLabels,
+                cellEvidence
+            },
+            literature,
+            rankingContext.evidenceScopeId || ''
+        );
 }
 
 function getPathwayIntroduction(pathway) {
@@ -4411,7 +5747,7 @@ function renderEvidenceGenePreview(genes, chipClass) {
     const remainder = genes.length - visible.length;
     return `
         ${visible.map(gene => renderGeneOfficialLink(gene, chipClass)).join('')}
-        ${remainder > 0 ? `<span class="evidence-gene-more">+${remainder} · expand pathway</span>` : ''}`;
+        ${remainder > 0 ? `<span class="evidence-gene-more">+${remainder} more</span>` : ''}`;
 }
 
 function renderExpandableEvidenceGenes(genes, chipClass, note) {
@@ -4433,8 +5769,118 @@ function renderExpandableEvidenceGenes(genes, chipClass, note) {
             </details>` : ''}`;
 }
 
+function renderExternalEvidenceGenes(pathway) {
+    const current = Array.isArray(pathway?.external_evidence_genes)
+        ? pathway.external_evidence_genes
+        : [];
+    // Read the one-off Figure 6 field as a compatibility fallback, while all
+    // new live runs write the generic external_evidence_genes contract.
+    const legacy = Array.isArray(pathway?.independent_evidence_genes)
+        ? pathway.independent_evidence_genes
+        : [];
+    const entries = (current.length ? current : legacy).filter(entry => entry?.gene);
+    if (!entries.length) return '';
+
+    const note = pathway?.external_evidence_note
+        || pathway?.independent_evidence_note
+        || 'External literature evidence; not used for enrichment or ranking.';
+    const sourceLinks = entry => {
+        const supplied = Array.isArray(entry?.pmids) ? entry.pmids : [];
+        const recovered = (Array.isArray(entry?.source_refs) ? entry.source_refs : [])
+            .map(value => String(value || '').match(/PMID\s*:?\s*(\d{6,9})/i)?.[1])
+            .filter(Boolean);
+        const pmids = [...supplied, ...recovered]
+            .map(value => String(value || '').replace(/\D/g, ''))
+            .filter((value, index, values) => value && values.indexOf(value) === index);
+        return pmids.map(pmid => `
+            <a href="https://pubmed.ncbi.nlm.nih.gov/${escapeHtml(pmid)}/"
+               target="_blank" rel="noopener">PMID:${escapeHtml(pmid)}
+               <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg>
+            </a>`).join('');
+    };
+
+    return `
+        <details class="external-evidence-block">
+            <summary>
+                <span>External corroborating genes</span>
+                <small>${entries.length} gene${entries.length === 1 ? '' : 's'}; not used for enrichment or ranking</small>
+                <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+            </summary>
+            <div class="external-evidence-body">
+                <p>${escapeHtml(note)}</p>
+                <div class="external-evidence-grid">
+                    ${entries.map(entry => `
+                        <div class="external-evidence-gene">
+                            ${renderGeneOfficialLink(entry.gene, 'evidence-gene-chip evidence-gene-chip--external')}
+                            <span class="external-evidence-categories">
+                                ${(entry.categories || []).map(category => `<span>${escapeHtml(category)}</span>`).join('')}
+                            </span>
+                            ${sourceLinks(entry) ? `<div class="external-evidence-sources">${sourceLinks(entry)}</div>` : ''}
+                        </div>`).join('')}
+                </div>
+            </div>
+        </details>`;
+}
+
+function normalizeDatabaseCategory(category) {
+    const value = String(category || '').trim().toUpperCase();
+    if (value === 'GO_BP' || value === 'GOBP') return 'GO:BP';
+    if (value === 'GO_MF' || value === 'GOMF') return 'GO:MF';
+    if (value === 'GO_CC' || value === 'GOCC') return 'GO:CC';
+    if (value === 'REACTOME') return 'REAC';
+    return value;
+}
+
+function getConsolidatedDatabaseReasoning(category) {
+    const categoryKey = normalizeDatabaseCategory(category);
+    const records = collectedReasoning
+        .filter(entry => entry?.reasoning && normalizeDatabaseCategory(entry.category) === categoryKey)
+        .sort((a, b) => Number(a.iteration || 1) - Number(b.iteration || 1));
+    if (!records.length) return null;
+
+    return {
+        category,
+        iteration: Math.max(...records.map(entry => Number(entry.iteration || 1))),
+        // Consolidate the initial biological rationale and later validation
+        // refinements into one database-level record instead of exposing
+        // internal prompt-pass navigation to readers.
+        reasoning: Object.assign({}, ...records.map(entry => entry.reasoning))
+    };
+}
+
+function renderDatabaseReasoningDetails(category) {
+    const record = getConsolidatedDatabaseReasoning(category);
+    const content = record
+        ? renderReasoningPanel(record.reasoning, category, record.iteration, {
+            recordView: true,
+            embeddedDatabase: true
+        })
+        : `
+            <div class="database-reasoning-empty">
+                No method record was stored for this completed analysis.
+            </div>`;
+
+    return `
+        <details class="database-reasoning-details detailed-report-only">
+            <summary class="database-reasoning-summary">
+                <strong>Method record</strong>
+                <span class="database-reasoning-toggle" aria-hidden="true">
+                    <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                </span>
+            </summary>
+            <div class="database-reasoning-body">
+                ${content}
+            </div>
+        </details>`;
+}
+
 function renderEvidenceSectionsView(pathways) {
     if (!elements.evidenceSections) return;
+
+    const cellTypeFrequencyEntries = getRunCellTypeFrequencies(pathways);
+    const cellTypeFrequencyMap = new Map(
+        cellTypeFrequencyEntries.map(entry => [entry.label, entry])
+    );
 
     // Group pathways by category
     const categories = {};
@@ -4449,6 +5895,7 @@ function renderEvidenceSectionsView(pathways) {
         const rankedItems = [...items].sort((a, b) =>
             Number(a.gpt_rank ?? Number.MAX_SAFE_INTEGER) - Number(b.gpt_rank ?? Number.MAX_SAFE_INTEGER)
         );
+        const shownItems = rankedItems.slice(0, pathwayDisplayLimit);
 
         return `
         <div class="evidence-section ${sectionIndex === 0 ? 'open' : ''}">
@@ -4457,15 +5904,19 @@ function renderEvidenceSectionsView(pathways) {
                     ${renderDatabaseMark(cat)}
                     <span class="evidence-section-code" style="color: ${info.color};">${cat}</span>
                     <span class="evidence-section-name">${escapeHtml(info.name)}</span>
-                    <span class="evidence-section-count">${rankedItems.length} pathways</span>
+                    <span class="evidence-section-count">${shownItems.length === rankedItems.length ? `${rankedItems.length} validated pathways` : `Showing ${shownItems.length} of ${rankedItems.length}`}</span>
                 </div>
                 <div class="evidence-section-action">
-                    <span>Database details</span>
-                    <span class="evidence-section-toggle">⌄</span>
+                    <span>View pathways</span>
+                    <span class="evidence-section-toggle"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>
                 </div>
             </div>
             <div class="evidence-section-body">
-                ${rankedItems.map((p, rankIndex) => {
+                <section class="database-output-stage" aria-label="Validated pathways and interpretations">
+                    <h4 class="database-output-stage-title">Ranked pathways</h4>
+                    <div class="database-pathway-list">
+                ${shownItems.map((p, rankIndex) => {
+            const evidenceScopeId = `evidence-${sectionIndex + 1}-${rankIndex + 1}`;
             const preview = truncateText(getPathwayIntroduction(p), 230);
             const literatureRecords = getPathwayLiteratureRecords(p);
             const pmidList = literatureRecords.map(record => record.pmid);
@@ -4478,9 +5929,15 @@ function renderEvidenceSectionsView(pathways) {
                 : 'evidence-gene-chip';
             const pathwayCellContext = getPathwayCellContext(p);
             const pathwayCellLabels = extractCellTypeLabels(pathwayCellContext);
+            const pathwayCellFrequencies = pathwayCellLabels
+                .map(label => cellTypeFrequencyMap.get(label))
+                .filter(Boolean)
+                .sort((a, b) => b.count - a.count || a.order - b.order || a.label.localeCompare(b.label));
+            const pathwayTopCellFrequencies = pathwayCellFrequencies.slice(0, 5);
+            const remainingPathwayContexts = Math.max(0, pathwayCellFrequencies.length - pathwayTopCellFrequencies.length);
 
             return `
-                    <details class="evidence-item evidence-item--layered" data-category="${escapeHtml(cat)}" data-rank="${rankIndex + 1}">
+                    <details class="evidence-item evidence-item--layered" id="${evidenceScopeId}" data-category="${escapeHtml(cat)}" data-rank="${rankIndex + 1}">
                         <summary class="evidence-item-summary">
                             <div class="evidence-summary-main">
                                 <div class="evidence-title-line">
@@ -4489,10 +5946,11 @@ function renderEvidenceSectionsView(pathways) {
                                     ${renderPathwayId(p)}
                                 </div>
                                 <p class="evidence-item-preview">${escapeHtml(preview)}</p>
-                                ${pathwayCellLabels.length ? `
+                                ${pathwayTopCellFrequencies.length ? `
                                     <div class="evidence-pathway-context-row">
                                         <span class="evidence-driver-label">Cell/tissue context</span>
-                                        ${pathwayCellLabels.slice(0, 6).map(label => renderCellContextOfficialLink(label, 'evidence-context-chip')).join('')}
+                                        ${pathwayTopCellFrequencies.map(entry => renderCellContextFrequencyLink(entry, 'evidence-context-chip')).join('')}
+                                        ${remainingPathwayContexts ? `<span class="evidence-context-more">${remainingPathwayContexts} additional context${remainingPathwayContexts === 1 ? '' : 's'}</span>` : ''}
                                     </div>` : ''}
                                 <div class="evidence-driver-row">
                                     <span class="evidence-driver-label" title="${escapeHtml(geneEvidence.note)}">${escapeHtml(geneEvidence.label)}</span>
@@ -4507,31 +5965,28 @@ function renderEvidenceSectionsView(pathways) {
                                     <small>Adjusted P-value</small>
                                     <strong>${formatPValue(p.p_value || p.pvalue)}</strong>
                                 </span>
-                                <span class="evidence-key-metric">
-                                    <small>Literature</small>
-                                    <strong>${pmidList.length} PMID${pmidList.length === 1 ? '' : 's'}</strong>
-                                </span>
                                 <span class="evidence-key-metric evidence-key-metric--overlap">
                                     <small>Overlap / pathway size</small>
-                                    <strong>${overlapSize ?? '—'} / ${termSize ?? '—'} genes</strong>
+                                    <strong>${overlapSize ?? 'NA'} / ${termSize ?? 'NA'} genes</strong>
                                 </span>
-                                <span class="evidence-item-chevron">⌄</span>
+                                <span class="evidence-item-chevron"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>
                             </div>
                         </summary>
                         <div class="evidence-item-expanded">
                             <div class="evidence-full-copy">
-                                <span class="evidence-detail-label">Pathway interpretation and ranking rationale</span>
-                                ${renderDiseaseInterpretation(p, { rank: rankIndex + 1, category: cat, total: rankedItems.length })}
+                                <span class="evidence-detail-label">Interpretation</span>
+                                ${renderDiseaseInterpretation(p, { rank: rankIndex + 1, category: cat, total: rankedItems.length, evidenceScopeId })}
                                 <div class="evidence-expanded-genes">
-                                    <span class="evidence-detail-label">Input–pathway intersection genes</span>
+                                    <span class="evidence-detail-label">Input-pathway intersection genes</span>
                                     ${renderExpandableEvidenceGenes(genes, geneChipClass, geneEvidence.note)}
                                 </div>
+                                ${renderExternalEvidenceGenes(p)}
                             </div>
                             <div class="evidence-source-block">
-                                <span class="evidence-detail-label">Pathway-linked literature</span>
+                                <span class="evidence-detail-label">Literature</span>
                                 <div class="evidence-item-meta">
                                     ${literatureRecords.length > 0
-                    ? literatureRecords.map(renderLiteratureRecord).join('')
+                    ? literatureRecords.map(record => renderLiteratureRecord(record, evidenceScopeId)).join('')
                     : '<span class="no-pmid">No literature references attached to this record.</span>'
                 }
                                 </div>
@@ -4540,18 +5995,58 @@ function renderEvidenceSectionsView(pathways) {
                     </details>
                     `;
         }).join('')}
+                    </div>
+                </section>
+                ${renderDatabaseReasoningDetails(cat)}
             </div>
         </div>
         `;
     }).join('');
 
     elements.evidenceSections.innerHTML = sectionsHtml;
+    enhanceReasoningSectionToggles(elements.evidenceSections);
 }
 
 
 // Global function for evidence toggle
 window.toggleEvidence = function (section) {
     section.classList.toggle('open');
+};
+
+window.jumpToNarrativeEvidence = function (trigger) {
+    if (!trigger) return;
+    const evidenceItem = trigger.closest('.evidence-item');
+    const targetIds = String(trigger.dataset.evidenceTargets || '')
+        .split(/\s+/)
+        .filter(Boolean);
+    const targets = targetIds
+        .map(id => document.getElementById(id))
+        .filter(Boolean);
+    if (!targets.length) return;
+
+    if (evidenceItem) {
+        evidenceItem.querySelectorAll('.narrative-evidence-jump[aria-pressed="true"]')
+            .forEach(button => button.setAttribute('aria-pressed', 'false'));
+        evidenceItem.querySelectorAll('.evidence-literature-record.is-narrative-evidence-target')
+            .forEach(record => record.classList.remove('is-narrative-evidence-target'));
+    }
+    trigger.setAttribute('aria-pressed', 'true');
+    targets.forEach(record => record.classList.add('is-narrative-evidence-target'));
+
+    const primaryTarget = targets[0];
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    primaryTarget.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest'
+    });
+    window.setTimeout(() => {
+        try {
+            primaryTarget.focus({ preventScroll: true });
+        } catch (_error) {
+            primaryTarget.focus();
+        }
+    }, reduceMotion ? 0 : 350);
 };
 
 
@@ -4637,7 +6132,7 @@ function renderDatabaseReasoningAudit(results) {
                     onclick="switchReasoningCategory(this)">
                     <strong>${escapeHtml(entry.category || 'Other')}</strong>
                     <span>${escapeHtml(categoryNames[entry.category] || entry.category || 'Other')}</span>
-                    <small>Structured reasoning record</small>
+                    <small>Method record</small>
                 </button>`;
         }).join('');
 
@@ -4664,9 +6159,9 @@ function renderDatabaseReasoningAudit(results) {
         <div class="reasoning-browser">
             <div class="reasoning-browser-toolbar">
                 <div>
-                    <span class="section-eyebrow">Prompt pass</span>
-                    <h3>Supporting reasoning on demand</h3>
-                    <p>Open a database record only when its hypothesis-generation strategy or validation feedback is useful.</p>
+                    <span class="section-eyebrow">Method records</span>
+                    <h3>Database reasoning</h3>
+                    <p>Review hypothesis-generation rationale and validation feedback by database.</p>
                 </div>
                 <div class="reasoning-pass-tabs" role="tablist" aria-label="Prompt passes">
                     ${passTabs}
@@ -4794,14 +6289,14 @@ function renderPathwayTable(pathways) {
             </table>
             
             <div class="pathway-slider-controls">
-                <button class="slider-btn prev-btn">◀ Previous</button>
+                <button class="slider-btn prev-btn"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-left"></use></svg> Previous</button>
                 <input type="range" 
                        class="pathway-slider" 
                        min="1" 
                        max="${pathways.length}" 
                        value="1" 
                        step="1">
-                <button class="slider-btn next-btn">Next ▶</button>
+                <button class="slider-btn next-btn">Next <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-right"></use></svg></button>
             </div>
         </div>
     `;
@@ -5012,21 +6507,21 @@ function renderTop10PathwaysResults(data) {
                 <h1 class="results-hero-title">
                     ${escapeHtml(disease)}<span class="hero-x">×</span>Pathway Analysis
                 </h1>
-                <span class="gene-count-badge">📊 ${geneCount} genes analyzed</span>
+                <span class="gene-count-badge"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-chart-bar"></use></svg> ${geneCount} genes analyzed</span>
             </div>
             <div class="overall-status ${overallStrength}">
-                ✓ ${capitalizeFirst(overallStrength)} Evidence
+                <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-check"></use></svg> ${capitalizeFirst(overallStrength)} Evidence
             </div>
         </div>
         
         <!-- Model Tabs -->
         <div class="model-tabs">
             <div class="model-tab active">
-                <span class="model-tab-icon">🧬</span>
-                <span>GPT Analysis</span>
+                <span class="model-tab-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-dna"></use></svg></span>
+                <span>Interpretation</span>
             </div>
             <div class="model-tab">
-                <span class="model-tab-icon">📈</span>
+                <span class="model-tab-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-chart-line"></use></svg></span>
                 <span>Enrichment</span>
             </div>
         </div>
@@ -5035,7 +6530,7 @@ function renderTop10PathwaysResults(data) {
         ${renderScoreCards(top10, avgScore, topPvalue, strongCount)}
         
         <!-- Top 10 Pathways Table -->
-        <h3 style="margin-bottom: 16px; font-size: 1.1rem;">📋 Top 10 Ranked Pathways</h3>
+        <h3 style="margin-bottom: 16px; font-size: 1.1rem;"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-clipboard-text"></use></svg> Top 10 Ranked Pathways</h3>
         ${renderBrowseTable(top10)}
         
         <!-- Evidence Sections by Category -->
@@ -5141,19 +6636,19 @@ function renderEvidenceByCategory(pathways) {
     });
 
     let html = '<div style="margin-top: 32px;">';
-    html += '<h3 style="margin-bottom: 16px; font-size: 1.1rem;">📚 Evidence by Category</h3>';
+    html += '<h3 style="margin-bottom: 16px; font-size: 1.1rem;"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-books"></use></svg> Evidence by Category</h3>';
 
     const categoryIcons = {
-        'GO:BP': '🧬',
-        'GO:MF': '⚙️',
-        'GO:CC': '🏠',
-        'KEGG': '🔬',
-        'REAC': '🔄',
-        'Other': '📁'
+        'GO:BP': phIcon('dna'),
+        'GO:MF': phIcon('gear'),
+        'GO:CC': phIcon('house'),
+        'KEGG': phIcon('microscope'),
+        'REAC': phIcon('arrows-clockwise'),
+        'Other': phIcon('folder')
     };
 
     for (const [cat, pws] of Object.entries(categories)) {
-        const icon = categoryIcons[cat] || '📁';
+        const icon = categoryIcons[cat] || phIcon('folder');
         const sectionId = `evidence-${cat.replace(/[^a-zA-Z0-9]/g, '-')}-${Date.now()}`;
 
         html += `
@@ -5163,7 +6658,7 @@ function renderEvidenceByCategory(pathways) {
                         <div class="evidence-icon">${icon}</div>
                         <span class="evidence-title">${cat} (${pws.length} pathways)</span>
                     </div>
-                    <span class="evidence-toggle">▼</span>
+                    <span class="evidence-toggle"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>
                 </div>
                 <div class="evidence-content">
                     <div class="evidence-body">
@@ -5250,7 +6745,7 @@ function renderIntegrationSummary(data, topPathways) {
     return `
         <div class="integration-summary">
             <div class="integration-summary-header">
-                <span class="integration-summary-icon">🔗</span>
+                <span class="integration-summary-icon"><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-link-simple"></use></svg></span>
                 <span class="integration-summary-title">Integration Summary</span>
             </div>
             <div class="integration-summary-content">
@@ -5323,6 +6818,143 @@ function closeExportDropdown() {
     }
 }
 
+function updateRetryNarrativesButton(pathways) {
+    const button = elements.retryNarrativesBtn;
+    if (!button) return;
+    const unresolved = (pathways || []).filter(pathway =>
+        pathway?.pathway_narrative?.generated !== true
+    ).length;
+    button.classList.toggle('hidden', unresolved === 0);
+    button.disabled = false;
+    button.innerHTML = '<span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrows-clockwise"></use></svg> Regenerate narratives</span>';
+    button.title = unresolved
+        ? `${unresolved} pathway narrative${unresolved === 1 ? '' : 's'} require regeneration.`
+        : 'Every pathway narrative passed validation.';
+}
+
+async function retryFallbackNarratives() {
+    if (!state.sessionId) return;
+    const button = elements.retryNarrativesBtn;
+    const originalHtml = button?.innerHTML;
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<span><svg class="ph ph-spin" aria-hidden="true" focusable="false"><use href="#ph-circle-notch"></use></svg> Starting…</span>';
+    }
+    try {
+        const response = await fetch(`/api/retry-narratives/${state.sessionId}`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' }
+        });
+        const payload = await response.json();
+        if (!response.ok || payload.error) {
+            throw new Error(payload.error || `Narrative regeneration failed (${response.status})`);
+        }
+        if (payload.quota) updateQuotaStatus(payload.quota);
+        state.sessionId = payload.session_id;
+        state.isAnalyzing = true;
+        state.analysisStartedAt = Date.now();
+        document.body.classList.add('analysis-running-view');
+        elements.resultsSection?.classList.add('hidden');
+        elements.heroSection?.classList.add('hidden');
+        elements.inputSection?.classList.add('hidden');
+        elements.chatSection?.classList.remove('hidden');
+        setActiveWorkflowStep('interpret');
+        updateAnalysisProgress({
+            percent: 1,
+            stage: 'Queued',
+            detail: 'Narrative regeneration was accepted.',
+            state: 'queued',
+            elapsed_seconds: 0,
+        });
+        showTyping(true);
+        startPolling();
+    } catch (error) {
+        console.error('Narrative regeneration failed:', error);
+        alert('Narrative regeneration failed: ' + error.message);
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = originalHtml;
+        }
+    }
+}
+
+function getPdfExportLimit() {
+    const value = document.getElementById('pdf-export-limit')?.value || 'all';
+    return value === 'all' ? Infinity : Number(value) || Infinity;
+}
+
+function getPdfExportLimitQuery() {
+    const limit = getPdfExportLimit();
+    return Number.isFinite(limit) ? String(limit) : 'all';
+}
+
+function prepareLocalPdf(format) {
+    const resultsSection = elements.resultsSection || document.getElementById('results-section');
+    const previousDetailed = resultsSection?.classList.contains('report-view--detailed');
+    const previousDisplayLimit = pathwayDisplayLimit;
+    const previousOpenItems = new Set(
+        [...document.querySelectorAll('details.evidence-item[open]')]
+            .map(item => `${item.dataset.category || ''}::${item.dataset.rank || ''}`)
+    );
+    const previousTitle = document.title;
+    const targetView = format === 'pdf' ? 'detailed' : 'summary';
+    const exportLimit = getPdfExportLimit();
+    pathwayDisplayLimit = exportLimit;
+    if (currentResults?.pathways) renderEvidenceSectionsView(currentResults.pathways);
+    document.querySelectorAll('details.evidence-item').forEach(item => {
+        item.open = true;
+    });
+    document.querySelectorAll('.summary-ranked-table tbody tr').forEach(row => {
+        const rank = Number(row.dataset.exportRank) || Infinity;
+        row.classList.toggle('pdf-export-excluded', Number.isFinite(exportLimit) && rank > exportLimit);
+    });
+    setReportView(targetView);
+    closeExportDropdown();
+    document.body.classList.add('local-pdf-print');
+    document.title = format === 'pdf'
+        ? 'GenePathwayAI_detailed_report'
+        : 'GenePathwayAI_takeaway_summary';
+
+    let restored = false;
+    const restore = () => {
+        if (restored) return;
+        restored = true;
+        document.body.classList.remove('local-pdf-print');
+        document.title = previousTitle;
+        document.querySelectorAll('.summary-ranked-table tbody tr').forEach(row => {
+            row.classList.remove('pdf-export-excluded');
+        });
+        pathwayDisplayLimit = previousDisplayLimit;
+        if (currentResults?.pathways) renderEvidenceSectionsView(currentResults.pathways);
+        document.querySelectorAll('details.evidence-item').forEach(item => {
+            const key = `${item.dataset.category || ''}::${item.dataset.rank || ''}`;
+            item.open = previousOpenItems.has(key);
+        });
+        setReportView(previousDetailed ? 'detailed' : 'summary');
+    };
+    return restore;
+}
+
+// Exposed for deterministic browser regression checks; invoking it prepares
+// the print DOM and returns a restore callback without opening a print dialog.
+window.prepareLocalPdfExport = prepareLocalPdf;
+
+function printLocalPdf(format) {
+    if (typeof window.print !== 'function') {
+        throw new Error('This browser does not provide a print-to-PDF function.');
+    }
+    const restore = prepareLocalPdf(format);
+    window.addEventListener('afterprint', restore, { once: true });
+    // The animation frame lets the requested Summary/Detailed layout settle
+    // before the native dialog captures the document.
+    requestAnimationFrame(() => window.setTimeout(() => {
+        window.print();
+        // Safari versions that omit afterprint still return from this call.
+        window.setTimeout(restore, 250);
+    }, 50));
+}
+
 async function exportData(format) {
     if (!state.sessionId) return;
 
@@ -5334,12 +6966,28 @@ async function exportData(format) {
     }
 
     try {
-        const response = await fetch(`/api/export/${state.sessionId}/${format}`, {
+        const isPdf = format === 'pdf' || format === 'pdf-summary';
+        if (isPdf && window.location.protocol === 'file:') {
+            printLocalPdf(format);
+            return;
+        }
+        if (format === 'csv' || format === 'json') {
+            const link = document.createElement('a');
+            link.href = `/api/export/${encodeURIComponent(state.sessionId)}/${format}?download=1`;
+            link.download = '';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
+
+        const exportUrl = `/api/export/${state.sessionId}/${format}${isPdf ? `?limit=${encodeURIComponent(getPdfExportLimitQuery())}` : ''}`;
+        const response = await fetch(exportUrl, {
             credentials: 'same-origin',
-            headers: format === 'pdf' ? { Accept: 'application/pdf' } : undefined
+            headers: isPdf ? { Accept: 'application/pdf' } : undefined
         });
 
-        if (format === 'pdf') {
+        if (isPdf) {
             const contentType = (response.headers.get('Content-Type') || '').toLowerCase();
             if (!response.ok || !contentType.includes('application/pdf')) {
                 let message = `Export failed (${response.status})`;
@@ -5364,19 +7012,12 @@ async function exportData(format) {
             }
             const disposition = response.headers.get('Content-Disposition') || '';
             const filenameMatch = disposition.match(/filename="?([^";]+)"?/i);
-            const filename = filenameMatch?.[1] || 'GenePathwayAI_full_report.pdf';
+            const filename = filenameMatch?.[1] || (format === 'pdf-summary'
+                ? 'GenePathwayAI_takeaway_summary.pdf'
+                : 'GenePathwayAI_detailed_report.pdf');
             downloadExportBlob(blob, filename);
             return;
         }
-
-        const result = await response.json();
-
-        if (result.error) {
-            throw new Error(result.error);
-        }
-
-        const blob = new Blob([result.data], { type: result.mime });
-        downloadExportBlob(blob, result.filename);
 
     } catch (error) {
         console.error('Export failed:', error);
@@ -5384,7 +7025,8 @@ async function exportData(format) {
     } finally {
         if (btn) {
             const titles = {
-                'pdf': 'Full Report (.pdf)',
+                'pdf-summary': 'Take-away Summary (.pdf)',
+                'pdf': 'Detailed Report (.pdf)',
                 'csv': 'Pathway Table (.csv)',
                 'json': 'Raw Data (.json)'
             };
@@ -5412,6 +7054,8 @@ function downloadExportBlob(blob, filename) {
 let historyData = [];
 
 function showHistoryPanel() {
+    document.body.classList.remove('analysis-running-view');
+    hideProductTour({ remember: false });
     document.getElementById('hero-section').classList.add('hidden');
     document.getElementById('hero-section').style.display = 'none';
     const resultsSection = document.getElementById('results-section');
@@ -5440,6 +7084,7 @@ function showHistoryPanel() {
 }
 
 function showAnalysisView() {
+    document.body.classList.remove('analysis-running-view');
     document.getElementById('history-section').style.display = 'none';
     document.getElementById('docs-section').style.display = 'none';
 
@@ -5451,13 +7096,15 @@ function showAnalysisView() {
         inputSection.classList.remove('hidden');
     }
     const chatSection = document.getElementById('chat-section');
-    if (chatSection) chatSection.classList.remove('hidden');
+    if (chatSection) chatSection.classList.add('hidden');
     const resultsSection = document.getElementById('results-section');
     if (resultsSection) resultsSection.classList.add('hidden');
 
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     const analysisLink = document.querySelector('.nav-link[data-view="analysis"]');
     if (analysisLink) analysisLink.classList.add('active');
+    setActiveWorkflowStep('input');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 async function loadHistory() {
@@ -5504,7 +7151,7 @@ function renderHistoryTable(entries) {
             <tr>
                 <td>
                     <span class="session-id-cell" title="${entry.session_id}" onclick="copySessionId('${entry.session_id}')">
-                        ${shortId} <span class="copy-icon">&#x2398;</span>
+                        ${shortId} <span class="copy-icon"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-copy"></use></svg></span>
                     </span>
                 </td>
                 <td><strong>${escapeHtml(entry.disease_name || entry.disease || 'Unknown')}</strong></td>
@@ -5661,6 +7308,8 @@ function getDocumentationHashId() {
 }
 
 function showDocsPanel(requestedDocId = '') {
+    document.body.classList.remove('analysis-running-view');
+    hideProductTour({ remember: false });
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector('.nav-link[data-view="docs"]').classList.add('active');
 
@@ -5720,7 +7369,9 @@ function renderDocumentationPager(page, docId) {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'doc-pager-button';
-        button.innerHTML = `<small>${direction === 'previous' ? '← Previous' : 'Next →'}</small><strong>${escapeHtml(item.title)}</strong>`;
+        button.innerHTML = `<small>${direction === 'previous'
+            ? `${phIcon('arrow-left', 'ph-xs')} Previous`
+            : `Next ${phIcon('arrow-right', 'ph-xs')}`}</small><strong>${escapeHtml(item.title)}</strong>`;
         button.addEventListener('click', () => switchDoc(item.id));
         pager.appendChild(button);
     };

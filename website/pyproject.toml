@@ -15,4 +15,5 @@ dependencies = [
     "pandas>=3.0.0",
     "requests>=2.32,<3",
     "reportlab>=4.4,<5",
+    "whitenoise>=6.12,<7",
 ]

@@ -32,7 +32,7 @@ DEMO_INTERPRETATION_POINTS = {
     "GO:0150076": [
         ("Biological context", "Neuroinflammatory responses coordinate innate immune signaling, protease activity and tissue remodeling in injured neural tissue."),
         ("Gene-level support", "GRN contributes to lysosomal and myeloid-cell homeostasis, while MMP9, MMP8, CTSC and AZU1 connect the input module to extracellular remodeling and innate immune effector activity."),
-        ("Disease relevance", "In Alzheimer's disease, persistent microglial and astrocytic inflammatory signaling can amplify synaptic injury around amyloid and tau pathology; the attached literature places this pathway in that disease context."),
+        ("Disease relevance", "In Alzheimer's disease, persistent microglial and astrocytic inflammatory signaling can amplify synaptic injury around amyloid and tau pathology. The GRN-centered lysosomal signal together with MMP8, MMP9, CTSC and AZU1 protease activity supports a neuroimmune-remodeling interpretation of this gene module."),
     ],
     "GO:0001774": [
         ("Biological context", "Microglial activation describes the transition of resident brain macrophages from homeostatic surveillance toward phagocytic, inflammatory or repair-associated states."),
@@ -77,17 +77,17 @@ DEMO_INTERPRETATION_POINTS = {
     "KEGG:04142": [
         ("Biological context", "The KEGG lysosome pathway organizes acid hydrolases and lipid, glycan and protein degradation reactions required for cellular recycling."),
         ("Gene-level support", "AGA, HEXB, CTSA, ARSA, multiple cathepsins, ASAH1, NPC2, GNS, GUSB, GLB1, FUCA1, GM2A and NEU1 form a coherent lysosomal enzyme module."),
-        ("Disease relevance", "A coordinated lysosomal program is relevant to amyloid/tau clearance, mitophagy and microglial handling of extracellular material in Alzheimer's disease."),
+        ("Disease relevance", "The overlap spans glycan degradation, lipid handling and lysosomal proteolysis, supporting a coordinated degradative program rather than an isolated enzyme signal. In Alzheimer's disease, this map-level pattern is relevant to amyloid/tau clearance, mitophagy and microglial processing of extracellular material."),
     ],
     "KEGG:04210": [
         ("Biological context", "The apoptosis pathway integrates stress signaling with protease activation and regulated dismantling of damaged cells."),
         ("Gene-level support", "MAPK1 provides a stress-signaling node, while CTSZ, CTSH, CTSC, CTSD and CTSS connect lysosomal protease activity to cell-death regulation; SPTAN1 is a cytoskeletal substrate of proteolytic injury."),
-        ("Disease relevance", "Apoptotic and apoptosis-adjacent mechanisms are implicated in neuronal loss during Alzheimer's disease, but enrichment of this pathway does not establish that apoptosis is the only or dominant death program in the tissue."),
+        ("Disease relevance", "The combined MAPK1 stress-signaling, cathepsin and SPTAN1 pattern links cellular stress to proteolytic and cytoskeletal injury within the apoptosis map. This supports an apoptosis-associated contribution to neuronal vulnerability in Alzheimer's disease without implying that apoptosis is the only death program in the tissue."),
     ],
     "REAC:R-HSA-168249": [
         ("Biological context", "Reactome's Innate Immune System pathway covers pattern recognition, inflammatory signaling, antimicrobial effectors, phagocyte activation and immune-linked cell death."),
         ("Gene-level support", "The broad intersection includes TOLLIP, LYZ, MPO, PYCARD, GSDMD, PTPN6, PTX3, CHI3L1 and multiple proteases, forming a dense innate-immune and myeloid-effector signature."),
-        ("Disease relevance", "Innate immune signaling is central to microglial responses in Alzheimer's disease and can influence plaque handling, inflammatory injury and metabolic adaptation; the breadth of this parent pathway warrants follow-up at more specific child pathways."),
+        ("Disease relevance", "Pattern-recognition, inflammasome-linked and phagocyte-effector clusters together place this module within microglial innate-immune remodeling in Alzheimer's disease, with implications for plaque handling and inflammatory injury. Because this Reactome entry is a broad parent event, its child pathways provide the appropriate level for resolving the specific reaction mechanism."),
     ],
     "GO:0006979": [
         ("Biological context", "The oxidative-stress response balances oxidant production, antioxidant defense, redox metabolism and repair of oxidatively damaged molecules."),
@@ -110,6 +110,176 @@ DEMO_INTERPRETATION_POINTS = {
         ("Disease relevance", "The signal may capture a peripheral acute-phase component relevant to systemic inflammation in Alzheimer's disease; it should not be interpreted as proof that the enriched genes originate from resident brain cells."),
     ],
 }
+
+
+# Structured extracts used by the result page to keep the long interpretation
+# readable.  Every symbol is filtered against the audited query-term
+# intersection before it is written to the demo, so this table cannot make a
+# non-intersection protein look like part of the result.
+DEMO_NARRATIVE_ANNOTATIONS = {
+    "GO:0150076": {
+        "drivers": ["GRN", "MMP9"],
+        "clusters": [
+            ("Lysosomal and myeloid homeostasis", ["GRN", "CTSC", "AZU1"]),
+            ("Protease and matrix remodeling", ["MMP8", "MMP9"]),
+        ],
+    },
+    "GO:0001774": {
+        "drivers": ["GRN", "CTSC"],
+        "clusters": [
+            ("Lysosomal remodeling", ["GRN", "CTSC"]),
+            ("Myeloid effector activity", ["MMP8", "AZU1"]),
+        ],
+    },
+    "GO:0006954": {
+        "drivers": ["PYCARD", "GSDMD", "MMP9"],
+        "clusters": [
+            ("Inflammasome-linked signaling", ["PYCARD", "GSDMD"]),
+            ("Innate recognition", ["PGLYRP1", "TOLLIP", "LYZ"]),
+            ("Tissue remodeling", ["MMP8", "MMP9", "PTX3"]),
+            ("Acute-phase response", ["ORM1", "ORM2", "HP"]),
+        ],
+    },
+    "GO:0061900": {
+        "drivers": ["GRN", "CTSC"],
+        "clusters": [
+            ("Glial lysosomal homeostasis", ["GRN", "CTSC"]),
+            ("Reactive effector activity", ["MMP8", "AZU1"]),
+        ],
+    },
+    "GO:0005515": {
+        "drivers": ["MAPK1", "PYCARD", "VCP"],
+        "clusters": [
+            ("Inflammatory signaling", ["MAPK1", "PYCARD", "GSDMD", "TOLLIP"]),
+            ("Protein quality control", ["VCP", "CCT2", "CCT8", "ERP44", "TXNDC5"]),
+            ("Lysosomal proteolysis", ["CTSD", "CTSS", "CTSC", "CTSH", "CTSZ"]),
+        ],
+    },
+    "GO:0005509": {
+        "drivers": ["ANXA2", "SPTAN1", "CRACR2A"],
+        "clusters": [
+            ("Membrane and cytoskeleton", ["ANXA2", "SPTAN1", "THBS1"]),
+            ("Calcium-responsive signaling", ["CRACR2A", "GCA", "S100A7"]),
+        ],
+    },
+    "GO:0005764": {
+        "drivers": ["GRN", "NPC2"],
+        "clusters": [
+            ("Acid hydrolases", ["AGA", "HEXB", "GLA", "GNS", "GUSB", "GLB1"]),
+            ("Cathepsin proteases", ["CTSA", "CTSG", "CTSZ", "CTSH", "CTSC", "CTSD", "CTSS"]),
+            ("Lipid handling", ["ASAH1", "NPC2", "GM2A"]),
+        ],
+    },
+    "GO:0005783": {
+        "drivers": ["VCP", "ERP44", "TXNDC5"],
+        "clusters": [
+            ("Oxidative protein folding", ["ERP44", "TXNDC5"]),
+            ("ER-associated quality control", ["VCP", "FAF2"]),
+            ("Stress signaling", ["MAPK1", "PRKCD", "PYCARD"]),
+        ],
+    },
+    "GO:0005788": {
+        "drivers": ["ERP44", "TXNDC5"],
+        "clusters": [
+            ("Luminal protein folding", ["ERP44", "TXNDC5"]),
+            ("Lysosomal-enzyme transit", ["ARSA", "ARSB", "CTSZ", "CTSC"]),
+        ],
+    },
+    "KEGG:04142": {
+        "drivers": ["NPC2", "HEXB", "ASAH1"],
+        "clusters": [
+            ("Glycan degradation", ["AGA", "HEXB", "GNS", "GUSB", "GLB1", "FUCA1", "NEU1"]),
+            ("Lipid degradation and transport", ["ASAH1", "NPC2", "GM2A"]),
+            ("Proteolysis", ["CTSA", "CTSG", "CTSZ", "CTSH", "CTSC", "CTSD", "CTSS"]),
+        ],
+    },
+    "KEGG:04210": {
+        "drivers": ["MAPK1", "CTSD", "SPTAN1"],
+        "clusters": [
+            ("Stress signaling", ["MAPK1"]),
+            ("Lysosomal proteases", ["CTSZ", "CTSH", "CTSC", "CTSD", "CTSS"]),
+            ("Cytoskeletal injury", ["SPTAN1"]),
+        ],
+    },
+    "REAC:R-HSA-168249": {
+        "drivers": ["TOLLIP", "PYCARD", "GSDMD"],
+        "clusters": [
+            ("Pattern recognition", ["PGLYRP1", "TOLLIP", "LYZ"]),
+            ("Inflammatory cell death", ["PYCARD", "GSDMD"]),
+            ("Phagocyte effectors", ["MPO", "LTF", "CTSG", "ELANE"]),
+            ("Tissue remodeling", ["MMP8", "MMP9", "PTX3"]),
+        ],
+    },
+    "GO:0006979": {
+        "drivers": ["PRDX6", "MPO", "IDH1"],
+        "clusters": [
+            ("Oxidant generation", ["MPO", "PRKCD"]),
+            ("Antioxidant defense", ["PRDX6", "HP"]),
+            ("Redox metabolism", ["IDH1", "NAPRT"]),
+        ],
+    },
+    "GO:0043065": {
+        "drivers": ["PYCARD", "PRKCD", "CTSD"],
+        "clusters": [
+            ("Inflammatory death signaling", ["PYCARD", "PRKCD"]),
+            ("Lysosomal proteases", ["CTSH", "CTSC", "CTSD"]),
+            ("Injury remodeling", ["GRN", "MMP9", "THBS1"]),
+        ],
+    },
+    "GO:0006457": {
+        "drivers": ["ERP44", "CCT2", "TXNDC5"],
+        "clusters": [
+            ("Cytosolic chaperonin", ["CCT2", "CCT8"]),
+            ("Secretory-pathway folding", ["ERP44", "TXNDC5"]),
+            ("Proteostasis support", ["GRN", "B2M"]),
+        ],
+    },
+    "GO:0002526": {
+        "drivers": ["ELANE", "ORM1", "HP"],
+        "clusters": [
+            ("Neutrophil protease activity", ["ELANE"]),
+            ("Circulating acute-phase response", ["ORM1", "ORM2", "HP"]),
+        ],
+    },
+}
+
+
+def build_demo_pathway_narrative(disease_name, profile_row, symbols, interpretation_points):
+    """Create the audited offline narrative without an additional model call."""
+    pathway_id = str(profile_row.get("native") or "")
+    pathway_name = str(profile_row.get("name") or "this pathway")
+    opening = (
+        f"{len(symbols)} submitted {disease_name}-associated proteins were significantly enriched "
+        f"in {pathway_name}{f' ({pathway_id})' if pathway_id else ''}."
+    )
+    paragraphs = [opening]
+    paragraphs.extend(
+        str(point.get("text") or "").strip()
+        for point in interpretation_points
+        if str(point.get("text") or "").strip()
+    )
+
+    allowed = {str(symbol).upper(): str(symbol) for symbol in symbols}
+    annotation = DEMO_NARRATIVE_ANNOTATIONS.get(pathway_id, {})
+    drivers = [
+        allowed[gene.upper()]
+        for gene in annotation.get("drivers", [])
+        if gene.upper() in allowed
+    ]
+    clusters = []
+    for label, members in annotation.get("clusters", []):
+        genes = [allowed[gene.upper()] for gene in members if gene.upper() in allowed]
+        if genes:
+            clusters.append({"label": label, "genes": genes})
+
+    return {
+        "paragraphs": paragraphs,
+        "driver_genes": drivers,
+        "clusters": clusters,
+        "discussed_genes": list(dict.fromkeys(drivers + [g for c in clusters for g in c["genes"]])),
+        "generated": False,
+        "provenance": "audited archived interpretation",
+    }
 
 
 def load_pathway_cell_context(path=PATHWAY_CONTEXT_PATH):
@@ -472,6 +642,12 @@ def reconcile_pathways(result, entry, snapshot):
                 "description": grounded_interpretation,
                 "enrichment_source": "g:Profiler replay snapshot",
             }
+        )
+        pathway["pathway_narrative"] = build_demo_pathway_narrative(
+            entry.get("disease_name") or entry.get("disease") or "historical",
+            profile_row,
+            intersection_symbols,
+            interpretation_points,
         )
 
     meta = snapshot.get("gprofiler_meta", {})

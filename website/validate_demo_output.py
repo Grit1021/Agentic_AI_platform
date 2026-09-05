@@ -10,15 +10,17 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parent
 SNAPSHOT_PATH = PROJECT_DIR / "demo_sources" / "gprofiler_profile.json"
-DEMO_PATH = PROJECT_DIR / "web_app" / "offline_demo_data.js"
+DEMO_PATH = PROJECT_DIR / "web_app" / "offline_demo_data.json"
 DEMO_PREFIX = "window.OFFLINE_DEMO_RESULT="
 
 
 def read_demo(path=DEMO_PATH):
     source = path.read_text(encoding="utf-8").strip()
-    if not source.startswith(DEMO_PREFIX) or not source.endswith(";"):
-        raise AssertionError("offline_demo_data.js is not a valid bundled result assignment.")
-    return json.loads(source[len(DEMO_PREFIX) : -1])
+    if path.suffix == ".json":
+        return json.loads(source)
+    if source.startswith(DEMO_PREFIX) and source.endswith(";"):
+        return json.loads(source[len(DEMO_PREFIX) : -1])
+    raise AssertionError(f"{path.name} is not a valid bundled result.")
 
 
 def main():

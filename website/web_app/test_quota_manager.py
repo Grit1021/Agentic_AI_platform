@@ -33,6 +33,33 @@ class QuotaManagerMemoryTests(unittest.TestCase):
             manager.reserve("user-c")
         self.assertEqual(raised.exception.scope, "global")
 
+    def test_per_user_override_is_enforced_and_can_be_reset(self):
+        manager = self.build_manager(user_limit=3, global_limit=20)
+        manager.set_user_limit("reader@example.com", 1)
+        status = manager.reserve("owner-reader", "reader@example.com")
+        self.assertEqual(status["user_limit"], 1)
+        self.assertEqual(status["user_limit_source"], "override")
+        with self.assertRaises(QuotaExceeded):
+            manager.reserve("owner-reader", "reader@example.com")
+
+        manager.set_user_limit("reader@example.com", None)
+        reset_status = manager.status("owner-reader", "reader@example.com")
+        self.assertEqual(reset_status["user_limit"], 3)
+        self.assertEqual(reset_status["user_limit_source"], "default")
+
+    def test_admin_snapshot_does_not_expose_owner_ids(self):
+        manager = self.build_manager(user_limit=3, global_limit=20)
+        manager.register_user("cognito-subject", "reader@example.com")
+        manager.reserve("cognito-subject", "reader@example.com")
+        snapshot = manager.admin_snapshot(["reader@example.com", "new@example.com"])
+
+        self.assertEqual(snapshot["global_used"], 1)
+        self.assertEqual(snapshot["users"][0]["email"], "new@example.com")
+        reader = next(user for user in snapshot["users"] if user["email"] == "reader@example.com")
+        self.assertTrue(reader["registered"])
+        self.assertEqual(reader["used"], 1)
+        self.assertNotIn("owner_id", reader)
+
 
 if __name__ == "__main__":
     unittest.main()

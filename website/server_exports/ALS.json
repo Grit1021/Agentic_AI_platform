@@ -1,0 +1,1897 @@
+{
+  "metadata": {
+    "disease": "amyotrophic lateral sclerosis",
+    "gene_count": 105,
+    "genes": [
+      "AQP1",
+      "ARID5A",
+      "CARD10",
+      "CATSPER1",
+      "CNNM3",
+      "COL8A1",
+      "CYSRT1",
+      "EFEMP1",
+      "EFEMP2",
+      "FRS3",
+      "GLRX3",
+      "HOXA1",
+      "HOXC8",
+      "ISM2",
+      "KLHL38",
+      "KPRP",
+      "KRT1",
+      "KRT10",
+      "KRT13",
+      "KRT14",
+      "KRT15",
+      "KRT16",
+      "KRT18",
+      "KRT19",
+      "KRT20",
+      "KRT27",
+      "KRT33B",
+      "KRT35",
+      "KRT36",
+      "KRT38",
+      "KRT5",
+      "KRT6A",
+      "KRT6B",
+      "KRT75",
+      "KRT76",
+      "KRT8",
+      "KRT82",
+      "KRT83",
+      "KRT85",
+      "KRT86",
+      "KRT9",
+      "KRTAP1-1",
+      "KRTAP10-5",
+      "KRTAP10-7",
+      "KRTAP10-8",
+      "KRTAP10-9",
+      "KRTAP11-1",
+      "KRTAP12-2",
+      "KRTAP12-3",
+      "KRTAP12-4",
+      "KRTAP13-2",
+      "KRTAP19-5",
+      "KRTAP2-3",
+      "KRTAP26-1",
+      "KRTAP4-12",
+      "KRTAP4-2",
+      "KRTAP5-9",
+      "KRTAP6-1",
+      "KRTAP6-2",
+      "KRTAP8-1",
+      "KRTAP9-2",
+      "KRTAP9-3",
+      "LCE1A",
+      "LCE1B",
+      "LCE1C",
+      "LCE1E",
+      "LCE1F",
+      "LCE2C",
+      "LCE2D",
+      "LCE3A",
+      "LCE3E",
+      "LCE4A",
+      "LCE5A",
+      "LINC01600",
+      "MAG",
+      "MDFI",
+      "MEOX2",
+      "MOBP",
+      "MOG",
+      "MUC4",
+      "NOTCH2NLA",
+      "OPALIN",
+      "OTX1",
+      "PLA2G10",
+      "PLSCR1",
+      "PLSCR4",
+      "POU4F2",
+      "PPL",
+      "PRKAB2",
+      "SMCP",
+      "SPRY1",
+      "SPRY2",
+      "STK16",
+      "SUSD2",
+      "TGM1",
+      "TNS2",
+      "TRIM42",
+      "TYRO3",
+      "VASN",
+      "VENTX",
+      "YIPF3",
+      "ZIC1",
+      "ZNF417",
+      "ZNF581",
+      "ZNF587"
+    ],
+    "analysis_date": "2026-08-22T14:37:49.721394",
+    "model": "gpt-5.1",
+    "mode": "Real Pipeline"
+  },
+  "pathways": [
+    {
+      "name": "skin epidermis development",
+      "pathway_id": "GO:0098773",
+      "native": "GO:0098773",
+      "p_value": 0.012515997660773692,
+      "category": "GO:BP",
+      "genes": "CYSRT1,KRT1,KRT16,KRT27,PLA2G10",
+      "intersection_genes": [
+        "CYSRT1",
+        "KRT1",
+        "KRT16",
+        "KRT27",
+        "PLA2G10"
+      ],
+      "intersection_size": 5,
+      "term_size": 136,
+      "query_size": 84,
+      "pathway_description": "The process whose specific outcome is the progression of the skin epidermis over time, from its formation to the mature structure. [GOC:dos]",
+      "cell_context": "Not resolved from the supplied pathway-level evidence.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Altered skin epidermis development in ALS may reflect systemic changes in barrier integrity, immune signaling, or peripheral sensory structures that secondarily influence motor neuron vulnerability or disease biomarkers rather than a primary driver of neurodegeneration. The involvement of keratins and PLA2G10 suggests that epidermal remodeling, inflammation, and lipid signaling could mirror or modulate peripheral neuropathic processes observed in ALS. \nIntersection-gene interpretation: KRT1, KRT16, and KRT27 indicate changes in keratin-based structural organization and stress-responsive keratin expression in the epidermis, while CYSRT1 and PLA2G10 point to redox and phospholipase-mediated lipid remodeling that can influence barrier function and inflammatory tone. Together, these genes suggest that ALS-associated signatures in this pathway may capture altered epidermal differentiation, mechanical resilience, and inflammatory signaling at the skin surface. \nPubMed literature synthesis: The review on small fiber neuropathy in unexpected clinical settings supports a link between cutaneous structural/immune changes and peripheral nerve dysfunction, consistent with skin-level alterations accompanying ALS-related neuropathy. The 3D artificial skin model study indicates that epidermal systems can report pyroptosis-cascade activation in ALS, positioning skin epidermis development pathways as accessible readouts of systemic inflammatory and cell-death mechanisms relevant to the disease. \nCell/tissue context: The evidence supports involvement of the skin epidermis and its keratinocyte layers, with additional relevance to cutaneous small sensory fibers embedded in the skin. [PMID:23965408] [PMID:31943276] [PMID:41789732]",
+      "description": "Disease pathology and relevance: Altered skin epidermis development in ALS may reflect systemic changes in barrier integrity, immune signaling, or peripheral sensory structures that secondarily influence motor neuron vulnerability or disease biomarkers rather than a primary driver of neurodegeneration. The involvement of keratins and PLA2G10 suggests that epidermal remodeling, inflammation, and lipid signaling could mirror or modulate peripheral neuropathic processes observed in ALS. \nIntersection-gene interpretation: KRT1, KRT16, and KRT27 indicate changes in keratin-based structural organization and stress-responsive keratin expression in the epidermis, while CYSRT1 and PLA2G10 point to redox and phospholipase-mediated lipid remodeling that can influence barrier function and inflammatory tone. Together, these genes suggest that ALS-associated signatures in this pathway may capture altered epidermal differentiation, mechanical resilience, and inflammatory signaling at the skin surface. \nPubMed literature synthesis: The review on small fiber neuropathy in unexpected clinical settings supports a link between cutaneous structural/immune changes and peripheral nerve dysfunction, consistent with skin-level alterations accompanying ALS-related neuropathy. The 3D artificial skin model study indicates that epidermal systems can report pyroptosis-cascade activation in ALS, positioning skin epidermis development pathways as accessible readouts of systemic inflammatory and cell-death mechanisms relevant to the disease. \nCell/tissue context: The evidence supports involvement of the skin epidermis and its keratinocyte layers, with additional relevance to cutaneous small sensory fibers embedded in the skin. [PMID:23965408] [PMID:31943276] [PMID:41789732]",
+      "gpt_rank": 1,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "23965408",
+          "title": "What's in the literature?",
+          "journal": "Journal of clinical neuromuscular disease",
+          "year": "2013"
+        },
+        {
+          "pmid": "31943276",
+          "title": "Small fiber neuropathy in unexpected clinical settings: a review.",
+          "journal": "Muscle & nerve",
+          "year": "2020"
+        },
+        {
+          "pmid": "41789732",
+          "title": "3D Artificial Skin Model As a Novel Strategy for the Detection of Pyroptosis-Cascade Activation in Amyotrophic Lateral Sclerosis.",
+          "journal": "ACS applied materials & interfaces",
+          "year": "2026"
+        },
+        {
+          "pmid": "18273717",
+          "title": "The rare G93D mutation causes a slowly progressing lower motor neuron disease.",
+          "journal": "Amyotrophic lateral sclerosis : official publication of the World Federation of Neurology Research Group on Motor Neuron Diseases",
+          "year": "2008"
+        }
+      ],
+      "pmids": [
+        "23965408",
+        "31943276",
+        "41789732",
+        "18273717"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 5 amyotrophic lateral sclerosis associated proteins were significantly enriched in the skin epidermis development pathway (GO:0098773).",
+          "Among the proteins enriched in this term, keratin 1 (KRT1) is a major type II intermediate filament protein that provides structural support and mechanical resilience to suprabasal keratinocytes in the epidermis. Within the context of amyotrophic lateral sclerosis, its enrichment in this pathway points to an involvement of epidermal cytoskeletal architecture in the disease-associated gene module identified here, consistent with emerging work that uses skin tissue and artificial skin models to probe amyotrophic lateral sclerosis–related pathology. Keratin 16 (KRT16), a stress-inducible type I keratin typically upregulated in hyperproliferative and wound-responsive epidermis, contributes to cytoskeletal reorganization during epidermal repair; its inclusion in the amyotrophic lateral sclerosis–derived module suggests that genes involved in epidermal stress responses and barrier adaptation are captured by the analysis, in line with reports that peripheral tissues such as skin can mirror aspects of the disease milieu. Phospholipase A2 group X (PLA2G10) is a secreted phospholipase that hydrolyses membrane phospholipids to liberate bioactive lipid mediators, thereby influencing inflammatory and barrier-regulatory pathways in the epidermis; its enrichment here indicates that lipid-modifying and inflammatory components of the epidermal compartment are represented in the amyotrophic lateral sclerosis–linked gene set, compatible with the use of skin-based systems to monitor inflammatory cascades in the disease.",
+          "The remaining enriched proteins map to complementary aspects of epidermal structure and specialization. Cysteine-rich tail 1 (CYSRT1) is a poorly characterized, cysteine-rich protein with expression in epithelial tissues, where its sequence composition is compatible with roles in membrane association or protein–protein interactions within keratinocytes; its presence in this pathway suggests that less well-defined epithelial factors are part of the amyotrophic lateral sclerosis–associated epidermal signature. Keratin 27 (KRT27) is a type I keratin predominantly associated with specialized skin appendages such as the hair follicle, where it contributes to the integrity and differentiation of inner root sheath structures, and its enrichment indicates that appendage-related keratin programs also intersect with the amyotrophic lateral sclerosis module.",
+          "Functionally, the proteins listed for this record can be organized into a structural keratin cytoskeleton cluster, comprising KRT1 and KRT27, and an epidermal regulatory/adhesion-associated cluster centered on CYSRT1. The structural keratin cluster reflects the incorporation of genes that maintain the intermediate filament network and tissue resilience of the epidermis and its appendages, while the CYSRT1 cluster highlights additional, less well-defined components that may modulate epithelial cell–cell or cell–matrix interactions and thereby influence the maturation and maintenance of the skin epidermis.",
+          "Together, the enrichment of these proteins in the skin epidermis development pathway suggests that the amyotrophic lateral sclerosis gene module captured in this analysis prominently involves epidermal structural and regulatory programs, consistent with clinical and experimental observations that skin and small-fiber compartments can be affected in the disease and can serve as accessible proxies for pathogenic processes. Within this term, PLA2G10 and KRT16 appear to drive the association by linking epidermal barrier and stress-adaptive cytoskeletal remodeling to inflammatory and lipid-signaling components. The coordinated presence of KRT1 and KRT16, which are known to form heteropolymeric intermediate filaments in keratinocytes, underscores that established keratin–keratin interactions underlie part of the signal in this pathway. Overall, the data point to an amyotrophic lateral sclerosis–related disturbance of epidermal differentiation, stress adaptation, and barrier-associated signaling rather than an isolated alteration in a single epidermal factor."
+        ],
+        "driver_genes": [
+          "PLA2G10",
+          "KRT16"
+        ],
+        "clusters": [
+          {
+            "label": "structural keratin cytoskeleton",
+            "genes": [
+              "KRT1",
+              "KRT27"
+            ]
+          },
+          {
+            "label": "epidermal regulatory/adhesion-associated components",
+            "genes": [
+              "CYSRT1"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "CYSRT1",
+          "KRT1",
+          "KRT16",
+          "KRT27",
+          "PLA2G10"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Altered skin epidermis development in ALS may reflect systemic changes in barrier integrity, immune signaling, or peripheral sensory structures that secondarily influence motor neuron vulnerability or disease biomarkers rather than a primary driver of neurodegeneration. The involvement of keratins and PLA2G10 suggests that epidermal remodeling, inflammation, and lipid signaling could mirror or modulate peripheral neuropathic processes observed in ALS."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT1, KRT16, and KRT27 indicate changes in keratin-based structural organization and stress-responsive keratin expression in the epidermis, while CYSRT1 and PLA2G10 point to redox and phospholipase-mediated lipid remodeling that can influence barrier function and inflammatory tone. Together, these genes suggest that ALS-associated signatures in this pathway may capture altered epidermal differentiation, mechanical resilience, and inflammatory signaling at the skin surface."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "The review on small fiber neuropathy in unexpected clinical settings supports a link between cutaneous structural/immune changes and peripheral nerve dysfunction, consistent with skin-level alterations accompanying ALS-related neuropathy. The 3D artificial skin model study indicates that epidermal systems can report pyroptosis-cascade activation in ALS, positioning skin epidermis development pathways as accessible readouts of systemic inflammatory and cell-death mechanisms relevant to the disease."
+        }
+      ]
+    },
+    {
+      "name": "epidermis development",
+      "pathway_id": "GO:0008544",
+      "native": "GO:0008544",
+      "p_value": 8.226267471578548e-36,
+      "category": "GO:BP",
+      "genes": "CYSRT1,KRT1,KRT10,KRT14,KRT15,KRT16,KRT27,KRT36,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT82,KRT83,KRT85,KRT86,KRT9,KRTAP5-9,KRTAP6-1,KRTAP6-2,LCE1A,LCE1B,LCE1C,LCE1E,LCE1F,LCE2C,LCE2D,LCE3A,LCE3E,LCE4A,LCE5A,PLA2G10,PPL,TGM1",
+      "intersection_genes": [
+        "CYSRT1",
+        "KRT1",
+        "KRT10",
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT27",
+        "KRT36",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRT9",
+        "KRTAP5-9",
+        "KRTAP6-1",
+        "KRTAP6-2",
+        "LCE1A",
+        "LCE1B",
+        "LCE1C",
+        "LCE1E",
+        "LCE1F",
+        "LCE2C",
+        "LCE2D",
+        "LCE3A",
+        "LCE3E",
+        "LCE4A",
+        "LCE5A",
+        "PLA2G10",
+        "PPL",
+        "TGM1"
+      ],
+      "intersection_size": 35,
+      "term_size": 400,
+      "query_size": 84,
+      "pathway_description": "The process whose specific outcome is the progression of the epidermis over time, from its formation to the mature structure. The epidermis is the outer epithelial layer of an animal, it may be a single layer that produces an extracellular material (e.g. the cuticle of arthropods) or a complex stratified squamous epithelium, as in the case of many vertebrate species. [GOC:go_curators, UBERON:0001003]",
+      "cell_context": "Development and differentiation of epidermal keratinocytes in the skin.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Altered epidermis development in ALS may reflect systemic changes in epithelial barrier integrity, peripheral trophic support, or shared cytoskeletal stress responses between skin and nervous system. Dysregulation of epidermal programs can also serve as a peripheral readout of broader cellular stress and differentiation defects relevant to motor neuron vulnerability. \nIntersection-gene interpretation: The keratins KRT1, KRT10, KRT14, and KRT15, together with CYSRT1, indicate perturbation of basal and suprabasal epidermal layers, suggesting shifts in keratinocyte differentiation and cytoskeletal organization. Such changes imply that structural and maturation programs in epidermal cells are altered, potentially mirroring or contributing to cytoskeletal instability seen in ALS. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The evidence supports involvement of the epidermis and its keratinocyte layers, including basal and suprabasal compartments of the skin.",
+      "description": "Disease pathology and relevance: Altered epidermis development in ALS may reflect systemic changes in epithelial barrier integrity, peripheral trophic support, or shared cytoskeletal stress responses between skin and nervous system. Dysregulation of epidermal programs can also serve as a peripheral readout of broader cellular stress and differentiation defects relevant to motor neuron vulnerability. \nIntersection-gene interpretation: The keratins KRT1, KRT10, KRT14, and KRT15, together with CYSRT1, indicate perturbation of basal and suprabasal epidermal layers, suggesting shifts in keratinocyte differentiation and cytoskeletal organization. Such changes imply that structural and maturation programs in epidermal cells are altered, potentially mirroring or contributing to cytoskeletal instability seen in ALS. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The evidence supports involvement of the epidermis and its keratinocyte layers, including basal and suprabasal compartments of the skin.",
+      "gpt_rank": 2,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "23965408",
+          "title": "What's in the literature?",
+          "journal": "Journal of clinical neuromuscular disease",
+          "year": "2013"
+        },
+        {
+          "pmid": "31943276",
+          "title": "Small fiber neuropathy in unexpected clinical settings: a review.",
+          "journal": "Muscle & nerve",
+          "year": "2020"
+        },
+        {
+          "pmid": "41789732",
+          "title": "3D Artificial Skin Model As a Novel Strategy for the Detection of Pyroptosis-Cascade Activation in Amyotrophic Lateral Sclerosis.",
+          "journal": "ACS applied materials & interfaces",
+          "year": "2026"
+        },
+        {
+          "pmid": "19833436",
+          "title": "Olesoxime (cholest-4-en-3-one, oxime): analgesic and neuroprotective effects in a rat model of painful peripheral neuropathy produced by the chemotherapeutic agent, paclitaxel.",
+          "journal": "Pain",
+          "year": "2009"
+        },
+        {
+          "pmid": "18273717",
+          "title": "The rare G93D mutation causes a slowly progressing lower motor neuron disease.",
+          "journal": "Amyotrophic lateral sclerosis : official publication of the World Federation of Neurology Research Group on Motor Neuron Diseases",
+          "year": "2008"
+        }
+      ],
+      "pmids": [
+        "23965408",
+        "31943276",
+        "41789732",
+        "19833436",
+        "18273717"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "35 submitted amyotrophic lateral sclerosis-associated proteins were significantly enriched in epidermis development (GO:0008544).",
+          "Among the structural keratins, KRT14 and KRT5 exemplify the basal epidermal cytoskeleton and anchor keratinocytes to the basement membrane, thereby maintaining epidermal architecture. In the context of our amyotrophic lateral sclerosis protein module, their enrichment in this term, together with the use of 3D artificial skin models to monitor pyroptosis-cascade activation in amyotrophic lateral sclerosis, suggests that perturbation of basal keratin networks may be a relevant read-out of disease-related inflammatory stress in peripheral epithelial tissues.",
+          "KRT1, KRT10 and KRT9 are hallmark suprabasal keratins that support terminal differentiation and mechanical resilience of the upper epidermal layers. Their joint enrichment in amyotrophic lateral sclerosis associated proteins, again in light of epidermis-based model systems developed for amyotrophic lateral sclerosis research, points to differentiation-dependent keratin assemblies as sensitive components of the epidermal response to disease-linked stress pathways, even though direct causal roles in motor neuron degeneration have not been established.",
+          "Late differentiation markers such as TGM1, which catalyzes cross-linking reactions during cornified envelope formation, and a non-intersection pathway component family members including LCE1A and LCE3A, which contribute structural components to the outermost barrier, indicate that the amyotrophic lateral sclerosis module extends into the terminal stages of epidermal maturation. Their combined enrichment, together with periplakin (PPL), which scaffolds desmosomal and cornified envelope proteins, supports the view that cornified envelope integrity and barrier assembly are disproportionately represented among amyotrophic lateral sclerosis linked genes and therefore may modulate how the skin participates in systemic or locally triggered inflammatory cascades described in experimental models of the disease.",
+          "The remaining proteins enriched in this term fall into several functional clusters. A basal cytoskeletal cluster (KRT15, together with KRT5 and KRT14) supports stem and progenitor keratinocyte compartments. A suprabasal stress and wound-response keratin cluster (KRT6A, KRT6B, KRT16, KRT75, KRT76) underpins rapid epidermal remodeling, while a hair and appendage keratin cluster (KRT27, KRT36, KRT82, KRT83, KRT85, KRT86) reflects specialization of follicular and nail structures. A cornified envelope and barrier cluster (LCE1B, LCE1C, LCE1E, LCE1F, LCE2C, LCE2D, LCE3E, LCE4A, LCE5A, KRTAP5-9, KRTAP6-1, KRTAP6-2, PPL, TGM1) encompasses proteins that assemble the outer barrier, whereas a small signaling and enzymatic cluster (PLA2G10 and CYSRT1) contributes to lipid metabolism and redox-sensitive processes at the epidermal surface. Together, these clusters indicate that the amyotrophic lateral sclerosis associated gene set is distributed across basal, differentiating, appendage and terminally cornified compartments of the epidermis rather than confined to a single layer or function.",
+          "Overall, enrichment of 35 amyotrophic lateral sclerosis related proteins in the “epidermis development” term suggests that structural and barrier-forming programs of the skin are a recurrent feature of the disease-linked gene module, in line with emerging use of artificial skin systems to interrogate inflammatory and pyroptotic pathways in amyotrophic lateral sclerosis. The association appears to be driven primarily by key differentiation keratins (KRT14, KRT5, KRT1, KRT10), together with late envelope components such as TGM1 and LCE1A. Well-characterized interactions between intersection proteins, including the heteropolymer pairs KRT5–KRT14 in basal layers and KRT1–KRT10 in suprabasal layers, provide a structural framework through which perturbations in individual genes could propagate to broader epidermal architecture. These findings support the interpretation that epidermal cytoskeletal and barrier modules, while peripheral to the central nervous system, may nonetheless report or modulate systemic processes relevant to amyotrophic lateral sclerosis pathobiology."
+        ],
+        "driver_genes": [
+          "KRT14",
+          "KRT10",
+          "LCE1A"
+        ],
+        "clusters": [
+          {
+            "label": "Basal cytoskeletal keratins",
+            "genes": [
+              "KRT5",
+              "KRT15",
+              "KRT14"
+            ]
+          },
+          {
+            "label": "Suprabasal differentiation and stress keratins",
+            "genes": [
+              "KRT1",
+              "KRT6A",
+              "KRT6B",
+              "KRT9",
+              "KRT16",
+              "KRT75",
+              "KRT76"
+            ]
+          },
+          {
+            "label": "Hair and appendage keratins",
+            "genes": [
+              "KRT27",
+              "KRT36",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86"
+            ]
+          },
+          {
+            "label": "Cornified envelope and barrier components",
+            "genes": [
+              "KRTAP5-9",
+              "KRTAP6-1",
+              "KRTAP6-2",
+              "LCE1B",
+              "LCE1C",
+              "LCE1E",
+              "LCE1F",
+              "LCE2C",
+              "LCE2D",
+              "LCE3A",
+              "LCE3E",
+              "LCE4A",
+              "LCE5A",
+              "PPL",
+              "TGM1"
+            ]
+          },
+          {
+            "label": "Epidermal signaling and enzymatic factors",
+            "genes": [
+              "CYSRT1",
+              "PLA2G10"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "CYSRT1",
+          "KRT1",
+          "KRT10",
+          "KRT14",
+          "KRT15",
+          "KRT16",
+          "KRT27",
+          "KRT36",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT75",
+          "KRT76",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRT9",
+          "KRTAP5-9",
+          "KRTAP6-1",
+          "KRTAP6-2",
+          "LCE1A",
+          "LCE1B",
+          "LCE1C",
+          "LCE1E",
+          "LCE1F",
+          "LCE2C",
+          "LCE2D",
+          "LCE3A",
+          "LCE3E",
+          "LCE4A",
+          "LCE5A",
+          "PLA2G10",
+          "PPL",
+          "TGM1"
+        ],
+        "generated": true,
+        "deterministic_repair": {
+          "unsupported_symbols_rephrased": [
+            "LCE"
+          ],
+          "opening_count_normalized": true
+        },
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Altered epidermis development in ALS may reflect systemic changes in epithelial barrier integrity, peripheral trophic support, or shared cytoskeletal stress responses between skin and nervous system. Dysregulation of epidermal programs can also serve as a peripheral readout of broader cellular stress and differentiation defects relevant to motor neuron vulnerability."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "The keratins KRT1, KRT10, KRT14, and KRT15, together with CYSRT1, indicate perturbation of basal and suprabasal epidermal layers, suggesting shifts in keratinocyte differentiation and cytoskeletal organization. Such changes imply that structural and maturation programs in epidermal cells are altered, potentially mirroring or contributing to cytoskeletal instability seen in ALS."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:23965408 (2013) What's in the literature?; PMID:31943276 (2020) Small fiber neuropathy in unexpected clinical settings: a review.; PMID:41789732 (2026) 3D Artificial Skin Model As a Novel Strategy for the Detection of Pyroptosis-Cascade Activation in Amyotrophic Lateral Sclerosis."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "keratinization",
+      "pathway_id": "GO:0031424",
+      "native": "GO:0031424",
+      "p_value": 1.3231363961887156e-40,
+      "category": "GO:BP",
+      "genes": "KRT1,KRT16,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT82,KRT83,KRT85,KRT86,KRTAP6-1,KRTAP6-2,LCE1A,LCE1B,LCE1C,LCE1E,LCE1F,LCE2C,LCE2D,LCE3A,LCE3E,LCE4A,LCE5A,PPL,TGM1",
+      "intersection_genes": [
+        "KRT1",
+        "KRT16",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRTAP6-1",
+        "KRTAP6-2",
+        "LCE1A",
+        "LCE1B",
+        "LCE1C",
+        "LCE1E",
+        "LCE1F",
+        "LCE2C",
+        "LCE2D",
+        "LCE3A",
+        "LCE3E",
+        "LCE4A",
+        "LCE5A",
+        "PPL",
+        "TGM1"
+      ],
+      "intersection_size": 26,
+      "term_size": 82,
+      "query_size": 84,
+      "pathway_description": "The process in which the cytoplasm of the outermost cells of the vertebrate epidermis is replaced by keratin. Keratinization occurs in the stratum corneum, feathers, hair, claws, nails, hooves, and horns. [GOC:dph, GOC:ebc, GOC:sdb_2009, GOC:tb]",
+      "cell_context": "Keratinization in specialized epidermal and adnexal keratinocytes, including hair follicle and nail-associated keratinocytes.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Altered keratinization indicates changes in the replacement of cytoplasm with keratin in outer epidermal cells, potentially reflecting systemic cytoskeletal stress or differentiation defects that parallel intermediate filament abnormalities in ALS. Such peripheral keratin changes may serve as biomarkers of broader cytoskeletal dysregulation impacting motor neurons and their supporting cells. \nIntersection-gene interpretation: KRT1, KRT5, KRT6A, KRT6B, and KRT16 together mark basal, proliferative, and stress-responsive keratinocyte states, suggesting that both homeostatic and injury-induced keratinization programs are perturbed. This constellation implies remodeling of keratin filament composition and organization during epidermal stratification and response to stress. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The pathway and genes support involvement of the epidermis, particularly basal and suprabasal keratinocytes undergoing keratinization in the skin.",
+      "description": "Disease pathology and relevance: Altered keratinization indicates changes in the replacement of cytoplasm with keratin in outer epidermal cells, potentially reflecting systemic cytoskeletal stress or differentiation defects that parallel intermediate filament abnormalities in ALS. Such peripheral keratin changes may serve as biomarkers of broader cytoskeletal dysregulation impacting motor neurons and their supporting cells. \nIntersection-gene interpretation: KRT1, KRT5, KRT6A, KRT6B, and KRT16 together mark basal, proliferative, and stress-responsive keratinocyte states, suggesting that both homeostatic and injury-induced keratinization programs are perturbed. This constellation implies remodeling of keratin filament composition and organization during epidermal stratification and response to stress. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The pathway and genes support involvement of the epidermis, particularly basal and suprabasal keratinocytes undergoing keratinization in the skin.",
+      "gpt_rank": 3,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "31187709",
+          "title": "Protein Misfolding Diseases and Therapeutic Approaches.",
+          "journal": "Current protein & peptide science",
+          "year": "2019"
+        },
+        {
+          "pmid": "25677198",
+          "title": "No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese.",
+          "journal": "Amyotrophic lateral sclerosis & frontotemporal degeneration",
+          "year": "2015"
+        },
+        {
+          "pmid": "32329357",
+          "title": "Keratinous biomarker of mercury exposure associated with amyotrophic lateral sclerosis risk in a nationwide U.S. study.",
+          "journal": "Amyotrophic lateral sclerosis & frontotemporal degeneration",
+          "year": "2020"
+        },
+        {
+          "pmid": "41904009",
+          "title": "Cytoskeltal intermediate filaments in Tau pathology and neurodegeneration.",
+          "journal": "Advances in protein chemistry and structural biology",
+          "year": "2026"
+        },
+        {
+          "pmid": "29760195",
+          "title": "Neuron-Specific HuR-Deficient Mice Spontaneously Develop Motor Neuron Disease.",
+          "journal": "Journal of immunology (Baltimore, Md. : 1950)",
+          "year": "2018"
+        }
+      ],
+      "pmids": [
+        "31187709",
+        "25677198",
+        "32329357",
+        "41904009",
+        "29760195"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "26 submitted amyotrophic lateral sclerosis-associated proteins were significantly enriched in keratinization (GO:0031424).",
+          "Among the classical epithelial keratins enriched in this term, KRT1, KRT5 and KRT16 exemplify the intermediate filament backbone that underpins the structural integrity of keratinizing epithelia. These keratins are major constituents of hair, nail and stratum corneum structures that were used as keratinous matrices in an epidemiologic study reporting that mercury levels in such tissues are associated with ALS risk, linking this subset of structural proteins—and by extension the keratinization process—to an exposure-related ALS phenotype via their role as the analyte-bearing scaffold.",
+          "PPL and TGM1 represent functionally distinct but closely related components of the keratinization machinery that further connect this pathway to ALS-relevant mechanisms. PPL is a cytolinker that organizes intermediate filaments at junctional complexes, and disruption of intermediate filament networks is a recurring theme in neurodegeneration, consistent with broader evidence implicating cytoskeletal intermediate filaments in protein aggregation–related pathology. TGM1 catalyzes ε-(γ-glutamyl)lysine cross-linking to form the cornified envelope in keratinized tissues, and these highly cross-linked structures are the same keratinous substrates in which mercury levels have been quantified as biomarkers associated with ALS risk, placing TGM1-dependent protein cross-linking at the core of the tissue-level readout used in that ALS epidemiologic study.",
+          "The remaining proteins enriched in keratinization can be organized into three functional clusters. A first cluster comprises additional type II keratins (KRT6A, KRT6B, KRT75, KRT76, KRT82, KRT83, KRT85, KRT86) that polymerize into intermediate filaments together with their partners to form the mechanical scaffold of hair shafts, inner root sheaths and specialized epidermal structures, thereby determining the physical properties of the keratinous tissues that accumulate environmental toxicants such as mercury. A second cluster consists of the keratin-associated proteins KRTAP6-1 and KRTAP6-2, which bind to and stabilize hair keratin filaments, and the late cornified envelope proteins LCE1A, LCE1B, LCE1C, LCE1E, LCE1F, LCE2C, LCE2D, LCE3A, LCE3E, LCE4A and LCE5A, which are incorporated into the cornified envelope; together, these proteins modulate the density, cross-linking potential and barrier function of the keratinized matrix that serves as the measurable keratinous biomarker in ALS risk studies. A third, smaller cluster includes PPL and TGM1 acting in concert with the broader keratin and a non-intersection pathway component sets to couple intermediate filaments to cell junctions and to enzymatically fix these assemblies into an insoluble envelope, thereby locking in both structural properties and any bound exogenous compounds within keratinized tissues.",
+          "Overall, enrichment of keratinization highlights that a substantial portion of the ALS-associated protein set contributes to the formation and stabilization of keratinized structures that have been used as keratinous biomarkers of mercury exposure in ALS risk research. Within this pathway, TGM1, PPL and KRT1 appear to drive the association by anchoring the enzymatic cross-linking and cytoskeletal framework that define the measurable biochemical properties of hair and nail matrices. A well-documented interaction between intersection proteins is the TGM1-mediated cross-linking of keratins and late cornified envelope proteins, which integrates a non-intersection pathway component family members and a non-intersection pathway component proteins into a single, highly insoluble structure. These observations suggest that, although the enriched keratinization proteins are not established ALS genes in a genetic sense within the supplied evidence, their collective role in building keratinized tissues provides a mechanistic substrate for exposure biomarkers that have been epidemiologically linked to ALS."
+        ],
+        "driver_genes": [
+          "KRT1",
+          "PPL",
+          "TGM1"
+        ],
+        "clusters": [
+          {
+            "label": "Structural keratin filament scaffold of keratinized tissues",
+            "genes": [
+              "KRT6A",
+              "KRT6B",
+              "KRT75",
+              "KRT76",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86"
+            ]
+          },
+          {
+            "label": "Cornified envelope and keratin-associated matrix modifiers",
+            "genes": [
+              "KRTAP6-1",
+              "KRTAP6-2",
+              "LCE1A",
+              "LCE1B",
+              "LCE1C",
+              "LCE1E",
+              "LCE1F",
+              "LCE2C",
+              "LCE2D",
+              "LCE3A",
+              "LCE3E",
+              "LCE4A",
+              "LCE5A"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "KRT1",
+          "KRT16",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT75",
+          "KRT76",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRTAP6-1",
+          "KRTAP6-2",
+          "LCE1A",
+          "LCE1B",
+          "LCE1C",
+          "LCE1E",
+          "LCE1F",
+          "LCE2C",
+          "LCE2D",
+          "LCE3A",
+          "LCE3E",
+          "LCE4A",
+          "LCE5A",
+          "PPL",
+          "TGM1"
+        ],
+        "generated": true,
+        "deterministic_repair": {
+          "unsupported_symbols_rephrased": [
+            "LCE",
+            "KRT"
+          ],
+          "opening_count_normalized": true
+        },
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Altered keratinization indicates changes in the replacement of cytoplasm with keratin in outer epidermal cells, potentially reflecting systemic cytoskeletal stress or differentiation defects that parallel intermediate filament abnormalities in ALS. Such peripheral keratin changes may serve as biomarkers of broader cytoskeletal dysregulation impacting motor neurons and their supporting cells."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT1, KRT5, KRT6A, KRT6B, and KRT16 together mark basal, proliferative, and stress-responsive keratinocyte states, suggesting that both homeostatic and injury-induced keratinization programs are perturbed. This constellation implies remodeling of keratin filament composition and organization during epidermal stratification and response to stress."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:31187709 (2019) Protein Misfolding Diseases and Therapeutic Approaches.; PMID:25677198 (2015) No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese.; PMID:32329357 (2020) Keratinous biomarker of mercury exposure associated with amyotrophic lateral sclerosis risk in a nationwide U.S. study."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "structural constituent of cytoskeleton",
+      "pathway_id": "GO:0005200",
+      "native": "GO:0005200",
+      "p_value": 2.1236275183227147e-08,
+      "category": "GO:MF",
+      "genes": "KRT14,KRT15,KRT16,KRT19,KRT20,KRT5,KRT6A,KRT6B,KRT9,PPL",
+      "intersection_genes": [
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT19",
+        "KRT20",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT9",
+        "PPL"
+      ],
+      "intersection_size": 10,
+      "term_size": 113,
+      "query_size": 103,
+      "pathway_description": "The action of a molecule that contributes to the structural integrity of a cytoskeletal structure. [GOC:mah]",
+      "cell_context": "Cytoskeletal architecture of epithelial cells, especially basal and suprabasal epidermal keratinocytes.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: This is a broad functional term, indicating that ALS-associated changes may involve general alterations in cytoskeletal structural proteins rather than a single, specific signaling mechanism. In this context, perturbations in keratin-based cytoskeletal integrity could reflect systemic or peripheral tissue stress that parallels cytoskeletal vulnerability in motor neurons. \nIntersection-gene interpretation: KRT14, KRT15, KRT16, KRT19, and KRT20 encode keratin proteins that act as core structural elements of intermediate filaments, supporting cell shape, resilience, and junctional stability. Their enrichment suggests reorganization or stress-induced expression of keratin cytoskeletal components, potentially affecting epithelial cell mechanics and responses to injury or inflammation in ALS. \nPubMed literature synthesis: No attached literature is provided for this pathway, so the mechanistic link to ALS remains at the level of general cytoskeletal structural perturbation rather than a documented disease-specific pathway. \nCell/tissue context: The keratin repertoire points to epithelial tissues, including basal and suprabasal keratinocytes and simple epithelia where KRT19 and KRT20 are expressed.",
+      "description": "Disease pathology and relevance: This is a broad functional term, indicating that ALS-associated changes may involve general alterations in cytoskeletal structural proteins rather than a single, specific signaling mechanism. In this context, perturbations in keratin-based cytoskeletal integrity could reflect systemic or peripheral tissue stress that parallels cytoskeletal vulnerability in motor neurons. \nIntersection-gene interpretation: KRT14, KRT15, KRT16, KRT19, and KRT20 encode keratin proteins that act as core structural elements of intermediate filaments, supporting cell shape, resilience, and junctional stability. Their enrichment suggests reorganization or stress-induced expression of keratin cytoskeletal components, potentially affecting epithelial cell mechanics and responses to injury or inflammation in ALS. \nPubMed literature synthesis: No attached literature is provided for this pathway, so the mechanistic link to ALS remains at the level of general cytoskeletal structural perturbation rather than a documented disease-specific pathway. \nCell/tissue context: The keratin repertoire points to epithelial tissues, including basal and suprabasal keratinocytes and simple epithelia where KRT19 and KRT20 are expressed.",
+      "gpt_rank": 4,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "39181624",
+          "title": "Neurofilaments in neurologic disease.",
+          "journal": "Advances in clinical chemistry",
+          "year": "2024"
+        },
+        {
+          "pmid": "24433963",
+          "title": "Microtubule-stabilizing agents as potential therapeutics for neurodegenerative disease.",
+          "journal": "Bioorganic & medicinal chemistry",
+          "year": "2014"
+        },
+        {
+          "pmid": "1490424",
+          "title": "Aluminium and the neurofibrillary tangle: results of tissue microprobe studies.",
+          "journal": "Ciba Foundation symposium",
+          "year": "1992"
+        },
+        {
+          "pmid": "16637591",
+          "title": "[S100B: astrocyte specific protein].",
+          "journal": "Nihon shinkei seishin yakurigaku zasshi = Japanese journal of psychopharmacology",
+          "year": "2006"
+        },
+        {
+          "pmid": "3211075",
+          "title": "Biochemical composition and dynamics of the axonal cytoskeleton in the corticospinal system of the adult hamster.",
+          "journal": "Metabolic brain disease",
+          "year": "1988"
+        }
+      ],
+      "pmids": [
+        "39181624",
+        "24433963",
+        "1490424",
+        "16637591",
+        "3211075"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 10 amyotrophic lateral sclerosis associated proteins were significantly enriched in the Gene Ontology molecular function pathway “structural constituent of cytoskeleton” (GO:0005200).",
+          "Within this molecular function, KRT14 and KRT5 exemplify the core activity captured by the term, namely the provision of mechanical stability as obligate components of intermediate filament bundles. In the context of amyotrophic lateral sclerosis, their enrichment indicates that molecules whose primary biochemical role is to bear mechanical load and maintain cytoskeletal integrity are disproportionately represented in the disease-associated module, aligning with the broader observation that disruption of filamentous cytoskeletal networks, including neurofilaments, is a consistent feature of degenerating motor pathways in neurologic disease. Periplakin (PPL), a cytolinker that anchors intermediate filaments to junctional complexes, further underscores that structural scaffolding rather than catalysis, transport, or receptor activity is the relevant shared function in this term, and its presence in the enriched set emphasizes that connections between filament systems and membrane-associated structures are part of the cytoskeletal vulnerability highlighted in amyotrophic lateral sclerosis.",
+          "The remaining keratins in the intersection can be organized into two functional clusters that collectively refine the nature of the enriched cytoskeletal activity. One cluster comprises type I intermediate filament keratins (KRT15, KRT16, KRT19, KRT20), whose shared function is to polymerize with type II partners into 10-nm filaments that provide tensile strength and resistance to mechanical deformation; in the present pathway, they contribute additional support for the interpretation that amyotrophic lateral sclerosis preferentially involves proteins whose biochemical role is to act as filament-forming structural subunits rather than regulators of cytoskeletal dynamics. A second, complementary cluster consists of the type II keratins KRT6A, KRT6B and KRT9, which form the heteropolymeric counterparts to type I keratins and thus reinforce the conclusion that the enriched molecular function is the core structural backbone of intermediate filaments themselves, not accessory binding, signaling, or enzymatic modulation of the cytoskeleton.",
+          "Taken together, enrichment of these 10 proteins in “structural constituent of cytoskeleton” indicates that the amyotrophic lateral sclerosis module is biased toward molecules whose primary molecular function is to build and mechanically stabilize cytoskeletal architectures, in line with the central role of cytoskeletal disorganization described in neurodegenerative motor system pathology. The association appears to be driven in particular by the intermediate filament pair KRT5 and KRT14, which assemble into obligate heteropolymers, and by the cytolinker PPL, which tethers such filaments to junctional complexes. Well-documented physical interactions between KRT5 and KRT14, and between keratin filaments and PPL, provide a structural framework within which cytoskeletal stress could be propagated or buffered in vulnerable cells in amyotrophic lateral sclerosis.",
+          "KRT14",
+          "KRT5",
+          "PPL"
+        ],
+        "driver_genes": [
+          "KRT14",
+          "KRT5",
+          "PPL"
+        ],
+        "clusters": [
+          {
+            "label": "Type I intermediate filament keratins",
+            "genes": [
+              "KRT15",
+              "KRT16",
+              "KRT19",
+              "KRT20"
+            ]
+          },
+          {
+            "label": "Type II intermediate filament keratins",
+            "genes": [
+              "KRT6A",
+              "KRT6B",
+              "KRT9"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "KRT14",
+          "KRT15",
+          "KRT16",
+          "KRT19",
+          "KRT20",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT9",
+          "PPL"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "This is a broad functional term, indicating that ALS-associated changes may involve general alterations in cytoskeletal structural proteins rather than a single, specific signaling mechanism. In this context, perturbations in keratin-based cytoskeletal integrity could reflect systemic or peripheral tissue stress that parallels cytoskeletal vulnerability in motor neurons."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT14, KRT15, KRT16, KRT19, and KRT20 encode keratin proteins that act as core structural elements of intermediate filaments, supporting cell shape, resilience, and junctional stability. Their enrichment suggests reorganization or stress-induced expression of keratin cytoskeletal components, potentially affecting epithelial cell mechanics and responses to injury or inflammation in ALS."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:39181624 (2024) Neurofilaments in neurologic disease.; PMID:24433963 (2014) Microtubule-stabilizing agents as potential therapeutics for neurodegenerative disease.; PMID:1490424 (1992) Aluminium and the neurofibrillary tangle: results of tissue microprobe studies."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "structural molecule activity",
+      "pathway_id": "GO:0005198",
+      "native": "GO:0005198",
+      "p_value": 4.739833846535657e-15,
+      "category": "GO:MF",
+      "genes": "COL8A1,EFEMP1,EFEMP2,KRT1,KRT10,KRT13,KRT14,KRT15,KRT16,KRT18,KRT19,KRT20,KRT27,KRT33B,KRT35,KRT36,KRT38,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT82,KRT83,KRT85,KRT86,KRT9,KRTAP11-1,KRTAP13-2,KRTAP26-1,MOBP,MUC4,PPL",
+      "intersection_genes": [
+        "COL8A1",
+        "EFEMP1",
+        "EFEMP2",
+        "KRT1",
+        "KRT10",
+        "KRT13",
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT18",
+        "KRT19",
+        "KRT20",
+        "KRT27",
+        "KRT33B",
+        "KRT35",
+        "KRT36",
+        "KRT38",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRT9",
+        "KRTAP11-1",
+        "KRTAP13-2",
+        "KRTAP26-1",
+        "MOBP",
+        "MUC4",
+        "PPL"
+      ],
+      "intersection_size": 33,
+      "term_size": 1106,
+      "query_size": 103,
+      "pathway_description": "The action of a molecule that contributes to the structural integrity of a complex. [GOC:mah, GOC:vw]",
+      "cell_context": "Structural framework of epithelial tissues, particularly the extracellular matrix and cytoskeletal components of skin and other epithelia.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: This broad pathway points to changes in molecules that maintain structural integrity of cellular and extracellular complexes, consistent with the cytoskeletal and matrix disorganization observed in ALS-affected tissues. Disruption of such structural activities can impair mechanical stability, cell–matrix interactions, and tissue resilience under stress, all of which may exacerbate motor neuron degeneration and muscle wasting. \nIntersection-gene interpretation: COL8A1, EFEMP1, and EFEMP2 highlight altered extracellular matrix and basement membrane structure, while KRT1 and KRT10 indicate changes in intermediate filament networks, together suggesting coordinated remodeling of both intracellular and extracellular scaffolds. These intersection genes imply that ALS-associated changes extend beyond neurons to supporting structural frameworks that influence cell survival and function. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The gene set supports involvement of connective tissue and basement membrane structures as well as epithelial layers such as the epidermis.",
+      "description": "Disease pathology and relevance: This broad pathway points to changes in molecules that maintain structural integrity of cellular and extracellular complexes, consistent with the cytoskeletal and matrix disorganization observed in ALS-affected tissues. Disruption of such structural activities can impair mechanical stability, cell–matrix interactions, and tissue resilience under stress, all of which may exacerbate motor neuron degeneration and muscle wasting. \nIntersection-gene interpretation: COL8A1, EFEMP1, and EFEMP2 highlight altered extracellular matrix and basement membrane structure, while KRT1 and KRT10 indicate changes in intermediate filament networks, together suggesting coordinated remodeling of both intracellular and extracellular scaffolds. These intersection genes imply that ALS-associated changes extend beyond neurons to supporting structural frameworks that influence cell survival and function. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The gene set supports involvement of connective tissue and basement membrane structures as well as epithelial layers such as the epidermis.",
+      "gpt_rank": 5,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "30171200",
+          "title": "Neurofilaments as biomarkers in neurological disorders.",
+          "journal": "Nature reviews. Neurology",
+          "year": "2018"
+        },
+        {
+          "pmid": "32048886",
+          "title": "Organelle-specific autophagy in inflammatory diseases: a potential therapeutic target underlying the quality control of multiple organelles.",
+          "journal": "Autophagy",
+          "year": "2021"
+        },
+        {
+          "pmid": "37683611",
+          "title": "Damaged mitochondria recruit the effector NEMO to activate NF-kappaB signaling.",
+          "journal": "Molecular cell",
+          "year": "2023"
+        },
+        {
+          "pmid": "34130600",
+          "title": "The spectrum of neurodevelopmental, neuromuscular and neurodegenerative disorders due to defective autophagy.",
+          "journal": "Autophagy",
+          "year": "2022"
+        },
+        {
+          "pmid": "41277110",
+          "title": "Autophagy and mitophagy at the synapse and beyond: implications for learning, memory and neurological disorders.",
+          "journal": "Autophagy",
+          "year": "2026"
+        }
+      ],
+      "pmids": [
+        "30171200",
+        "32048886",
+        "37683611",
+        "34130600",
+        "41277110"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 33 amyotrophic lateral sclerosis associated proteins were significantly enriched in the GO molecular function term structural molecule activity (GO:0005198). This term captures proteins whose shared activity is to provide structural integrity to multiprotein complexes or higher-order assemblies, rather than catalysis or signaling per se.",
+          "Among the structurally active proteins, COL8A1, EFEMP1 and EFEMP2 exemplify extracellular matrix and matricellular components whose primary molecular function is to stabilize supramolecular assemblies in the tissue microenvironment. COL8A1 encodes a fibrillar collagen that contributes to basement membrane architecture, while EFEMP1 and EFEMP2 are fibulin-like glycoproteins that scaffold elastic and collagenous networks. Their enrichment in this term indicates that a subset of the amyotrophic lateral sclerosis associated proteins in this analysis act as structural organizers of extracellular complexes, suggesting that integrity of the extracellular matrix and related scaffolds is a recurring theme within the structural molecule activity signal in this disease context.",
+          "MOBP, MUC4 and PPL highlight structurally specialized scaffolds at the myelin sheath and epithelial or junctional surfaces. MOBP is an abundant myelin-associated protein whose molecular function is to stabilize the compact myelin sheath by crosslinking membrane layers, making it a prominent structural effector within this enriched term and a plausible contributor to cytoskeletal and membrane integrity disturbances in amyotrophic lateral sclerosis. MUC4 encodes a large transmembrane mucin that forms extended, heavily glycosylated extracellular domains, structurally supporting mucosal surfaces and receptor-containing complexes. PPL (periplakin) is a cytolinker that binds intermediate filaments and membrane-associated complexes, reinforcing desmosomal and related junctional structures; its presence among the enriched proteins points to structural coupling between intermediate filaments and cell–cell or cell–matrix adhesion complexes in the amyotrophic lateral sclerosis associated gene set.",
+          "Several type I and type II keratins in the intersection, including KRT13, KRT18 and KRT19, illustrate the core structural role of intermediate filaments captured by this pathway. These keratins polymerize into 10-nm filaments that maintain cellular mechanical resilience and organize cytoplasmic architecture, particularly in epithelial and epithelial-like cells. In the context of amyotrophic lateral sclerosis, their inclusion among the associated proteins in this analysis suggests that intermediate filament scaffolds, while classically studied in non-neural tissues, may contribute indirectly to tissue-level responses or barrier functions relevant to disease progression, complementing the primarily neural structural components such as MOBP.",
+          "The remaining enriched proteins fall into coherent structural clusters. A large cluster consists of epithelial keratin intermediate filaments, comprising KRT1, KRT5, KRT9, KRT10, KRT14, KRT15, KRT16, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KRT6A, KRT6B, KRT75, KRT76, KRT82, KRT83, KRT85 and KRT86; these proteins function as obligate heteropolymers that form the core cytoskeletal scaffold in stratified and specialized epithelia, and their enrichment indicates a strong representation of intermediate filament structural activity in the amyotrophic lateral sclerosis module. A second cluster is formed by the keratin-associated proteins KRTAP11-1, KRTAP13-2 and KRTAP26-1, which bind and crosslink keratin filaments to modulate filament packing and mechanical properties. Together with MUC4 and PPL, which structurally couple cytoskeletal networks to apical or junctional complexes, these clusters underscore that much of the signal in this term arises from proteins whose primary biochemical role is to build or reinforce filamentous and membrane-associated structural assemblies.",
+          "Overall, enrichment of structural molecule activity in the amyotrophic lateral sclerosis associated proteins indicates that a substantial portion of the module is dedicated to maintaining the physical integrity of extracellular matrices, myelin sheaths and cytoskeletal complexes, rather than mediating enzymatic or classical signaling functions. Within this term, COL8A1, EFEMP1 and particularly MOBP appear to be key drivers of the association, representing extracellular matrix and myelin-compactation structures that are highly relevant to neural tissue architecture. The coordinated presence of multiple keratin pairs, such as KRT5 with KRT14 and KRT1 with KRT10, which are known to co-assemble into heteropolymeric intermediate filaments, further emphasizes that higher-order filament formation is a central feature of this enrichment. These findings suggest that perturbations in structural scaffolds at the matrix, myelin and cytoskeletal levels are an important axis along which the amyotrophic lateral sclerosis associated gene set converges in this pathway analysis."
+        ],
+        "driver_genes": [
+          "COL8A1",
+          "EFEMP1",
+          "MOBP"
+        ],
+        "clusters": [
+          {
+            "label": "Epithelial keratin intermediate filaments",
+            "genes": [
+              "KRT1",
+              "KRT5",
+              "KRT9",
+              "KRT10",
+              "KRT14",
+              "KRT15",
+              "KRT16",
+              "KRT20",
+              "KRT27",
+              "KRT33B",
+              "KRT35",
+              "KRT36",
+              "KRT38",
+              "KRT6A",
+              "KRT6B",
+              "KRT75",
+              "KRT76",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86"
+            ]
+          },
+          {
+            "label": "Keratin-associated structural modifiers",
+            "genes": [
+              "KRTAP11-1",
+              "KRTAP13-2",
+              "KRTAP26-1"
+            ]
+          },
+          {
+            "label": "Mucosal and junctional structural scaffolds",
+            "genes": [
+              "KRT13",
+              "KRT18",
+              "KRT19",
+              "MUC4",
+              "PPL",
+              "EFEMP2"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "COL8A1",
+          "EFEMP1",
+          "EFEMP2",
+          "KRT1",
+          "KRT10",
+          "KRT13",
+          "KRT14",
+          "KRT15",
+          "KRT16",
+          "KRT18",
+          "KRT19",
+          "KRT20",
+          "KRT27",
+          "KRT33B",
+          "KRT35",
+          "KRT36",
+          "KRT38",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT75",
+          "KRT76",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRT9",
+          "KRTAP11-1",
+          "KRTAP13-2",
+          "KRTAP26-1",
+          "MOBP",
+          "MUC4",
+          "PPL"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "This broad pathway points to changes in molecules that maintain structural integrity of cellular and extracellular complexes, consistent with the cytoskeletal and matrix disorganization observed in ALS-affected tissues. Disruption of such structural activities can impair mechanical stability, cell–matrix interactions, and tissue resilience under stress, all of which may exacerbate motor neuron degeneration and muscle wasting."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "COL8A1, EFEMP1, and EFEMP2 highlight altered extracellular matrix and basement membrane structure, while KRT1 and KRT10 indicate changes in intermediate filament networks, together suggesting coordinated remodeling of both intracellular and extracellular scaffolds. These intersection genes imply that ALS-associated changes extend beyond neurons to supporting structural frameworks that influence cell survival and function."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:30171200 (2018) Neurofilaments as biomarkers in neurological disorders.; PMID:32048886 (2021) Organelle-specific autophagy in inflammatory diseases: a potential therapeutic target underlying the quality control of multiple organelles.; PMID:37683611 (2023) Damaged mitochondria recruit the effector NEMO to activate NF-kappaB signaling."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "intermediate filament cytoskeleton",
+      "pathway_id": "GO:0045111",
+      "native": "GO:0045111",
+      "p_value": 1.008619975708711e-65,
+      "category": "GO:CC",
+      "genes": "KRT1,KRT10,KRT13,KRT14,KRT15,KRT16,KRT18,KRT19,KRT20,KRT27,KRT33B,KRT35,KRT36,KRT38,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT8,KRT82,KRT83,KRT85,KRT86,KRT9,KRTAP1-1,KRTAP10-5,KRTAP10-7,KRTAP10-8,KRTAP10-9,KRTAP11-1,KRTAP12-2,KRTAP12-3,KRTAP12-4,KRTAP13-2,KRTAP19-5,KRTAP2-3,KRTAP26-1,KRTAP4-12,KRTAP4-2,KRTAP5-9,KRTAP6-1,KRTAP6-2,KRTAP8-1,KRTAP9-2,KRTAP9-3,PPL",
+      "intersection_genes": [
+        "KRT1",
+        "KRT10",
+        "KRT13",
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT18",
+        "KRT19",
+        "KRT20",
+        "KRT27",
+        "KRT33B",
+        "KRT35",
+        "KRT36",
+        "KRT38",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT8",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRT9",
+        "KRTAP1-1",
+        "KRTAP10-5",
+        "KRTAP10-7",
+        "KRTAP10-8",
+        "KRTAP10-9",
+        "KRTAP11-1",
+        "KRTAP12-2",
+        "KRTAP12-3",
+        "KRTAP12-4",
+        "KRTAP13-2",
+        "KRTAP19-5",
+        "KRTAP2-3",
+        "KRTAP26-1",
+        "KRTAP4-12",
+        "KRTAP4-2",
+        "KRTAP5-9",
+        "KRTAP6-1",
+        "KRTAP6-2",
+        "KRTAP8-1",
+        "KRTAP9-2",
+        "KRTAP9-3",
+        "PPL"
+      ],
+      "intersection_size": 47,
+      "term_size": 248,
+      "query_size": 93,
+      "pathway_description": "Cytoskeletal structure made from intermediate filaments, typically organized in the cytosol as an extended system that stretches from the nuclear envelope to the plasma membrane. Some intermediate filaments run parallel to the cell surface, while others traverse the cytosol; together they form an internal framework that helps support the shape and resilience of the cell. [ISBN:0716731363]",
+      "cell_context": "Intermediate filament cytoskeleton of epithelial cells, especially keratinocytes in stratified epithelia such as the epidermis.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Disruption of the intermediate filament cytoskeleton is a plausible contributor to ALS, as cytoskeletal disorganization can impair axonal transport, cellular resilience to mechanical stress, and structural integrity in both neurons and supporting cells. However, this term is broad, and in this gene set it most directly reflects keratin-based filament changes that may serve as peripheral correlates of cytoskeletal stress rather than direct motor neuron pathology. \nIntersection-gene interpretation: KRT1, KRT10, KRT13, KRT14, and KRT15 encode type I/II keratins that assemble into intermediate filaments, indicating remodeling of keratin networks that maintain cell shape, mechanical stability, and junctional organization. Such keratin filament alterations could influence cell–cell adhesion, barrier properties, and responses to mechanical or inflammatory stress in ALS-relevant peripheral tissues. \nPubMed literature synthesis: None of the supplied literature is directly attached to this pathway, so no specific study-based mechanistic link to ALS can be drawn beyond the general concept that intermediate filament perturbations are a recognized feature of neurodegenerative conditions. \nCell/tissue context: The keratin profile supports involvement of stratified epithelia such as the epidermis and related keratinocyte-rich tissues.",
+      "description": "Disease pathology and relevance: Disruption of the intermediate filament cytoskeleton is a plausible contributor to ALS, as cytoskeletal disorganization can impair axonal transport, cellular resilience to mechanical stress, and structural integrity in both neurons and supporting cells. However, this term is broad, and in this gene set it most directly reflects keratin-based filament changes that may serve as peripheral correlates of cytoskeletal stress rather than direct motor neuron pathology. \nIntersection-gene interpretation: KRT1, KRT10, KRT13, KRT14, and KRT15 encode type I/II keratins that assemble into intermediate filaments, indicating remodeling of keratin networks that maintain cell shape, mechanical stability, and junctional organization. Such keratin filament alterations could influence cell–cell adhesion, barrier properties, and responses to mechanical or inflammatory stress in ALS-relevant peripheral tissues. \nPubMed literature synthesis: None of the supplied literature is directly attached to this pathway, so no specific study-based mechanistic link to ALS can be drawn beyond the general concept that intermediate filament perturbations are a recognized feature of neurodegenerative conditions. \nCell/tissue context: The keratin profile supports involvement of stratified epithelia such as the epidermis and related keratinocyte-rich tissues.",
+      "gpt_rank": 6,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "38609644",
+          "title": "Neurofilaments as biomarkers in neurological disorders - towards clinical application.",
+          "journal": "Nature reviews. Neurology",
+          "year": "2024"
+        },
+        {
+          "pmid": "32640130",
+          "title": "Phase 1-2 Trial of Antisense Oligonucleotide Tofersen for SOD1 ALS.",
+          "journal": "The New England journal of medicine",
+          "year": "2020"
+        },
+        {
+          "pmid": "39177232",
+          "title": "Population-Based Evidence for the Use of Serum Neurofilaments as Individual Diagnostic and Prognostic Biomarkers in Amyotrophic Lateral Sclerosis.",
+          "journal": "Annals of neurology",
+          "year": "2024"
+        },
+        {
+          "pmid": "8833441",
+          "title": "Neuronal intermediate filaments.",
+          "journal": "Annual review of neuroscience",
+          "year": "1996"
+        },
+        {
+          "pmid": "24673472",
+          "title": "Basophilic inclusions and neuronal intermediate filament inclusions in amyotrophic lateral sclerosis and frontotemporal lobar degeneration.",
+          "journal": "Neuropathology : official journal of the Japanese Society of Neuropathology",
+          "year": "2014"
+        }
+      ],
+      "pmids": [
+        "38609644",
+        "32640130",
+        "39177232",
+        "8833441",
+        "24673472"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 47 amyotrophic lateral sclerosis associated proteins were significantly enriched in the “intermediate filament cytoskeleton” compartment (GO:0045111). This term captures the extended intermediate filament network spanning from the nuclear envelope to the plasma membrane, and the proteins listed for this record therefore co-localize within this structural cytoskeletal framework rather than sharing a defined biochemical activity.",
+          "Among the proteins enriched in this compartment, PPL exemplifies a structural scaffold that links intermediate filaments to cell–cell junctions. As a cytolinker associated with desmosomes and related complexes, PPL resides stably within the intermediate filament cytoskeleton rather than shuttling transiently through it. In the context of amyotrophic lateral sclerosis, neuronal intermediate filaments are a recognized site of pathological inclusion formation, and intermediate filament subunits are established fluid biomarkers; however, the available evidence does not currently support a direct, protein-specific role for PPL in amyotrophic lateral sclerosis beyond its contribution to intermediate filament organization as a structural resident of this compartment. KRT8, which forms type II intermediate filaments in simple epithelia, is likewise a core structural constituent of the intermediate filament cytoskeleton rather than a transient visitor, and its enrichment here again points to a predominance of stable scaffold components rather than regulatory or signaling proteins, without a documented, individual association with amyotrophic lateral sclerosis.",
+          "KRT18, KRT19 and KRT20 further extend this group of canonical type I and type II keratin intermediate filament proteins that assemble into cytoskeletal networks underlying cellular mechanical resilience. These keratins are embedded within the cytosolic intermediate filament system that, in neurons, has been repeatedly implicated in amyotrophic lateral sclerosis by the presence of neuronal intermediate filament inclusions and by the clinical development of neurofilament-based biomarkers. For KRT18, KRT19 and KRT20 themselves, however, the current literature does not indicate a specific causal or modifying role in amyotrophic lateral sclerosis, and their relevance here is best interpreted as reinforcing the prominence of intermediate filament scaffold proteins in the enriched module rather than indicating keratin-specific disease mechanisms.",
+          "The remaining proteins enriched in this term fall into several structural clusters within the intermediate filament cytoskeleton. A first cluster comprises epidermal and stratified epithelial keratins such as KRT1, KRT5, KRT9, KRT10, KRT13, KRT14, KRT15, KRT16, KRT27, KRT35, KRT36, KRT38, KRT6A, KRT6B, KRT75 and KRT76, which together form the major load-bearing intermediate filament networks in differentiated and basal epithelial layers; these are long-lived structural residents of the compartment, and their reappearance here reflects the shared localization of multiple previously discussed keratins specifically to the intermediate filament scaffold. A second cluster consists of hair and hair-follicle keratins, including KRT33B, KRT82, KRT83, KRT85 and KRT86, which assemble into specialized intermediate filament arrays in keratinized appendages, again acting as stable cytoskeletal elements rather than dynamic regulators. A third cluster encompasses the keratin-associated proteins KRTAP1-1, KRTAP2-3, KRTAP4-2, KRTAP4-12, KRTAP5-9, KRTAP6-1, KRTAP6-2, KRTAP8-1, KRTAP9-2, KRTAP9-3, KRTAP10-5, KRTAP10-7, KRTAP10-8, KRTAP10-9, KRTAP11-1, KRTAP12-2, KRTAP12-3, KRTAP12-4, KRTAP13-2, KRTAP19-5 and KRTAP26-1, which bind to and modify keratin intermediate filament bundles, reinforcing or altering the properties of the cytoskeletal network rather than transiently passing through this compartment. Across all of these clusters, there is currently no direct evidence from the supplied literature that these individual keratin or keratin-associated proteins are mechanistically linked to amyotrophic lateral sclerosis; instead, they collectively mark the localization of the gene module to the intermediate filament cytoskeleton, a cellular structure that is itself a known locus of neuronal pathology in the disease.",
+          "Taken together, the enrichment of 47 proteins in the intermediate filament cytoskeleton term indicates that this amyotrophic lateral sclerosis–related module is strongly biased toward structural components of the cytoskeletal scaffold rather than toward enzymes or signaling factors. The contribution of this pathway to amyotrophic lateral sclerosis is therefore best interpreted at the level of the compartment: neuronal intermediate filaments are established sites of pathological inclusions and sources of clinically explored fluid biomarkers, and the present result underscores that the disease-associated module is enriched in proteins that co-localize to this broader cytoskeletal system. Within the intersection, PPL, KRT8 and KRT18 appear to be the principal drivers of the association by virtue of their roles as core or linking components of intermediate filament networks. PPL, in particular, is well documented to interact directly with keratin intermediate filaments, providing a specific example of an interaction between proteins in this intersection and illustrating how cytolinker–keratin complexes help organize the intermediate filament cytoskeleton that is centrally implicated, at the compartment level, in amyotrophic lateral sclerosis pathology. co-localization within this compartment, however, should not be taken as evidence that these proteins share a common pathogenic mechanism in amyotrophic lateral sclerosis without additional functional data."
+        ],
+        "driver_genes": [
+          "PPL",
+          "KRT8",
+          "KRT18"
+        ],
+        "clusters": [
+          {
+            "label": "epidermal and stratified epithelial keratin intermediate filaments",
+            "genes": [
+              "KRT1",
+              "KRT5",
+              "KRT9",
+              "KRT10",
+              "KRT13",
+              "KRT14",
+              "KRT15",
+              "KRT16",
+              "KRT27",
+              "KRT35",
+              "KRT36",
+              "KRT38",
+              "KRT6A",
+              "KRT6B",
+              "KRT75",
+              "KRT76"
+            ]
+          },
+          {
+            "label": "hair and hair-follicle keratin intermediate filaments",
+            "genes": [
+              "KRT33B",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86"
+            ]
+          },
+          {
+            "label": "keratin-associated proteins reinforcing keratin intermediate filaments",
+            "genes": [
+              "KRTAP1-1",
+              "KRTAP2-3",
+              "KRTAP4-2",
+              "KRTAP4-12",
+              "KRTAP5-9",
+              "KRTAP6-1",
+              "KRTAP6-2",
+              "KRTAP8-1",
+              "KRTAP9-2",
+              "KRTAP9-3",
+              "KRTAP10-5",
+              "KRTAP10-7",
+              "KRTAP10-8",
+              "KRTAP10-9",
+              "KRTAP11-1",
+              "KRTAP12-2",
+              "KRTAP12-3",
+              "KRTAP12-4",
+              "KRTAP13-2",
+              "KRTAP19-5",
+              "KRTAP26-1"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "KRT1",
+          "KRT10",
+          "KRT13",
+          "KRT14",
+          "KRT15",
+          "KRT16",
+          "KRT18",
+          "KRT19",
+          "KRT20",
+          "KRT27",
+          "KRT33B",
+          "KRT35",
+          "KRT36",
+          "KRT38",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT75",
+          "KRT76",
+          "KRT8",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRT9",
+          "KRTAP1-1",
+          "KRTAP10-5",
+          "KRTAP10-7",
+          "KRTAP10-8",
+          "KRTAP10-9",
+          "KRTAP11-1",
+          "KRTAP12-2",
+          "KRTAP12-3",
+          "KRTAP12-4",
+          "KRTAP13-2",
+          "KRTAP19-5",
+          "KRTAP2-3",
+          "KRTAP26-1",
+          "KRTAP4-12",
+          "KRTAP4-2",
+          "KRTAP5-9",
+          "KRTAP6-1",
+          "KRTAP6-2",
+          "KRTAP8-1",
+          "KRTAP9-2",
+          "KRTAP9-3",
+          "PPL"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Disruption of the intermediate filament cytoskeleton is a plausible contributor to ALS, as cytoskeletal disorganization can impair axonal transport, cellular resilience to mechanical stress, and structural integrity in both neurons and supporting cells. However, this term is broad, and in this gene set it most directly reflects keratin-based filament changes that may serve as peripheral correlates of cytoskeletal stress rather than direct motor neuron pathology."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT1, KRT10, KRT13, KRT14, and KRT15 encode type I/II keratins that assemble into intermediate filaments, indicating remodeling of keratin networks that maintain cell shape, mechanical stability, and junctional organization. Such keratin filament alterations could influence cell–cell adhesion, barrier properties, and responses to mechanical or inflammatory stress in ALS-relevant peripheral tissues."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:38609644 (2024) Neurofilaments as biomarkers in neurological disorders - towards clinical application.; PMID:32640130 (2020) Phase 1-2 Trial of Antisense Oligonucleotide Tofersen for SOD1 ALS.; PMID:39177232 (2024) Population-Based Evidence for the Use of Serum Neurofilaments as Individual Diagnostic and Prognostic Biomarkers in Amyotrophic Lateral Sclerosis."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "cornified envelope",
+      "pathway_id": "GO:0001533",
+      "native": "GO:0001533",
+      "p_value": 2.852418317014123e-09,
+      "category": "GO:CC",
+      "genes": "CYSRT1,KRT1,KRT10,KRT14,KRT16,KRT75,PPL,TGM1",
+      "intersection_genes": [
+        "CYSRT1",
+        "KRT1",
+        "KRT10",
+        "KRT14",
+        "KRT16",
+        "KRT75",
+        "PPL",
+        "TGM1"
+      ],
+      "intersection_size": 8,
+      "term_size": 60,
+      "query_size": 93,
+      "pathway_description": "A type of plasma membrane that has been modified through addition of distinct intracellular and extracellular components, including ceramide, found in cornifying epithelial cells (corneocytes). [GOC:add, PMID:11112355, PMID:11590230, PMID:15803139]",
+      "cell_context": "Cornified envelope formation in late-stage differentiating epidermal keratinocytes of the skin.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Alterations in the cornified envelope in ALS would primarily impact the terminal barrier layer of the epidermis, potentially modifying cutaneous permeability, microbial interactions, and local immune activation that could secondarily influence peripheral nerves or systemic inflammation. These changes are more consistent with peripheral manifestations or biomarkers of ALS-associated stress than with direct motor neuron degeneration. \nIntersection-gene interpretation: KRT1, KRT10, KRT14, and KRT16 contribute keratin scaffolds that are crosslinked into the cornified envelope, while CYSRT1 may modulate redox or thiol-dependent processes during envelope formation. Together, these genes indicate remodeling of the terminally differentiated keratinocyte layer and its crosslinked protein–lipid shell, which could alter mechanical protection and environmental sensing in ALS patients. \nPubMed literature synthesis: No specific literature is attached to this pathway, so its ALS relevance is inferred from the role of the cornified envelope in skin barrier and immune interface rather than from direct experimental demonstration in the disease. \nCell/tissue context: The evidence supports involvement of terminally differentiated keratinocytes in the outer epidermal layers forming the cornified stratum corneum.",
+      "description": "Disease pathology and relevance: Alterations in the cornified envelope in ALS would primarily impact the terminal barrier layer of the epidermis, potentially modifying cutaneous permeability, microbial interactions, and local immune activation that could secondarily influence peripheral nerves or systemic inflammation. These changes are more consistent with peripheral manifestations or biomarkers of ALS-associated stress than with direct motor neuron degeneration. \nIntersection-gene interpretation: KRT1, KRT10, KRT14, and KRT16 contribute keratin scaffolds that are crosslinked into the cornified envelope, while CYSRT1 may modulate redox or thiol-dependent processes during envelope formation. Together, these genes indicate remodeling of the terminally differentiated keratinocyte layer and its crosslinked protein–lipid shell, which could alter mechanical protection and environmental sensing in ALS patients. \nPubMed literature synthesis: No specific literature is attached to this pathway, so its ALS relevance is inferred from the role of the cornified envelope in skin barrier and immune interface rather than from direct experimental demonstration in the disease. \nCell/tissue context: The evidence supports involvement of terminally differentiated keratinocytes in the outer epidermal layers forming the cornified stratum corneum.",
+      "gpt_rank": 7,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "27809706",
+          "title": "Oxidative stress and mitochondrial dysfunction-linked neurodegenerative disorders.",
+          "journal": "Neurological research",
+          "year": "2017"
+        },
+        {
+          "pmid": "36421678",
+          "title": "Calmodulin Binding Domains in Critical Risk Proteins Involved in Neurodegeneration.",
+          "journal": "Current issues in molecular biology",
+          "year": "2022"
+        },
+        {
+          "pmid": "9094064",
+          "title": "Involvement of Onuf's nucleus in amyotrophic lateral sclerosis.",
+          "journal": "Journal of the neurological sciences",
+          "year": "1997"
+        },
+        {
+          "pmid": "9230256",
+          "title": "Breathing pattern and respiratory mechanics in patients with amyotrophic lateral sclerosis.",
+          "journal": "The European respiratory journal",
+          "year": "1997"
+        }
+      ],
+      "pmids": [
+        "27809706",
+        "36421678",
+        "9094064",
+        "9230256"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 8 amyotrophic lateral sclerosis (ALS) associated proteins were significantly enriched in the GO:CC pathway “cornified envelope” (GO:0001533). This term denotes a specialized, ceramide-rich modification of the plasma membrane characteristic of cornifying epithelial cells rather than a neuronal compartment.",
+          "Among the proteins enriched in this cornified envelope term, TGM1, KRT14 and PPL exemplify core structural constituents of this compartment. TGM1 encodes a transglutaminase that catalyzes ε(γ-glutamyl)lysine cross-links between structural substrates, a defining biochemical step in stabilizing the cornified envelope, and its presence in our ALS-associated set indicates that the module includes enzymes that covalently remodel epithelial membranes. KRT14 is a type I intermediate filament keratin that forms obligate heteropolymers with type II keratins in basal keratinocytes, providing the filamentous scaffold upon which the cornified envelope is assembled. PPL encodes periplakin, a member of the plakin family that links intermediate filaments to the cornified envelope, serving as a scaffold that recruits both keratins and cross-linking enzymes to the cell periphery. In the context of this analysis, these three proteins highlight that the ALS-associated gene set includes components that localize to, and help define, the ultrastructure of cornifying epithelial cell membranes.",
+          "KRT1 and KRT10 further extend this structural theme as major type II and type I keratins of differentiating suprabasal keratinocytes, respectively, forming heteropolymers that are subsequently incorporated into the cornified envelope. KRT16 and KRT75 are additional intermediate filament keratins that localize to specialized epithelial compartments, including hair follicles and stress-responsive epithelia, and participate in networks that interface with the cornified envelope. Together, these keratins in the ALS-associated module converge on a shared localization at the interface between the cytoplasmic intermediate filament system and the modified plasma membrane that characterizes fully or partially cornified epithelial cells.",
+          "The remaining protein, CYSRT1, can be grouped with the keratins into a broader cluster of cornified-envelope–enriched components that contribute to the specialized barrier surface of epithelial cells. Within this cluster, KRT1, KRT10, KRT16 and KRT75 represent filament-forming structural proteins that provide mechanical resilience, whereas CYSRT1 contributes as an additional cornified-envelope–localized component whose precise structural role is less well defined but is annotated to the same specialized membrane compartment. All of these proteins are enriched in a cellular component that is characteristic of terminally differentiating epithelia, rather than of motor neurons or glia.",
+          "Overall, enrichment of the cornified envelope (GO:0001533) among the proteins listed for this record indicates that a subset of the ALS-associated module is biased toward proteins that co-localize in a highly specialized epithelial membrane domain, rather than in canonical neuronal organelles. This result points to peripheral, barrier-forming epithelial structures as a notable subcellular compartment represented in the ALS-associated protein set, without itself implying that the cornified envelope is a primary site of ALS pathology. TGM1, KRT14 and PPL appear to drive this association, as they are central structural and enzymatic constituents that define this compartment, while the keratins KRT1, KRT10, KRT16 and KRT75, together with CYSRT1, reinforce the shared localization. A well-documented interaction within this set is the cross-linking of keratins and periplakin by TGM1 during cornified envelope assembly, but it is important to emphasize that co-localization and known biochemical interactions in epithelial cells do not by themselves establish a common pathogenic mechanism in ALS; they simply identify a compartment that is over-represented within the analyzed protein module."
+        ],
+        "driver_genes": [
+          "TGM1",
+          "KRT14",
+          "PPL"
+        ],
+        "clusters": [
+          {
+            "label": "Cornified-envelope keratin scaffold",
+            "genes": [
+              "KRT1",
+              "KRT10",
+              "KRT16",
+              "KRT75"
+            ]
+          },
+          {
+            "label": "Additional cornified-envelope component",
+            "genes": [
+              "CYSRT1"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "CYSRT1",
+          "KRT1",
+          "KRT10",
+          "KRT14",
+          "KRT16",
+          "KRT75",
+          "PPL",
+          "TGM1"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Alterations in the cornified envelope in ALS would primarily impact the terminal barrier layer of the epidermis, potentially modifying cutaneous permeability, microbial interactions, and local immune activation that could secondarily influence peripheral nerves or systemic inflammation. These changes are more consistent with peripheral manifestations or biomarkers of ALS-associated stress than with direct motor neuron degeneration."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT1, KRT10, KRT14, and KRT16 contribute keratin scaffolds that are crosslinked into the cornified envelope, while CYSRT1 may modulate redox or thiol-dependent processes during envelope formation. Together, these genes indicate remodeling of the terminally differentiated keratinocyte layer and its crosslinked protein–lipid shell, which could alter mechanical protection and environmental sensing in ALS patients."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "4 PubMed records were added by archive backfill using disease + intersection genes. Representative records: PMID:27809706 (2017) Oxidative stress and mitochondrial dysfunction-linked neurodegenerative disorders.; PMID:36421678 (2022) Calmodulin Binding Domains in Critical Risk Proteins Involved in Neurodegeneration.; PMID:9094064 (1997) Involvement of Onuf's nucleus in amyotrophic lateral sclerosis."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + intersection genes"
+    },
+    {
+      "name": "Keratinization",
+      "pathway_id": "REAC:R-HSA-6805567",
+      "native": "REAC:R-HSA-6805567",
+      "p_value": 1.550864822829997e-82,
+      "category": "REAC",
+      "genes": "KRT1,KRT10,KRT13,KRT14,KRT15,KRT16,KRT18,KRT19,KRT20,KRT27,KRT33B,KRT35,KRT36,KRT38,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT8,KRT82,KRT83,KRT85,KRT86,KRT9,KRTAP1-1,KRTAP10-5,KRTAP10-7,KRTAP10-8,KRTAP10-9,KRTAP11-1,KRTAP12-2,KRTAP12-3,KRTAP12-4,KRTAP13-2,KRTAP19-5,KRTAP2-3,KRTAP26-1,KRTAP4-2,KRTAP5-9,KRTAP6-1,KRTAP6-2,KRTAP8-1,KRTAP9-2,KRTAP9-3,LCE1A,LCE1B,LCE1C,LCE1E,LCE1F,LCE2C,LCE2D,LCE3A,LCE3E,LCE4A,LCE5A,PPL,TGM1",
+      "intersection_genes": [
+        "KRT1",
+        "KRT10",
+        "KRT13",
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT18",
+        "KRT19",
+        "KRT20",
+        "KRT27",
+        "KRT33B",
+        "KRT35",
+        "KRT36",
+        "KRT38",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT8",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRT9",
+        "KRTAP1-1",
+        "KRTAP10-5",
+        "KRTAP10-7",
+        "KRTAP10-8",
+        "KRTAP10-9",
+        "KRTAP11-1",
+        "KRTAP12-2",
+        "KRTAP12-3",
+        "KRTAP12-4",
+        "KRTAP13-2",
+        "KRTAP19-5",
+        "KRTAP2-3",
+        "KRTAP26-1",
+        "KRTAP4-2",
+        "KRTAP5-9",
+        "KRTAP6-1",
+        "KRTAP6-2",
+        "KRTAP8-1",
+        "KRTAP9-2",
+        "KRTAP9-3",
+        "LCE1A",
+        "LCE1B",
+        "LCE1C",
+        "LCE1E",
+        "LCE1F",
+        "LCE2C",
+        "LCE2D",
+        "LCE3A",
+        "LCE3E",
+        "LCE4A",
+        "LCE5A",
+        "PPL",
+        "TGM1"
+      ],
+      "intersection_size": 58,
+      "term_size": 216,
+      "query_size": 79,
+      "pathway_description": "Keratinization",
+      "cell_context": "Keratinization in stratified squamous epithelia, particularly epidermal keratinocytes in the skin.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Keratinization changes in ALS likely represent altered differentiation and terminal maturation of keratinocytes, which may influence skin barrier function, local inflammation, and peripheral sensory environments rather than constituting a primary CNS lesion. Such peripheral epithelial alterations could modulate systemic inflammatory status or provide accessible biomarkers of disease-associated stress responses. \nIntersection-gene interpretation: KRT1, KRT10, KRT13, KRT14, and KRT15 encode structural keratins that are sequentially expressed during keratinocyte differentiation, so their joint enrichment suggests shifts in the balance between basal, suprabasal, and more differentiated keratinocyte states. This pattern is consistent with modified cornification and stratum formation that could alter mechanical protection and exposure of peripheral nerve endings in ALS. \nPubMed literature synthesis: No pathway-specific literature is attached, so the ALS connection is inferred from the known role of keratinization in skin barrier biology and its potential to influence peripheral nerve microenvironments rather than from direct experimental evidence. \nCell/tissue context: The biology and keratin composition indicate involvement of epidermal keratinocytes within stratified squamous epithelia of the skin.",
+      "description": "Disease pathology and relevance: Keratinization changes in ALS likely represent altered differentiation and terminal maturation of keratinocytes, which may influence skin barrier function, local inflammation, and peripheral sensory environments rather than constituting a primary CNS lesion. Such peripheral epithelial alterations could modulate systemic inflammatory status or provide accessible biomarkers of disease-associated stress responses. \nIntersection-gene interpretation: KRT1, KRT10, KRT13, KRT14, and KRT15 encode structural keratins that are sequentially expressed during keratinocyte differentiation, so their joint enrichment suggests shifts in the balance between basal, suprabasal, and more differentiated keratinocyte states. This pattern is consistent with modified cornification and stratum formation that could alter mechanical protection and exposure of peripheral nerve endings in ALS. \nPubMed literature synthesis: No pathway-specific literature is attached, so the ALS connection is inferred from the known role of keratinization in skin barrier biology and its potential to influence peripheral nerve microenvironments rather than from direct experimental evidence. \nCell/tissue context: The biology and keratin composition indicate involvement of epidermal keratinocytes within stratified squamous epithelia of the skin.",
+      "gpt_rank": 8,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "31187709",
+          "title": "Protein Misfolding Diseases and Therapeutic Approaches.",
+          "journal": "Current protein & peptide science",
+          "year": "2019"
+        },
+        {
+          "pmid": "25677198",
+          "title": "No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese.",
+          "journal": "Amyotrophic lateral sclerosis & frontotemporal degeneration",
+          "year": "2015"
+        },
+        {
+          "pmid": "32329357",
+          "title": "Keratinous biomarker of mercury exposure associated with amyotrophic lateral sclerosis risk in a nationwide U.S. study.",
+          "journal": "Amyotrophic lateral sclerosis & frontotemporal degeneration",
+          "year": "2020"
+        },
+        {
+          "pmid": "41904009",
+          "title": "Cytoskeltal intermediate filaments in Tau pathology and neurodegeneration.",
+          "journal": "Advances in protein chemistry and structural biology",
+          "year": "2026"
+        },
+        {
+          "pmid": "29760195",
+          "title": "Neuron-Specific HuR-Deficient Mice Spontaneously Develop Motor Neuron Disease.",
+          "journal": "Journal of immunology (Baltimore, Md. : 1950)",
+          "year": "2018"
+        }
+      ],
+      "pmids": [
+        "31187709",
+        "25677198",
+        "32329357",
+        "41904009",
+        "29760195"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 58 amyotrophic lateral sclerosis enriched proteins mapped to the Reactome pathway “Keratinization” (REAC:R-HSA-6805567). In Reactome, Keratinization is annotated as a pathway-level event whose immediate parent event is “Formation of the cornified envelope,” with the proteins listed for this record contributing to successive reaction steps within this process.",
+          "Within this pathway, TGM1 functions as a Ca2+-dependent transglutaminase catalyst that covalently cross-links structural substrates during the terminal stages of keratinization, transforming soluble precursors into an insoluble, cornified envelope. The link between protein misfolding diseases and neurodegeneration, highlighted in the supplied literature, underscores how aberrant cross-linking or misfolding of structural proteins can contribute to cellular stress; the enrichment of TGM1 therefore connects the ALS-associated gene set to an enzymatic node that directly drives the formation of highly stable protein polymers in this pathway. PPL acts primarily as a structural component of multiprotein complexes that bridge intermediate filaments to the forming cornified envelope; in the Keratinization pathway it participates as a scaffold that becomes a substrate for TGM1-mediated cross-linking rather than as a catalyst itself, situating ALS-enriched proteins both on the enzymatic and structural sides of the same reaction chain.",
+          "Among the intermediate filament keratins in this pathway, KRT8, KRT18, KRT19 and KRT20 form a group of type I/II keratin pairs that act as core cytoskeletal substrates for the keratinization reactions, assembling into higher-order filaments that are subsequently stabilized and cross-linked. The supplied evidence emphasizing cytoskeletal intermediate filaments in neurodegeneration and tau pathology supports a broader connection between intermediate filament disorganization and neuronal vulnerability, and the enrichment of these keratins therefore aligns the ALS gene set with the intermediate filament arm of the Keratinization pathway rather than with regulatory or signaling steps. In the context of this Reactome event, these keratins function as structural substrates that participate in successive steps of filament assembly and subsequent envelope incorporation, rather than serving as catalysts or regulatory cofactors.",
+          "A second notable subset of keratins includes KRT18 and KRT19, which in the context of Keratinization form heteropolymeric complexes with partners such as KRT8 and KRT20, and thereby act as components of intermediate filament complexes rather than standalone substrates. These complexes are progressively remodeled as keratinocytes advance through the keratinization program, indicating that the ALS-enriched proteins populate multiple successive reactions within the same event chain: initial filament formation, interaction with linker proteins such as PPL, and eventual cross-linking via TGM1. Although the supplied literature documenting HuR-deficient mice that develop motor neuron disease does not directly implicate these specific keratins, it supports the concept that perturbations of RNA handling can secondarily impact cytoskeletal composition, consistent with the over-representation of structurally focused keratinization components in the ALS gene set.",
+          "The remaining proteins can be grouped into several functional clusters within the Keratinization pathway. One cluster comprises numerous type I and type II keratins (KRT13, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KRT82, KRT83, KRT85, KRT86), which serve as structural substrates that polymerize into intermediate filaments before incorporation into the cornified envelope. A second cluster includes multiple keratin-associated proteins (KRTAP1-1, KRTAP10-5, KRTAP10-7, KRTAP10-8, KRTAP10-9, KRTAP11-1, KRTAP12-2, KRTAP12-3, KRTAP12-4, KRTAP13-2, KRTAP19-5, KRTAP2-3, KRTAP26-1, KRTAP4-2, KRTAP5-9, KRTAP6-1, KRTAP6-2, KRTAP8-1, KRTAP9-2, KRTAP9-3), which function as structural components that associate with keratin filaments and are themselves substrates for cross-linking reactions rather than catalysts. A third cluster consists of late cornified envelope proteins (LCE1A, LCE1B, LCE1C, LCE1E, LCE1F, LCE2C, LCE2D, LCE3A, LCE3E, LCE4A, LCE5A), which are small structural proteins that become incorporated into the outermost layers of the cornified envelope as substrates in the final steps of the keratinization sequence.",
+          "Overall, the Keratinization pathway contributes a structurally focused axis to amyotrophic lateral sclerosis biology in this analysis, concentrating the enriched proteins in catalytic cross-linking and intermediate filament assembly reactions rather than in upstream regulatory events. The association is primarily driven by the cross-linking enzyme TGM1 together with structurally central keratins such as KRT8, KRT18, KRT19 and KRT20, which populate key reaction steps from filament assembly to envelope formation. Within this pathway, TGM1 is documented to catalyze covalent cross-linking of structural substrates including PPL, and these proteins act together in shared reaction steps, forming stable protein polymers characteristic of advanced keratinization. The over-representation of these components therefore links the ALS-enriched gene set to a pathway in which cytoskeletal intermediate filaments and their covalent stabilization play a central mechanistic role, consistent with broader evidence implicating intermediate filament pathology and protein misfolding in neurodegenerative disease."
+        ],
+        "driver_genes": [
+          "TGM1",
+          "KRT8",
+          "KRT18"
+        ],
+        "clusters": [
+          {
+            "label": "Intermediate filament keratin substrates",
+            "genes": [
+              "KRT10",
+              "KRT13",
+              "KRT19",
+              "KRT20",
+              "KRT27",
+              "KRT33B",
+              "KRT35",
+              "KRT36",
+              "KRT38",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86",
+              "KRT5",
+              "KRT6A",
+              "KRT6B",
+              "KRT75",
+              "KRT76",
+              "KRT1",
+              "KRT14",
+              "KRT15",
+              "KRT16",
+              "KRT9",
+              "KRT18",
+              "KRT8"
+            ]
+          },
+          {
+            "label": "Keratin-associated structural proteins",
+            "genes": [
+              "KRTAP1-1",
+              "KRTAP10-5",
+              "KRTAP10-7",
+              "KRTAP10-8",
+              "KRTAP10-9",
+              "KRTAP11-1",
+              "KRTAP12-2",
+              "KRTAP12-3",
+              "KRTAP12-4",
+              "KRTAP13-2",
+              "KRTAP19-5",
+              "KRTAP2-3",
+              "KRTAP26-1",
+              "KRTAP4-2",
+              "KRTAP5-9",
+              "KRTAP6-1",
+              "KRTAP6-2",
+              "KRTAP8-1",
+              "KRTAP9-2",
+              "KRTAP9-3"
+            ]
+          },
+          {
+            "label": "Late cornified envelope proteins",
+            "genes": [
+              "LCE1A",
+              "LCE1B",
+              "LCE1C",
+              "LCE1E",
+              "LCE1F",
+              "LCE2C",
+              "LCE2D",
+              "LCE3A",
+              "LCE3E",
+              "LCE4A",
+              "LCE5A"
+            ]
+          },
+          {
+            "label": "Envelope scaffolding components",
+            "genes": [
+              "PPL"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "KRT13",
+          "KRT18",
+          "KRT19",
+          "KRT20",
+          "KRT27",
+          "KRT33B",
+          "KRT35",
+          "KRT36",
+          "KRT38",
+          "KRT8",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRTAP1-1",
+          "KRTAP10-5",
+          "KRTAP10-7",
+          "KRTAP10-8",
+          "KRTAP10-9",
+          "KRTAP11-1",
+          "KRTAP12-2",
+          "KRTAP12-3",
+          "KRTAP12-4",
+          "KRTAP13-2",
+          "KRTAP19-5",
+          "KRTAP2-3",
+          "KRTAP26-1",
+          "KRTAP4-2",
+          "KRTAP5-9",
+          "KRTAP6-1",
+          "KRTAP6-2",
+          "KRTAP8-1",
+          "KRTAP9-2",
+          "KRTAP9-3",
+          "LCE1A",
+          "LCE1B",
+          "LCE1C",
+          "LCE1E",
+          "LCE1F",
+          "LCE2C",
+          "LCE2D",
+          "LCE3A",
+          "LCE3E",
+          "LCE4A",
+          "LCE5A",
+          "PPL",
+          "TGM1"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Keratinization changes in ALS likely represent altered differentiation and terminal maturation of keratinocytes, which may influence skin barrier function, local inflammation, and peripheral sensory environments rather than constituting a primary CNS lesion. Such peripheral epithelial alterations could modulate systemic inflammatory status or provide accessible biomarkers of disease-associated stress responses."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "KRT1, KRT10, KRT13, KRT14, and KRT15 encode structural keratins that are sequentially expressed during keratinocyte differentiation, so their joint enrichment suggests shifts in the balance between basal, suprabasal, and more differentiated keratinocyte states. This pattern is consistent with modified cornification and stratum formation that could alter mechanical protection and exposure of peripheral nerve endings in ALS."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "5 PubMed records were added by archive backfill using disease + unquoted pathway. Representative records: PMID:31187709 (2019) Protein Misfolding Diseases and Therapeutic Approaches.; PMID:25677198 (2015) No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese.; PMID:32329357 (2020) Keratinous biomarker of mercury exposure associated with amyotrophic lateral sclerosis risk in a nationwide U.S. study."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + unquoted pathway"
+    },
+    {
+      "name": "Formation of the cornified envelope",
+      "pathway_id": "REAC:R-HSA-6809371",
+      "native": "REAC:R-HSA-6809371",
+      "p_value": 2.3945023023008135e-52,
+      "category": "REAC",
+      "genes": "KRT1,KRT10,KRT13,KRT14,KRT15,KRT16,KRT18,KRT19,KRT20,KRT27,KRT33B,KRT35,KRT36,KRT38,KRT5,KRT6A,KRT6B,KRT75,KRT76,KRT8,KRT82,KRT83,KRT85,KRT86,KRT9,LCE1A,LCE1B,LCE1C,LCE1E,LCE1F,LCE2C,LCE2D,LCE3A,LCE3E,LCE4A,LCE5A,PPL,TGM1",
+      "intersection_genes": [
+        "KRT1",
+        "KRT10",
+        "KRT13",
+        "KRT14",
+        "KRT15",
+        "KRT16",
+        "KRT18",
+        "KRT19",
+        "KRT20",
+        "KRT27",
+        "KRT33B",
+        "KRT35",
+        "KRT36",
+        "KRT38",
+        "KRT5",
+        "KRT6A",
+        "KRT6B",
+        "KRT75",
+        "KRT76",
+        "KRT8",
+        "KRT82",
+        "KRT83",
+        "KRT85",
+        "KRT86",
+        "KRT9",
+        "LCE1A",
+        "LCE1B",
+        "LCE1C",
+        "LCE1E",
+        "LCE1F",
+        "LCE2C",
+        "LCE2D",
+        "LCE3A",
+        "LCE3E",
+        "LCE4A",
+        "LCE5A",
+        "PPL",
+        "TGM1"
+      ],
+      "intersection_size": 38,
+      "term_size": 129,
+      "query_size": 79,
+      "pathway_description": "Formation of the cornified envelope",
+      "cell_context": "Formation of the cornified envelope in terminally differentiating epidermal keratinocytes of the skin.",
+      "cell_context_provenance": {
+        "scope": "pathway-level",
+        "source": "FDR-supported pathway cell context",
+        "stage": "post-validation"
+      },
+      "disease_interpretation": "Disease pathology and relevance: Perturbation of cornified envelope formation suggests altered terminal differentiation and barrier function of epidermal cells, which may reflect systemic stress responses or shared keratin network vulnerabilities relevant to ALS. Such changes could influence peripheral sensory environment, inflammation, or skin–nerve interactions that modulate disease course. \nIntersection-gene interpretation: The keratins KRT1, KRT10, KRT13, KRT14, and KRT15 indicate dysregulation across basal and differentiating keratinocyte populations that contribute to the cornified envelope, pointing to disturbed assembly of the keratin cytoskeleton during terminal differentiation. This pattern suggests that ALS-associated molecular changes affect programs governing keratin filament organization and envelope maturation. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The evidence specifically implicates the epidermis and its terminally differentiating keratinocytes that generate the cornified envelope in the outer skin layers.",
+      "description": "Disease pathology and relevance: Perturbation of cornified envelope formation suggests altered terminal differentiation and barrier function of epidermal cells, which may reflect systemic stress responses or shared keratin network vulnerabilities relevant to ALS. Such changes could influence peripheral sensory environment, inflammation, or skin–nerve interactions that modulate disease course. \nIntersection-gene interpretation: The keratins KRT1, KRT10, KRT13, KRT14, and KRT15 indicate dysregulation across basal and differentiating keratinocyte populations that contribute to the cornified envelope, pointing to disturbed assembly of the keratin cytoskeleton during terminal differentiation. This pattern suggests that ALS-associated molecular changes affect programs governing keratin filament organization and envelope maturation. \nPubMed literature synthesis: Not resolved from the supplied pathway-level evidence, as no literature titles are attached for this term. \nCell/tissue context: The evidence specifically implicates the epidermis and its terminally differentiating keratinocytes that generate the cornified envelope in the outer skin layers.",
+      "gpt_rank": 9,
+      "gpt_predicted": true,
+      "literature": [
+        {
+          "pmid": "25677198",
+          "title": "No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese.",
+          "journal": "Amyotrophic lateral sclerosis & frontotemporal degeneration",
+          "year": "2015"
+        }
+      ],
+      "pmids": [
+        "25677198"
+      ],
+      "pathway_narrative": {
+        "paragraphs": [
+          "Exactly 38 amyotrophic lateral sclerosis associated proteins were significantly enriched in the Reactome pathway ‘Formation of the cornified envelope’ (REAC:R-HSA-6809371). In the Reactome event hierarchy this term is a pathway-level event within the parent pathway ‘Keratinization’, and the proteins listed for this record participate as structural components of the cornified envelope, substrates for crosslinking, or the catalytic machinery that drives successive reaction steps in envelope assembly.\n\nAmong the notable proteins enriched in this pathway, TGM1 encodes the calcium-dependent transglutaminase that catalyzes ε-(γ-glutamyl) lysine crosslinking reactions during cornified envelope formation. Within this Reactome pathway, TGM1 functions as an enzyme catalyst that acts on multiple protein substrates in successive steps of the event chain, converting soluble precursors into an insoluble, highly crosslinked protein scaffold. With respect to amyotrophic lateral sclerosis, there is currently no documented genetic or mechanistic association of TGM1 beyond its over-representation in the present pathway-level analysis.\n\nPPL, which encodes periplakin, is enriched here as a structural component of cytoskeletal–membrane linker complexes that are incorporated into the developing cornified envelope. In the Reactome description of this pathway, PPL acts as a constituent of multiprotein complexes that are themselves substrates for TGM1-mediated crosslinking, placing PPL and TGM1 in sequential reaction steps in the assembly process rather than in the same catalytic event. To date, PPL has not been reported as directly implicated in amyotrophic lateral sclerosis, and its relevance in this context is limited to its participation in the enriched keratinization process.\n\nKRT10 represents one of the major type I intermediate filament proteins enriched in this pathway and serves as a prototypical substrate incorporated into the cornified envelope. In the Reactome event chain, KRT10 functions as a structural substrate that forms heteropolymeric intermediate filaments and is subsequently crosslinked by catalytic factors such as TGM1 during successive stages of envelope maturation. No direct clinical or genetic association between KRT10 and amyotrophic lateral sclerosis has been documented so far, and its appearance here reflects the convergence of intermediate filament biology with the keratinization pathway rather than a disease-specific role.\n\nThe remaining proteins enriched in this pathway cluster into several functional groups. A large cluster consists of type I and type II keratin intermediate filament proteins (KRT1, KRT5, KRT8, KRT9, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KRT6A, KRT6B, KRT75, KRT76, KRT82, KRT83, KRT85, KRT86), which act as structural components of filament networks that are progressively integrated into the cornified envelope through crosslinking reactions in this Reactome pathway. A second cluster is formed by the late cornified envelope proteins (LCE1A, LCE1B, LCE1C, LCE1E, LCE1F, LCE2C, LCE2D, LCE3A, LCE3E, LCE4A, LCE5A), which are small, proline-rich structural substrates that become covalently incorporated into the outer layers of the envelope in later reaction steps, downstream of initial keratin scaffold formation. Across these clusters, the proteins function predominantly as substrates or structural components within multi-protein complexes rather than as catalysts, and, aside from their joint enrichment in this pathway, there is no established, protein-specific mechanistic link to amyotrophic lateral sclerosis.\n\nTaken together, enrichment of these 38 proteins in ‘Formation of the cornified envelope’ (REAC:R-HSA-6809371) indicates that a coherent module of keratin-intermediate filament and envelope-assembly components is over-represented among the amyotrophic lateral sclerosis associated proteins analyzed. Within this pathway, the association appears to be driven primarily by the catalytic crosslinking activity of TGM1 and the scaffold-forming roles of PPL and KRT10, which anchor successive steps in the Reactome event chain. A well-documented interaction within the enriched set is the TGM1-mediated covalent crosslinking of structural substrates such as keratins and late cornified envelope proteins, with PPL contributing as a component of the complexes that are crosslinked. These findings support a convergent signal implicating keratin-based structural remodeling, rather than a single gene with a known causal role, in the pathway-level landscape of amyotrophic lateral sclerosis genetics revealed by this analysis.",
+          "driver_genes([",
+          "TGM1",
+          "KRT10",
+          "PPL"
+        ],
+        "driver_genes": [
+          "TGM1",
+          "KRT10",
+          "PPL"
+        ],
+        "clusters": [
+          {
+            "label": "Keratin intermediate filament scaffold",
+            "genes": [
+              "KRT1",
+              "KRT5",
+              "KRT8",
+              "KRT9",
+              "KRT13",
+              "KRT14",
+              "KRT15",
+              "KRT16",
+              "KRT18",
+              "KRT19",
+              "KRT20",
+              "KRT27",
+              "KRT33B",
+              "KRT35",
+              "KRT36",
+              "KRT38",
+              "KRT6A",
+              "KRT6B",
+              "KRT75",
+              "KRT76",
+              "KRT82",
+              "KRT83",
+              "KRT85",
+              "KRT86"
+            ]
+          },
+          {
+            "label": "Late cornified envelope structural substrates",
+            "genes": [
+              "LCE1A",
+              "LCE1B",
+              "LCE1C",
+              "LCE1E",
+              "LCE1F",
+              "LCE2C",
+              "LCE2D",
+              "LCE3A",
+              "LCE3E",
+              "LCE4A",
+              "LCE5A"
+            ]
+          }
+        ],
+        "discussed_genes": [
+          "KRT1",
+          "KRT10",
+          "KRT13",
+          "KRT14",
+          "KRT15",
+          "KRT16",
+          "KRT18",
+          "KRT19",
+          "KRT20",
+          "KRT27",
+          "KRT33B",
+          "KRT35",
+          "KRT36",
+          "KRT38",
+          "KRT5",
+          "KRT6A",
+          "KRT6B",
+          "KRT75",
+          "KRT76",
+          "KRT8",
+          "KRT82",
+          "KRT83",
+          "KRT85",
+          "KRT86",
+          "KRT9",
+          "LCE1A",
+          "LCE1B",
+          "LCE1C",
+          "LCE1E",
+          "LCE1F",
+          "LCE2C",
+          "LCE2D",
+          "LCE3A",
+          "LCE3E",
+          "LCE4A",
+          "LCE5A",
+          "PPL",
+          "TGM1"
+        ],
+        "generated": true,
+        "generation_attempts": 1
+      },
+      "interpretation_points": [
+        {
+          "label": "Disease pathology and relevance",
+          "text": "Perturbation of cornified envelope formation suggests altered terminal differentiation and barrier function of epidermal cells, which may reflect systemic stress responses or shared keratin network vulnerabilities relevant to ALS. Such changes could influence peripheral sensory environment, inflammation, or skin–nerve interactions that modulate disease course."
+        },
+        {
+          "label": "Intersection-gene interpretation",
+          "text": "The keratins KRT1, KRT10, KRT13, KRT14, and KRT15 indicate dysregulation across basal and differentiating keratinocyte populations that contribute to the cornified envelope, pointing to disturbed assembly of the keratin cytoskeleton during terminal differentiation. This pattern suggests that ALS-associated molecular changes affect programs governing keratin filament organization and envelope maturation."
+        },
+        {
+          "label": "PubMed literature synthesis",
+          "text": "1 PubMed records were added by archive backfill using disease + intersection genes. Representative records: PMID:25677198 (2015) No evidence of association between polymorphisms in four genes and sporadic amyotrophic lateral sclerosis in Han Chinese."
+        }
+      ],
+      "literature_provenance": "NCBI PubMed archive backfill: disease + intersection genes"
+    }
+  ],
+  "reasoning": {
+    "GO:BP_iter1": {
+      "overall_strategy": "I treated the 105-gene list as a co-regulated module and asked: “What biological processes are most likely enriched if these genes are perturbed together in ALS?” Conceptually, I map each gene to GO:BP terms using curated annotations (UniProt-GOA, NCBI Gene, Ensembl) and infer overrepresented processes by (1) counting term frequencies across the gene set, (2) collapsing redundant child terms into more interpretable parent processes, and (3) prioritizing terms that are mechanistically coherent with ALS pathophysiology (motor neuron degeneration, neuroinflammation, neuromuscular junction failure, barrier dysfunction). I then cross-check these inferred processes against known functions of key genes and gene families (e.g., keratins, ECM proteins, signaling adaptors) and against ALS literature (e.g., neuroinflammation, oxidative stress, vascular changes). The final 10 GO:BP predictions are those that best explain the dominant functional clusters in the gene set while remaining biologically plausible in ALS-relevant tissues.",
+      "gene_analysis": "Even from the partial list, several strong themes emerge:\n\n1. **Epithelial/structural and barrier-related genes**  \n   - Large keratin cluster: KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, plus KPRP (keratinocyte proline-rich protein).  \n   - ECM/structural: COL8A1, EFEMP1, EFEMP2, CNNM3 (ion transport with structural implications), AQP1 (water channel).  \n   This suggests a module enriched for **epithelial differentiation, cytoskeletal organization, and barrier/vascular remodeling**.\n\n2. **Inflammatory and signaling adaptor genes**  \n   - ARID5A (stabilizes IL-6 mRNA, regulates inflammatory responses), CARD10 (scaffold for NF-κB activation downstream of GPCRs), FRS3 (FGF receptor substrate, modulates MAPK signaling).  \n   These point to **NF-κB–mediated inflammatory signaling and growth factor signaling**.\n\n3. **Developmental and patterning genes**  \n   - HOXA1, HOXC8 (homeobox transcription factors controlling anterior–posterior patterning, neuronal and skeletal development), ISM2 (secreted protein implicated in angiogenesis and development).  \n   This indicates **developmental patterning, tissue morphogenesis, and possibly vascular development**.\n\n4. **Redox and stress response**  \n   - GLRX3 (glutaredoxin 3, redox regulation and iron–sulfur cluster biogenesis), AQP1 (also involved in oxidative stress responses in endothelium), EFEMP1/2 (ECM proteins linked to stress and degeneration).  \n   This supports **response to oxidative stress and cellular stress signaling**.\n\nOverall, the module looks like a **non-neuronal support/structural and inflammatory network**—epithelial/vascular barrier, ECM remodeling, and inflammatory signaling—rather than a pure neuronal synaptic module. In ALS, that aligns with **neurovascular unit dysfunction, skin/epidermal changes, and systemic inflammation** rather than motor neuron-intrinsic genes alone.",
+      "database_focus": "GO:BP is appropriate here because it captures **multi-step biological processes** (e.g., “epithelial cell differentiation,” “regulation of NF-κB signaling,” “extracellular matrix organization”) that integrate diverse gene functions into coherent pathways. This is crucial for a heterogeneous list containing cytoskeletal, ECM, transcriptional, and signaling genes. GO:BP provides a higher-level, mechanistic view than GO:MF (which would fragment the module into many enzyme and binding activities) and is more process-focused than GO:CC (which would emphasize locations like “intermediate filament cytoskeleton” or “basement membrane” without explaining the dynamic processes (e.g., remodeling, differentiation, inflammation) that are relevant to ALS pathogenesis.",
+      "key_gene_functions": "1. **Cytoskeleton and epithelial differentiation (keratin cluster)**  \n   - **KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38**:  \n     Type I/II intermediate filament proteins forming the cytoskeletal scaffold in epithelial cells. They are annotated to GO:BP terms such as:\n     - “epidermis development”  \n     - “keratinocyte differentiation”  \n     - “intermediate filament cytoskeleton organization”  \n     - “cornification” / “keratinization”  \n   - **KPRP**: Keratinocyte proline-rich protein, associated with cornified envelope formation and epidermal barrier function.  \n   This cluster strongly drives predictions related to **epidermal/epithelial differentiation and barrier formation**.\n\n2. **Extracellular matrix and tissue remodeling**  \n   - **COL8A1**: Collagen type VIII alpha 1 chain, a component of Descemet’s membrane and vascular basement membranes; annotated to:\n     - “extracellular matrix organization”  \n     - “angiogenesis”  \n     - “basement membrane organization”  \n   - **EFEMP1 (fibulin-3), EFEMP2 (fibulin-4)**: ECM glycoproteins involved in elastic fiber formation, basement membrane integrity, and pathological remodeling; annotated to:\n     - “extracellular matrix organization”  \n     - “elastic fiber assembly”  \n     - “angiogenesis” / “blood vessel development”  \n   These genes drive **ECM organization, vascular remodeling, and tissue morphogenesis** terms.\n\n3. **Inflammatory and stress signaling**  \n   - **ARID5A**: RNA-binding protein that stabilizes IL-6 mRNA and modulates inflammatory gene expression; annotated to:\n     - “regulation of inflammatory response”  \n     - “positive regulation of interleukin-6 production”  \n   - **CARD10**: Scaffold protein linking GPCRs to NF-κB activation via BCL10/MALT1; annotated to:\n     - “positive regulation of NF-κB transcription factor activity”  \n     - “regulation of apoptotic process”  \n   - **FRS3**: FGF receptor substrate 3, adaptor in FGF–MAPK signaling; annotated to:\n     - “fibroblast growth factor receptor signaling pathway”  \n     - “regulation of ERK1 and ERK2 cascade”  \n   - **GLRX3**: Redox enzyme involved in iron–sulfur cluster assembly and oxidative stress responses; annotated to:\n     - “cellular response to oxidative stress”  \n     - “protein maturation by iron–sulfur cluster transfer”  \n   These genes collectively support **inflammatory signaling, NF-κB/MAPK pathways, and oxidative stress responses**.\n\n4. **Developmental patterning and morphogenesis**  \n   - **HOXA1, HOXC8**: Homeobox transcription factors controlling segmental identity, hindbrain and spinal cord patterning, and skeletal development; annotated to:\n     - “anterior/posterior pattern specification”  \n     - “spinal cord development”  \n     - “skeletal system development”  \n   - **ISM2**: Implicated in angiogenesis and embryonic development; annotated to:\n     - “angiogenesis”  \n     - “embryonic organ development”  \n   These genes drive **developmental and morphogenetic GO:BP terms**, especially those related to axial patterning and vascular development.\n\n5. **Transport and barrier function**  \n   - **AQP1**: Aquaporin-1 water channel, highly expressed in endothelial cells, choroid plexus, and some glia; annotated to:\n     - “water transport”  \n     - “regulation of blood vessel diameter”  \n     - “response to hypoxia” (via literature and some GO annotations)  \n   - **CNNM3**: Metal transporter (Mg2+), involved in ion homeostasis; annotated to:\n     - “magnesium ion transmembrane transport”  \n   These support **transport, barrier function, and vascular tone regulation**.",
+      "pathway_selection_rationale": "Based on the above functional clusters, the 10 most plausible GO:BP pathways (at a conceptual level) and why they were selected:\n\n1. **Epidermis development / keratinocyte differentiation**  \n   - Driven by the dense keratin cluster (KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38) and KPRP.  \n   - Mechanistic bridge: these genes encode structural proteins and envelope components required for stratification, differentiation, and cornification of keratinocytes.  \n   - In ALS, skin and epithelial changes are increasingly recognized (e.g., skin biomarkers, altered barrier function), making this process relevant.\n\n2. **Intermediate filament cytoskeleton organization**  \n   - Same keratin genes plus possibly EFEMP1/2 (indirectly via ECM–cytoskeleton linkage).  \n   - Mechanistic bridge: keratins assemble into intermediate filaments that maintain cell integrity and respond to mechanical stress; dysregulation can alter cell resilience and signaling.  \n   - This process is thematically linked to structural integrity of epithelial and possibly endothelial cells in ALS patients.\n\n3. **Extracellular matrix organization**  \n   - Driven by COL8A1, EFEMP1, EFEMP2, and supported by structural keratins (via hemidesmosome/ECM interactions).  \n   - Mechanistic bridge: these ECM proteins regulate basement membrane composition, elastic fiber assembly, and tissue stiffness; ECM remodeling is a key feature of neurovascular and neuromuscular pathology.  \n   - In ALS, ECM changes around motor neurons, neuromuscular junctions, and vasculature are implicated in disease progression.\n\n4. **Angiogenesis / blood vessel development**  \n   - Driven by COL8A1, EFEMP1, EFEMP2, ISM2, and AQP1.  \n   - Mechanistic bridge: COL8A1 and fibulins are integral to vascular basement membranes and elastic fibers; ISM2 and AQP1 modulate angiogenic signaling and vascular permeability.  \n   - ALS shows microvascular abnormalities and blood–spinal cord barrier (BSCB) disruption; thus, vascular development/remodeling is mechanistically relevant.\n\n5. **Regulation of NF-κB signaling / inflammatory response**  \n   - Driven by CARD10 (NF-κB activation), ARID5A (IL-6 stabilization), and supported by ECM proteins that can modulate inflammation (EFEMP1/2).  \n   - Mechanistic bridge: CARD10 scaffolds GPCR-induced NF-κB activation; ARID5A prolongs inflammatory cytokine expression; ECM fragments can act as DAMPs.  \n   - Neuroinflammation is a central ALS mechanism; this GO:BP term directly connects the gene set to inflammatory signaling.\n\n6. **MAPK cascade / growth factor signaling (FGF pathway)**  \n   - Driven by FRS3 (FGF receptor substrate) and supported by ECM and developmental genes (EFEMP1/2, HOXA1, HOXC8) that modulate growth factor availability and responsiveness.  \n   - Mechanistic bridge: FRS3 transduces FGF receptor activation to ERK1/2; ECM composition and developmental transcription factors shape growth factor gradients and receptor expression.  \n   - In ALS, MAPK signaling contributes to glial activation, neuronal stress responses, and vascular remodeling.\n\n7. **Cellular response to oxidative stress**  \n   - Driven by GLRX3 and supported by AQP1 (involved in ROS handling in endothelium) and ECM proteins that respond to oxidative damage.  \n   - Mechanistic bridge: GLRX3 regulates redox homeostasis and iron–sulfur cluster integrity; oxidative stress is a hallmark of ALS motor neuron and vascular pathology.  \n   - This GO:BP term links the module to a core ALS mechanism.\n\n8. **Anterior/posterior pattern specification / spinal cord development**  \n   - Driven by HOXA1 and HOXC8.  \n   - Mechanistic bridge: these homeobox genes define segmental identity and patterning of the spinal cord and axial skeleton; their dysregulation can alter motor neuron pools and connectivity.  \n   - While these are developmental, reactivation or altered expression in adult tissues (including glia or vasculature) has been reported in neurodegeneration and may reflect maladaptive plasticity.\n\n9. **Epithelial cell migration / wound healing**  \n   - Supported by keratins (KRT16, KRT14, KRT19), ECM proteins (COL8A1, EFEMP1/2), and signaling adaptors (FRS3).  \n   - Mechanistic bridge: keratins and ECM components are dynamically remodeled during wound healing and epithelial migration; FGF–MAPK signaling promotes these processes.  \n   - In ALS, chronic micro-injury and repair responses in skin, vasculature, and possibly meninges could engage this pathway.\n\n10. **Regulation of water homeostasis and vascular permeability**  \n    - Driven by AQP1 and supported by ECM/vascular genes (COL8A1, EFEMP1/2) and ISM2.  \n    - Mechanistic bridge: AQP1 controls water flux across endothelial and epithelial barriers; ECM composition and angiogenic factors modulate vessel permeability and edema.  \n    - BSCB and blood–brain barrier (BBB) dysfunction in ALS involve altered water transport and vascular permeability, making this process mechanistically relevant.\n\nThese terms are thematically interconnected: **structural/epithelial differentiation**, **ECM and vascular remodeling**, **inflammatory and stress signaling**, and **developmental patterning**—all of which can converge on neurovascular unit dysfunction and systemic manifestations in ALS.",
+      "biological_evidence": "Multiple lines of evidence support these pathway predictions in ALS:\n\n- **Neurovascular and barrier dysfunction**: Human ALS spinal cord and animal models show **BSCB and BBB breakdown**, with altered expression of aquaporins (including AQP1), basement membrane collagens, and ECM proteins. ECM remodeling and angiogenesis-related genes are upregulated in ALS spinal cord and muscle transcriptomes, consistent with the “extracellular matrix organization” and “angiogenesis” GO:BP terms.\n- **Systemic and skin changes**: Skin biopsies from ALS patients reveal **altered keratin expression and epidermal structure**, and keratin-based signatures have been proposed as peripheral biomarkers. This supports enrichment of “epidermis development,” “keratinocyte differentiation,” and “intermediate filament organization.”\n- **Neuroinflammation and oxidative stress**: NF-κB activation in microglia and astrocytes, elevated IL-6, and oxidative stress markers are well-documented in ALS. ARID5A and CARD10 fit directly into these pathways, and GLRX3’s role in redox homeostasis aligns with the oxidative stress component of ALS pathology.",
+      "cell_context": "- keratinization: Keratinization in specialized epidermal and adnexal keratinocytes, including hair follicle and nail-associated keratinocytes.\n- epidermis development: Development and differentiation of epidermal keratinocytes in the skin.\n- skin epidermis development: Not resolved from the supplied pathway-level evidence.",
+      "relevance_strength_with_disease:_medium": "The mechanistic links between the predicted GO:BP pathways and ALS are biologically plausible and supported by literature on **neurovascular dysfunction, systemic inflammation, oxidative stress, and skin/ECM changes** in ALS. However, the gene set is **enriched for epithelial/structural and vascular genes rather than canonical motor neuron genes**, suggesting this module may represent a **peripheral or support-tissue response** to ALS rather than the primary neurodegenerative driver. I would expect statistical enrichment for the highlighted GO:BP terms, but their direct causal role in motor neuron death is likely secondary or modulatory, hence a medium rather than high confidence rating."
+    },
+    "GO:MF_iter1": {
+      "overall_strategy": "I treated the 105-gene list as a putative co-expression / co-regulation module and asked: “What specific biochemical activities do these proteins perform that could plausibly intersect ALS mechanisms?”  \n\nMethodologically, I would (1) map each gene to UniProt and Ensembl, (2) retrieve curated GO:MF annotations (including inferred from electronic annotation, IEA, but prioritizing experimental evidence codes like IDA, IMP, IPI), and (3) propagate annotations up the GO hierarchy to identify enriched parent terms. I then cluster genes by shared MF terms (e.g., “structural constituent of cytoskeleton,” “extracellular matrix structural constituent,” “transcription factor activity”) and look for over-represented themes that can form 10 coherent MF “pathways.” Finally, I cross-check these MF themes against known ALS biology (axon structure, membrane excitability, proteostasis, neuroinflammation, ECM remodeling) to prioritize terms that are both mechanistically plausible and likely to be statistically enriched.",
+      "gene_analysis": "Even from the partial list, several dominant functional themes are clear:\n\n1. **Cytoskeletal / structural proteins (especially keratins):**  \n   - KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KPRP.  \n   These are classical intermediate filament proteins and associated cornified envelope components, annotated with MF terms like “structural constituent of cytoskeleton” and “structural molecule activity.”\n\n2. **Extracellular matrix (ECM) and matricellular proteins:**  \n   - COL8A1 (collagen type VIII), EFEMP1 (fibulin-3), EFEMP2 (fibulin-4), ISM2 (ischemia-inducible factor), CYSRT1 (cysteine-rich tail protein).  \n   These map to “extracellular matrix structural constituent,” “glycosaminoglycan binding,” and “protein binding” with ECM specificity.\n\n3. **Transcriptional and signaling regulators:**  \n   - ARID5A (AT-rich interactive domain-containing protein 5A), HOXA1, HOXC8 (homeobox transcription factors), FRS3 (FGFR substrate 3), CARD10 (caspase recruitment domain family member), KLHL38 (BTB-Kelch family, substrate adaptor for CUL3 E3 ligase).  \n   These contribute to “DNA-binding transcription factor activity,” “transcription coregulator activity,” “protein kinase binding,” and “ubiquitin protein ligase binding.”\n\n4. **Ion and redox-related proteins:**  \n   - AQP1 (water channel), CNNM3 (metal transporter, Mg2+ homeostasis), CATSPER1 (cation channel of sperm), GLRX3 (glutaredoxin-3, redox enzyme).  \n   These map to “water channel activity,” “metal ion transmembrane transporter activity,” “cation channel activity,” and “oxidoreductase activity.”\n\nOverall, this module looks like a **stress-responsive epithelial/ECM–cytoskeletal remodeling and signaling module** with strong structural, ECM, and transcriptional regulation components, plus a smaller but important set of ion transport and redox regulators that are mechanistically relevant to ALS.",
+      "database_focus": "GO:MF is appropriate here because it dissects **what each protein actually does at the biochemical level**—binding partners, catalytic activities, channel/transport functions, and structural roles—rather than where it is (GO:CC) or what process it participates in (GO:BP).  \n\nFor a heterogeneous gene set like this, MF terms allow us to separate: (1) structural constituents (keratins, collagens), (2) transcription factors (HOX, ARID5A), (3) signaling adaptors (CARD10, FRS3), and (4) transporters/channels (AQP1, CNNM3, CATSPER1). This MF resolution complements GO:BP (e.g., “axon guidance,” “inflammatory response”) by specifying the **molecular levers** through which those processes are executed.",
+      "1._structural_constituents_of_cytoskeleton_and_cornified_envelope": "- **KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38**  \n  - Canonical MF:  \n    - GO:0005198 “structural molecule activity”  \n    - GO:0005200 “structural constituent of cytoskeleton”  \n  - These keratins form intermediate filaments, providing mechanical resilience and scaffolding for signaling complexes. In non-epithelial contexts, intermediate filament–like functions are analogous to neurofilaments in motor neurons (which are heavily implicated in ALS).\n\n- **KPRP (keratinocyte proline-rich protein)**  \n  - MF: “structural constituent of epidermis” (child of structural molecule activity), interacts with keratin filaments and cornified envelope proteins.",
+      "2._extracellular_matrix_structural_and_binding_activities": "- **COL8A1**  \n  - MF:  \n    - GO:0005201 “extracellular matrix structural constituent”  \n    - Collagen triple helix structural activity; binds integrins and ECM components.\n\n- **EFEMP1 (fibulin-3), EFEMP2 (fibulin-4)**  \n  - MF:  \n    - “extracellular matrix structural constituent”  \n    - “protein binding” with specificity for elastin, collagens, and growth factors (e.g., TGF-β modulation).\n\n- **CYSRT1, ISM2**  \n  - Cysteine-rich and secreted; annotated with “protein binding,” often associated with ECM or secreted signaling modulation.",
+      "3._transcription_factor_and_dna/rna_binding_activities": "- **HOXA1, HOXC8**  \n  - MF:  \n    - GO:0003700 “DNA-binding transcription factor activity”  \n    - GO:0000978 “RNA polymerase II proximal promoter sequence-specific DNA binding”  \n  - Regulate anterior–posterior patterning and neuronal identity; in adult tissues, they can be reactivated in stress or regeneration contexts.\n\n- **ARID5A**  \n  - MF:  \n    - “DNA-binding transcription factor activity” (ARID domain)  \n    - Also binds specific mRNAs (e.g., IL-6) and stabilizes them, so “RNA binding” is relevant.  \n  - Links inflammatory signaling to transcriptional and post-transcriptional control.",
+      "4._signaling_adaptors_and_ubiquitin_related_functions": "- **CARD10**  \n  - MF:  \n    - “protein binding,” “signal transducer activity,” “NF-κB binding” (via BCL10/MALT1 complex).  \n  - Scaffolds GPCR or receptor signaling to NF-κB activation.\n\n- **FRS3**  \n  - MF:  \n    - “protein kinase binding,” “receptor signaling adaptor activity.”  \n  - Couples FGFR activation to downstream MAPK/PI3K pathways.\n\n- **KLHL38**  \n  - MF:  \n    - “protein binding,” “ubiquitin protein ligase binding” (as a BTB-Kelch substrate adaptor for CUL3 E3 ligase complexes).  \n  - Specifies substrates for ubiquitin-mediated proteasomal degradation.",
+      "5._channel,_transporter,_and_redox_activities": "- **AQP1**  \n  - MF:  \n    - GO:0015250 “water channel activity”  \n    - GO:0022853 “active transmembrane transporter activity” (more specifically, passive channel).  \n  - Controls water permeability and indirectly cell volume and osmotic stress.\n\n- **CNNM3**  \n  - MF:  \n    - “metal ion transmembrane transporter activity,” particularly Mg2+ transport/regulation.  \n  - Mg2+ homeostasis is critical for ATP-dependent processes and neuronal excitability.\n\n- **CATSPER1**  \n  - MF:  \n    - “cation channel activity,” “calcium channel activity” (sperm-specific in canonical annotation).  \n  - Even if expression is low in CNS, its presence in the module suggests a cation channel–related MF theme.\n\n- **GLRX3 (PICOT)**  \n  - MF:  \n    - GO:0015035 “protein disulfide oxidoreductase activity”  \n    - GO:0016671 “oxidoreductase activity, acting on a sulfur group of donors.”  \n  - Maintains redox homeostasis, regulates Fe–S cluster biogenesis, and modulates signaling kinases via redox.",
+      "pathway_selection_rationale": "From these MF annotations, I would predict the following 10 GO:MF “pathways” (functional themes), each supported by specific genes:\n\n1. **Structural constituent of cytoskeleton (GO:0005200)**  \n   - Driven by: KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KPRP.  \n   - Rationale: High redundancy of keratin genes strongly enriches this term. Mechanistically, cytoskeletal structural integrity is central to axonal transport and motor neuron survival in ALS.\n\n2. **Structural molecule activity (GO:0005198)**  \n   - Driven by: all keratins above + COL8A1, EFEMP1, EFEMP2.  \n   - Rationale: This is a parent term capturing both cytoskeletal and ECM structural roles, reflecting a broader structural remodeling module.\n\n3. **Extracellular matrix structural constituent (GO:0005201)**  \n   - Driven by: COL8A1, EFEMP1, EFEMP2, possibly CYSRT1/ISM2.  \n   - Rationale: Multiple ECM proteins suggest a specific enrichment for ECM structural activity, relevant to perineuronal nets and neuromuscular junction (NMJ) integrity in ALS.\n\n4. **DNA-binding transcription factor activity (GO:0003700)**  \n   - Driven by: HOXA1, HOXC8, ARID5A.  \n   - Rationale: These transcription factors regulate developmental and inflammatory gene programs; their co-occurrence indicates a transcriptional control axis within the module.\n\n5. **RNA polymerase II proximal promoter sequence-specific DNA binding (GO:0000978)**  \n   - Driven by: HOXA1, HOXC8 (and possibly ARID5A depending on annotation).  \n   - Rationale: A more specific TF MF term, indicating direct promoter-level regulation of target genes, including those involved in neuronal identity and stress responses.\n\n6. **Protein kinase binding / receptor signaling adaptor activity (GO:0019901 / GO:0005057)**  \n   - Driven by: FRS3, CARD10, KLHL38 (via E3 ligase complexes that often regulate kinases), GLRX3 (modulates kinase activity via redox).  \n   - Rationale: These proteins form a signaling adaptor/effector module that couples extracellular cues (FGF, GPCRs) to intracellular kinase cascades and NF-κB.\n\n7. **Ubiquitin protein ligase binding / ubiquitin-dependent protein binding (GO:0031625 / GO:0044389)**  \n   - Driven by: KLHL38 (CUL3 adaptor), possibly ARID5A (interacts with ubiquitin machinery in inflammatory signaling), GLRX3 (interacts with E3 ligases in some contexts).  \n   - Rationale: This MF theme connects the module to proteostasis and protein quality control, a core ALS mechanism.\n\n8. **Water channel activity (GO:0015250)**  \n   - Driven by: AQP1.  \n   - Rationale: Even a single strong channel gene can yield a specific MF term; water channel activity is mechanistically linked to edema, cell volume regulation, and excitability in CNS tissues.\n\n9. **Metal ion transmembrane transporter activity (GO:0046873 / GO:0015082)**  \n   - Driven by: CNNM3, CATSPER1 (cation channel), possibly AQP1 (if broader transporter terms are used).  \n   - Rationale: This captures ion homeostasis, particularly Mg2+ and Ca2+, which are critical for motor neuron firing and mitochondrial function.\n\n10. **Oxidoreductase activity, acting on sulfur group of donors (GO:0016671) / protein disulfide oxidoreductase activity (GO:0015035)**  \n    - Driven by: GLRX3.  \n    - Rationale: Redox regulation is a central ALS mechanism; GLRX3’s MF term anchors a redox/oxidative stress axis within the module.\n\nThese MF terms are thematically connected: **structural integrity (cytoskeleton + ECM) ↔ signaling and transcriptional regulation ↔ ion and redox homeostasis ↔ proteostasis**, all of which are mechanistically intertwined in ALS pathogenesis.",
+      "biological_evidence": "Several of these MF themes are directly supported by ALS literature:\n\n- **Cytoskeletal structural activity:** Neurofilament disorganization and intermediate filament pathology are hallmark features of ALS motor neurons. While keratins are epithelial, the same MF category (“structural constituent of cytoskeleton”) captures analogous functions; intermediate filament perturbation is known to impair axonal transport and contribute to motor neuron degeneration.\n\n- **ECM structural activity:** Changes in collagen and fibulin expression have been reported in ALS spinal cord and muscle, affecting perivascular and perineuronal ECM. ECM stiffness and composition modulate motor neuron survival and glial activation.\n\n- **Transcription factor activity:** HOX genes and ARID family members are implicated in neuronal subtype specification and inflammatory gene regulation. ARID5A, in particular, stabilizes IL-6 mRNA and amplifies inflammatory signaling, which is a recognized contributor to ALS progression.\n\n- **Ion transport and redox MF:** Altered Ca2+ handling, Mg2+ homeostasis, and oxidative stress are central to ALS. AQP1 is upregulated in reactive astrocytes and endothelial cells in neurodegeneration, influencing edema and barrier function. GLRX3 and related redox enzymes modulate oxidative damage and mitochondrial function, both heavily implicated in ALS.\n\n- **Ubiquitin-related MF:** Ubiquitinated protein aggregates (TDP-43, SOD1, FUS) are a defining feature of ALS pathology. BTB-Kelch adaptors like KLHL family members regulate substrate-specific ubiquitination, and dysregulation of E3 ligase activity is increasingly recognized in ALS models.",
+      "cell_context": "- structural molecule activity: Structural framework of epithelial tissues, particularly the extracellular matrix and cytoskeletal components of skin and other epithelia.\n- structural constituent of cytoskeleton: Cytoskeletal architecture of epithelial cells, especially basal and suprabasal epidermal keratinocytes.",
+      "relevance_strength_with_disease:_medium": "The MF themes—cytoskeletal structural activity, ECM structural activity, transcription factor activity, ion transport, redox regulation, and ubiquitin-related binding—are all mechanistically aligned with known ALS pathways (axon integrity, NMJ stability, neuroinflammation, oxidative stress, proteostasis). However, many of the specific genes (e.g., multiple keratins, CATSPER1) are not canonical ALS genes and may reflect tissue contamination or a generic stress/epithelial response module rather than motor neuron–specific changes.  \n\nThus, while the **functional categories** are highly relevant to ALS, the **exact gene set** provides indirect rather than direct evidence; I would expect statistical enrichment for these MF terms, but with moderate confidence that they represent core ALS drivers rather than secondary or tissue-contextual responses."
+    },
+    "GO:CC_iter1": {
+      "overall_strategy": "I treated the 105-gene list as a putative co-expression / co-regulation module and asked: “In what physical structures inside or around the cell do these proteins most plausibly reside and act?” To do this, I conceptually mapped each gene to its curated GO:CC annotations (UniProt, Ensembl, NCBI Gene) and then grouped them into higher-order structures (e.g., intermediate filament cytoskeleton, extracellular matrix, plasma membrane microdomains). I then looked for convergence: cellular components that are (1) repeatedly annotated across multiple genes, (2) mechanistically coherent, and (3) biologically plausible in ALS-relevant tissues (motor neurons, astrocytes, microglia, skeletal muscle). Finally, I prioritized ~10 GO:CC terms that best explain the dominant structural themes and that can be mechanistically linked to ALS pathophysiology (axon integrity, neuromuscular junction, barrier function, extracellular matrix remodeling, and inflammatory interfaces).",
+      "gene_analysis": "Even from the partial list, the most striking feature is the dense cluster of keratin genes: KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, etc. This strongly points to enrichment in the **intermediate filament cytoskeleton**, particularly epithelial-type keratin networks, but also suggests broader cytoskeletal remodeling and stress responses. A second theme is **extracellular matrix (ECM) and secreted structural proteins**, including EFEMP1, EFEMP2, COL8A1, and ISM2, which implicate basement membrane, elastic fiber, and perivascular or perineuronal matrix compartments. A third theme is **plasma membrane and membrane-associated signaling** (AQP1 water channel, CNNM3 Mg²⁺ transporter, CATSPER1 Ca²⁺ channel, CARD10 scaffold in NF-κB signaling, FRS3 adaptor in FGF signaling), indicating a module that couples membrane transport/signaling to cytoskeletal and ECM remodeling. Overall, this looks like a **structural–interface module**: cytoskeleton–membrane–ECM interfaces that are critical at barriers (blood–brain/spinal cord barrier, skin-like epithelia) and at neuromuscular junctions and glial–neuronal contacts.",
+      "database_focus": "GO:CC is particularly appropriate here because the dominant signal is **structural and locational**, not purely enzymatic or transcriptional. Many of these genes (keratins, collagens, EFEMP proteins, channels) are best understood by where they are (e.g., intermediate filament, basement membrane, plasma membrane) rather than by a single catalytic activity. GO:CC provides the resolution to distinguish, for example, “intermediate filament cytoskeleton” vs “cell cortex” vs “basement membrane,” which is crucial for interpreting how these proteins shape the physical microenvironment of motor neurons and neuromuscular junctions. This complements GO:BP/GO:MF by anchoring functional hypotheses (e.g., barrier dysfunction, axonal support failure) to specific cellular structures.",
+      "key_gene_functions": "- **Intermediate filament / cytoskeletal keratins**  \n  - KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38 are canonical type I/II keratins. GO:CC annotations: *intermediate filament*, *keratin filament*, *cytoplasm*, *desmosome*, *hemidesmosome*, *cell–cell junction*. KRT18/19/20 are also expressed in simple epithelia and some glial/ependymal contexts.\n- **Extracellular matrix / basement membrane / elastic fiber**  \n  - COL8A1: a collagen of Descemet’s membrane and vascular basement membranes; GO:CC: *extracellular matrix*, *basement membrane*, *collagen-containing extracellular matrix*.  \n  - EFEMP1 (fibulin-3) and EFEMP2 (fibulin-4): secreted ECM glycoproteins; GO:CC: *extracellular region*, *elastic fiber*, *basement membrane*, *extracellular matrix*.  \n  - ISM2: secreted protein with thrombospondin type 1 repeats; GO:CC: *extracellular region*, likely *extracellular matrix* association.\n- **Plasma membrane channels/transporters**  \n  - AQP1: water channel; GO:CC: *plasma membrane*, *basolateral plasma membrane*, *membrane raft*, *endothelial cell membrane*.  \n  - CNNM3: Mg²⁺ transporter; GO:CC: *plasma membrane*, *integral component of membrane*.  \n  - CATSPER1: sperm-specific Ca²⁺ channel; GO:CC: *plasma membrane*, *cation channel complex*, *flagellum* (in sperm), but mechanistically a Ca²⁺-permeable channel complex.\n- **Signaling adaptors at membrane–cytoskeleton interfaces**  \n  - CARD10: membrane-associated scaffold linking GPCRs to NF-κB; GO:CC: *plasma membrane*, *cytoplasm*, *CBM complex* (CARD–BCL10–MALT1).  \n  - FRS3: adaptor for FGF receptors; GO:CC: *plasma membrane*, *cytoplasm*, *receptor complex*.\n- **Transcriptional regulators / patterning**  \n  - ARID5A: RNA-binding and transcriptional regulator; GO:CC: *nucleus*, *cytoplasm*, *stress granule* (reported in some datasets).  \n  - HOXA1, HOXC8: homeobox transcription factors; GO:CC: *nucleus*, *chromatin*, *transcription factor complex*.\n- **Redox / chaperone-like**  \n  - GLRX3: glutaredoxin; GO:CC: *cytoplasm*, *nucleus*, *mitochondrion* (depending on isoform), often associated with iron–sulfur cluster assembly.\n\nThese annotations collectively point to a network spanning **intermediate filament cytoskeleton**, **cell junctions**, **plasma membrane transport/signaling complexes**, and **extracellular matrix/basement membrane**.",
+      "pathway_selection_rationale": "Based on the above, the 10 most plausible GO:CC themes (phrased generically; exact GO IDs would be chosen from the ontology) are:\n\n1. **Intermediate filament cytoskeleton / keratin filament**  \n   - Driven by the large keratin cluster (KRT1, KRT10, KRT13, KRT14, KRT15, KRT16, KRT18, KRT19, KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38). Mechanistic bridge: these proteins assemble into 10-nm intermediate filaments that provide mechanical resilience, organize organelles, and anchor desmosomes/hemidesmosomes. In ALS, cytoskeletal disorganization in glia, ependyma, and peripheral tissues can influence barrier integrity and neuroinflammation.\n\n2. **Cell–cell junction / desmosome / hemidesmosome**  \n   - Many keratins are specifically annotated to *desmosome* and *hemidesmosome* (e.g., KRT14, KRT5 in canonical complexes; KRT1/10 in suprabasal layers). These structures physically link intermediate filaments to cadherin-based junctions and integrin-based adhesion to the basement membrane. In the CNS and at the neuromuscular junction, analogous junctional complexes (though not classical desmosomes) rely on intermediate filaments and integrins to maintain tissue integrity and signal transduction.\n\n3. **Cytoplasmic membrane-bounded vesicle / secretory pathway**  \n   - EFEMP1/2, ISM2, and COL8A1 are secreted via the ER–Golgi pathway; keratins and signaling adaptors (CARD10, FRS3) traffic through vesicular compartments during turnover. GO:CC terms like *Golgi apparatus*, *secretory vesicle*, and *extracellular exosome* are typically enriched in such modules. In ALS, altered secretion of ECM proteins and exosomes from astrocytes and microglia is a key mechanism of non-cell-autonomous toxicity.\n\n4. **Extracellular matrix / collagen-containing extracellular matrix**  \n   - COL8A1, EFEMP1, EFEMP2, ISM2 directly annotate to ECM-related GO:CC terms. Mechanistically, these proteins form or modulate basement membranes and elastic fibers around blood vessels, meninges, and perineuronal nets. ECM remodeling affects axonal guidance, synaptic stability, and barrier permeability in ALS.\n\n5. **Basement membrane / elastic fiber**  \n   - EFEMP1/2 and COL8A1 are strongly associated with basement membranes and elastic fibers. This more specific GO:CC term refines the broader ECM signal to the thin, specialized matrices that underlie endothelial cells, pericytes, and glia limitans. In ALS, basement membrane thickening or disruption at the blood–spinal cord barrier has been documented, and these genes could participate in that structural change.\n\n6. **Plasma membrane / integral component of plasma membrane**  \n   - AQP1, CNNM3, CATSPER1, CARD10, FRS3, and several keratins (via membrane-associated complexes) support enrichment of *plasma membrane* and *integral component of plasma membrane*. Mechanistically, these proteins mediate water and ion flux, receptor signaling, and coupling of membrane receptors to cytoskeletal and NF-κB pathways. In ALS, altered ion homeostasis and membrane excitability are central features.\n\n7. **Membrane raft / caveola / specialized membrane microdomain**  \n   - AQP1 and some signaling adaptors are known to partition into lipid rafts or caveolae; EFEMP1/2 can associate with these microdomains via ECM–integrin–raft coupling. GO:CC terms like *membrane raft* or *caveola* capture this. These microdomains are critical for receptor clustering, mechanotransduction, and endocytosis, all of which can modulate neuroinflammatory signaling in ALS.\n\n8. **Nucleus / transcription factor complex / chromatin**  \n   - HOXA1, HOXC8, ARID5A, and possibly GLRX3 (nuclear isoforms) drive enrichment of *nucleus*, *chromatin*, and *transcription factor complex*. While GO:CC here is broad, it indicates that part of the module resides in nuclear regulatory compartments, controlling patterning, stress responses, and inflammatory gene expression in ALS-relevant cells.\n\n9. **Stress granule / cytoplasmic ribonucleoprotein granule**  \n   - ARID5A has been implicated in RNA metabolism and can localize to cytoplasmic RNP granules under stress; GLRX3 and some keratins are associated with stress responses. ALS is characterized by pathological stress granules (e.g., TDP-43, FUS), so GO:CC terms like *cytoplasmic stress granule* or *ribonucleoprotein complex* are mechanistically plausible. This links the structural module to RNA handling under oxidative and proteotoxic stress.\n\n10. **Neuromuscular junction / synaptic membrane (indirect)**  \n   - While not all classical NMJ genes are in the partial list, the combination of ECM (COL8A1, EFEMP1/2), membrane channels/transporters (AQP1, CNNM3), and cytoskeletal elements (keratins) supports enrichment of components like *cell junction*, *postsynaptic membrane*, or *anchored component of membrane*. At the NMJ, ECM and cytoskeleton anchor acetylcholine receptors and organize synaptic clefts; disruption of these structures is a hallmark of ALS progression.\n\nThese terms are thematically linked: **intermediate filaments** connect to **cell junctions** and **plasma membrane microdomains**, which in turn connect to **ECM/basement membrane** and **secretory vesicles** that deliver ECM components. Nuclear and stress-granule components provide regulatory feedback to this structural network under disease stress.",
+      "biological_evidence": "In ALS, multiple studies have reported **blood–spinal cord barrier and blood–brain barrier disruption**, with thickened or fragmented basement membranes and altered expression of ECM proteins (collagens, fibulins, laminins) in spinal cord vasculature and meninges. EFEMP1/2 and COL8A1 fit directly into this compartment, supporting GO:CC terms for *basement membrane* and *extracellular matrix*. Keratin upregulation has been observed in reactive astrocytes and ependymal cells in neurodegenerative conditions, reflecting cytoskeletal remodeling and barrier repair; this aligns with enrichment of *intermediate filament cytoskeleton* and *cell–cell junction* terms. Additionally, AQP1 is expressed in spinal cord endothelial cells and some glial populations, and its dysregulation has been linked to edema and altered water homeostasis in neuroinflammation, supporting *plasma membrane* and *membrane raft* components in ALS.",
+      "cell_context": "- intermediate filament cytoskeleton: Intermediate filament cytoskeleton of epithelial cells, especially keratinocytes in stratified epithelia such as the epidermis.\n- cornified envelope: Cornified envelope formation in late-stage differentiating epidermal keratinocytes of the skin.",
+      "relevance_strength_with_disease": "**Medium** – The GO:CC predictions are biologically plausible and align with known ALS mechanisms involving barrier dysfunction, ECM remodeling, and non-cell-autonomous support failure, but many of the genes (especially keratins) are not canonical ALS drivers and may reflect secondary or systemic responses (e.g., skin, vasculature, or epithelial-like cells in bulk tissue). The strongest mechanistic links are for ECM/basement membrane and plasma membrane components (AQP1, EFEMP1/2, COL8A1) that can directly influence blood–spinal cord barrier integrity, neuroinflammation, and neuromuscular junction stability. Thus, these GO:CC terms are likely to validate statistically as a **structural microenvironment module** modulating ALS progression rather than as primary motor neuron-intrinsic pathways."
+    },
+    "KEGG_iter1": {
+      "overall_strategy": "I treated the 105-gene list as a putative co-expression / co-regulation module and asked: “Which KEGG pathways are most parsimoniously explained by the known molecular functions and interaction partners of these genes?”  \n\nMethodologically, I:\n\n1. **Mapped each gene to KEGG orthology (KO) entries** using curated knowledge (HGNC → UniProt → KO) and known pathway memberships (e.g., EFEMP1/2 in ECM–receptor interaction, GLRX3 in redox and iron–sulfur cluster biogenesis, CARD10 in NF-κB signaling).\n2. **Clustered genes by functional themes** (ECM/adhesion, redox/oxidative stress, immune/NF-κB, ion/solute transport, developmental transcription factors, epithelial/keratin network).\n3. **Matched these themes to KEGG pathways** that are mechanistically coherent with ALS biology (neuroinflammation, oxidative stress, ECM remodeling, ion homeostasis, growth factor signaling), then prioritized 9 pathways where multiple genes converge on the same process.\n4. **Cross-checked against ALS mechanisms** (microglial activation, motor neuron degeneration, neuromuscular junction remodeling, barrier dysfunction) to ensure that each predicted pathway has a plausible role in ALS pathophysiology, not just generic enrichment.",
+      "gene_analysis": "The gene list is strongly enriched for **structural/epithelial cytoskeletal genes** (large cluster of keratins: KRT1, KRT10, KRT13–KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KRT78, KRT80, KRT81, KRT82, KRT83, KRT84, KRT85, KRT86), suggesting a module that includes **barrier/epithelial or glial-like structural remodeling** rather than pure neuronal genes.  \n\nA second theme is **extracellular matrix (ECM) and matrix–cell signaling**: EFEMP1, EFEMP2 (fibulin family), COL8A1, ISM2, and AQP1 (water channel often associated with barrier and vascular endothelium). These genes point to ECM organization, vascular integrity, and tissue remodeling.  \n\nA third theme is **redox and stress response / signaling**: GLRX3 (glutaredoxin 3), ARID5A (RNA-binding regulator of inflammatory transcripts), CARD10 (NF-κB activator), CNNM3 (Mg2+ transporter), and FRS3 (FGF receptor substrate). These genes connect to oxidative stress, inflammatory signaling, and growth factor pathways.  \n\nFinally, **developmental transcription factors** (HOXA1, HOXC8) and niche genes (KLHL38, CYSRT1, CATSPER1) suggest a module that may be active in **non-neuronal support cells (epithelial, endothelial, perivascular, possibly astrocytic-like)** that respond to ALS-related tissue damage and inflammation.",
+      "database_focus": "KEGG is appropriate here because it provides **curated, pathway-level wiring diagrams** that integrate receptors, adaptors, kinases, transcription factors, and structural components into coherent signaling and metabolic routes. This is crucial for interpreting a mixed gene set where many genes (e.g., ECM, redox, NF-κB activators) converge on **multi-step signaling cascades** rather than isolated functions.  \n\nKEGG also offers **disease-relevant pathway maps** (e.g., NF-κB, cytokine signaling, ECM–receptor interaction, focal adhesion, oxidative phosphorylation, ferroptosis) that can be directly related to ALS mechanisms. It complements GO or Reactome by emphasizing **canonical, high-level pathways** that are easier to audit and to connect to experimental interventions (e.g., pathway inhibitors, growth factor modulation).",
+      "key_gene_functions": "- **ECM / structural and barrier-related genes**  \n  - **EFEMP1 (fibulin-3) & EFEMP2 (fibulin-4)**: ECM glycoproteins that bind elastin and collagens; involved in **ECM–receptor interaction**, **focal adhesion**, and vascular integrity.  \n  - **COL8A1**: Component of basement membranes, especially in vascular endothelium; participates in **ECM–receptor interaction** and **focal adhesion**.  \n  - **AQP1**: Water channel in endothelial cells, astrocytes, and some neurons; functionally linked to **fluid homeostasis**, edema, and barrier function.\n\n- **Redox / stress and iron–sulfur cluster biology**  \n  - **GLRX3 (PICOT)**: A monothiol glutaredoxin involved in **iron–sulfur cluster assembly**, redox regulation of signaling proteins, and modulation of NF-κB and MAPK pathways.  \n  - This places GLRX3 at the intersection of **oxidative stress pathways**, **mitochondrial function**, and **iron metabolism**, all central to ALS.\n\n- **Inflammation and NF-κB signaling**  \n  - **CARD10**: Scaffold protein that couples G protein–coupled receptors (GPCRs) and receptor tyrosine kinases to **NF-κB activation** via BCL10/MALT1.  \n  - **ARID5A**: RNA-binding protein that stabilizes mRNAs of inflammatory cytokines (e.g., IL-6) and is induced by NF-κB and STAT3; functionally embedded in **cytokine–cytokine receptor interaction** and **NF-κB / JAK–STAT signaling**.\n\n- **Growth factor and ion homeostasis**  \n  - **FRS3**: Adaptor protein for **FGF receptor signaling**, linking FGFR activation to downstream **MAPK and PI3K–Akt pathways**.  \n  - **CNNM3**: Magnesium transporter; Mg2+ homeostasis influences **ion transport, neuronal excitability, and mitochondrial function**.  \n  - **CATSPER1**: Canonical role in sperm Ca2+ influx; mechanistically, it is a **Ca2+ channel subunit**, linking to broader **calcium signaling** themes.\n\n- **Developmental transcription factors**  \n  - **HOXA1, HOXC8**: Homeobox transcription factors involved in **anterior–posterior patterning, motor neuron specification, and hindbrain development**. Their dysregulation can influence **axon guidance, synaptic connectivity, and neuronal survival pathways**.\n\n- **Keratins (KRT1, KRT10, KRT13–KRT20, KRT27, KRT33B, KRT35, KRT36, KRT38, KRT78, KRT80, KRT81–KRT86, KPRP)**  \n  - These form **intermediate filaments** in epithelial and some glial-like cells, contributing to **cell integrity, mechanical stress response, and barrier function**. While not heavily annotated in KEGG, they are functionally linked to **focal adhesion**, **ECM–cell interactions**, and **cytoskeletal remodeling** downstream of signaling pathways (e.g., MAPK, Rho GTPases).",
+      "pathway_selection_rationale": "Based on these functions, the 9 predicted KEGG pathways are driven by **convergence of multiple genes on shared mechanistic axes**:\n\n1. **ECM–receptor interaction**  \n   - Driven by **EFEMP1, EFEMP2, COL8A1, ISM2**. These ECM proteins interact with integrins and other receptors, fitting the KEGG ECM–receptor interaction map.  \n   - Mechanistic bridge to ALS: ECM remodeling around motor neurons and vasculature, altered perineuronal nets, and blood–brain/spinal cord barrier changes.\n\n2. **Focal adhesion**  \n   - EFEMP1/2 and COL8A1, together with the keratin network, support **cell–ECM adhesion and mechanotransduction**.  \n   - In ALS, focal adhesion signaling in astrocytes, microglia, and endothelial cells modulates **cell migration, scar formation, and barrier integrity**.\n\n3. **NF-κB signaling pathway**  \n   - **CARD10** is a direct activator of NF-κB; **ARID5A** stabilizes NF-κB–induced cytokine mRNAs; **GLRX3** modulates redox-sensitive NF-κB activation.  \n   - This justifies NF-κB pathway prediction: a central axis of **neuroinflammation and glial activation** in ALS.\n\n4. **Cytokine–cytokine receptor interaction / JAK–STAT signaling**  \n   - **ARID5A** is tightly linked to IL-6 and other cytokines; NF-κB and STAT3 co-regulate inflammatory cascades.  \n   - This pathway captures the **autocrine/paracrine cytokine loops** in microglia, astrocytes, and infiltrating immune cells in ALS.\n\n5. **MAPK signaling pathway**  \n   - **FRS3** couples FGFR to MAPK; **GLRX3** modulates MAPK via redox; NF-κB and MAPK pathways are often co-activated.  \n   - MAPK signaling is implicated in **stress responses, apoptosis, and glial activation** in ALS.\n\n6. **PI3K–Akt signaling pathway**  \n   - Downstream of **FGFR–FRS3** and ECM–integrin interactions (EFEMP1/2, COL8A1), PI3K–Akt is a canonical survival pathway.  \n   - In ALS, PI3K–Akt signaling in motor neurons and glia modulates **cell survival vs. apoptosis** and response to trophic factors.\n\n7. **Calcium signaling pathway**  \n   - **CATSPER1** is a Ca2+ channel subunit; **AQP1** and CNNM3 indirectly influence ionic/osmotic balance, which affects Ca2+ handling.  \n   - Dysregulated Ca2+ homeostasis is a hallmark of ALS motor neuron degeneration, making this pathway mechanistically relevant.\n\n8. **Oxidative stress / redox-related pathways (e.g., Glutathione metabolism, Ferroptosis, or related redox maps)**  \n   - **GLRX3** is central to glutaredoxin-mediated redox control and iron–sulfur cluster maintenance; this connects to **glutathione metabolism** and **ferroptosis-like mechanisms**.  \n   - ALS motor neurons show **oxidative damage, iron dysregulation, and lipid peroxidation**, aligning with these KEGG pathways.\n\n9. **Axon guidance / Neurotrophin signaling (developmental/neural patterning)**  \n   - **HOXA1 and HOXC8** are key regulators of motor neuron patterning and connectivity; their downstream targets intersect with **axon guidance and neurotrophin signaling** components in KEGG.  \n   - In ALS, reactivation or dysregulation of developmental programs can influence **axon maintenance, synaptic stability, and regenerative attempts**.\n\nThese pathways are thematically connected: **ECM/focal adhesion** feed into **PI3K–Akt and MAPK**, which cross-talk with **NF-κB and cytokine signaling**, all modulated by **redox status (GLRX3)** and **ion/Ca2+ homeostasis (CNNM3, CATSPER1, AQP1)**, with **developmental transcription factors (HOX genes)** shaping the neuronal/glial response.",
+      "biological_evidence": "In ALS, there is strong evidence for **chronic neuroinflammation** with NF-κB activation in microglia and astrocytes; CARD10- and ARID5A-like mechanisms (GPCR/RTK → NF-κB → cytokines) are consistent with transcriptomic signatures from ALS spinal cord and microglia.  \n\nECM remodeling and **vascular/blood–spinal cord barrier disruption** are documented in ALS, with altered collagen and fibulin expression in patient tissue and models, supporting the ECM–receptor interaction and focal adhesion predictions.  \n\nOxidative stress and **iron–sulfur cluster dysfunction** are central to ALS pathogenesis; glutaredoxin family members (like GLRX3) are implicated in maintaining mitochondrial and cytosolic redox balance, aligning with KEGG redox/oxidative pathways. Developmental transcription factors (HOX genes) have been linked to **motor neuron subtype vulnerability** and differential degeneration patterns in ALS.",
+      "cell_context": "The gene module points primarily to **non-neuronal support and barrier-associated cells** in the ALS spinal cord and motor cortex:  \n- **Vascular endothelial cells and perivascular cells** (AQP1, COL8A1, EFEMP1/2) involved in blood–spinal cord barrier integrity and ECM remodeling.  \n- **Astrocytes and reactive glia** (NF-κB and cytokine signaling via CARD10, ARID5A; cytoskeletal remodeling via keratins) that respond to motor neuron injury.  \n- **Epithelial-like or ependymal/barrier cells** (broad keratin expression, KPRP) at CNS interfaces (ventricular, meningeal, or choroid plexus surfaces) that may participate in barrier dysfunction and inflammatory signaling.  \n\nMotor neurons themselves are indirectly represented via **HOXA1/HOXC8** (developmental patterning) and pathways (axon guidance, neurotrophin, Ca2+ signaling) rather than direct neuron-specific markers.",
+      "relevance_strength_with_disease:_medium": "Mechanistically, the predicted KEGG pathways (NF-κB/cytokine signaling, ECM–receptor interaction, focal adhesion, PI3K–Akt/MAPK, oxidative stress, Ca2+ signaling) are **well-aligned with known ALS processes**: neuroinflammation, barrier breakdown, oxidative damage, and altered trophic support.  \n\nHowever, the gene list is **enriched for structural/epithelial and ECM genes rather than classic motor neuron markers**, suggesting this module captures a **supporting microenvironment / barrier response** rather than the core neuronal degeneration program. Thus, the pathways are likely **highly relevant to ALS progression and tissue remodeling**, but represent **one component (glial/vascular/ECM axis)** of the broader disease network rather than the entire pathogenic cascade."
+    },
+    "REAC_iter1": {
+      "overall_strategy": "I treated the 105-gene list as a putative co-expression / co-regulation module and asked: “Which Reactome pathways are most parsimoniously explained by the known molecular functions and interactions of these proteins?” Concretely, I mapped each gene to its UniProt entry, then to Reactome using curated protein–pathway associations (e.g., keratin intermediate filament assembly, ECM organization, innate immune signaling, ion transport). I then looked for pathway “cores” where multiple genes converge on the same Reactome process (e.g., several keratins → intermediate filament pathways; EFEMP1/2 + COL8A1 → ECM pathways; CARD10 + ARID5A → NF‑κB/innate immune pathways). Finally, I prioritized 8 Reactome pathways that (1) are directly supported by multiple genes in the list, and (2) have plausible mechanistic links to ALS pathophysiology (neuroinflammation, barrier dysfunction, ion homeostasis, and tissue remodeling).",
+      "gene_analysis": "The most striking feature of the list is a dense cluster of epithelial/structural genes: many keratins (KRT1, KRT10, KRT13–16, KRT18–20, KRT27, KRT33B, KRT35, KRT36, KRT38), keratin-associated proteins (KPRP), and extracellular matrix components (COL8A1, EFEMP1, EFEMP2, ISM2). This points to a module enriched for cytoskeletal integrity and tissue barrier/ECM organization. A second theme is immune and inflammatory regulation: ARID5A (stabilizes IL6 mRNA and modulates NF‑κB), CARD10 (CARD–MAGUK scaffold in NF‑κB activation), and GLRX3 (redox regulation, stress response). A third, smaller theme involves ion and membrane transport/signaling (AQP1 water channel, CNNM3 Mg2+ transporter, CATSPER1 Ca2+ channel, FRS3 FGFR adaptor). Overall, this looks like a “barrier/ECM–inflammation–ion homeostasis” module, which in ALS is most relevant to neurovascular unit integrity, glial/immune activation, and systemic tissue responses rather than motor neuron-intrinsic synaptic genes.",
+      "database_focus": "Reactome is particularly appropriate here because it provides mechanistically curated, pathway-level annotations that integrate structural proteins (keratins, collagens), signaling adaptors (CARD10, FRS3), and transporters (AQP1, CNNM3) into defined biological processes (e.g., “Intermediate filament organization,” “Extracellular matrix organization,” “Innate immune system,” “Ion homeostasis”). Unlike broader GO terms, Reactome pathways are organized into hierarchies that allow us to connect these genes to higher-order processes such as “Immune System,” “Hemostasis,” or “Cell–cell junction organization,” which are directly relevant to ALS tissue pathology. This complements other categories (e.g., KEGG, GO) by emphasizing experimentally supported reaction networks and multi-protein complexes rather than only functional labels.",
+      "key_gene_functions": "Several keratin genes (KRT1, KRT10, KRT13–16, KRT18–20, KRT27, KRT33B, KRT35, KRT36, KRT38) encode type I/II intermediate filament proteins that form heteropolymers critical for epithelial cytoskeletal architecture and cell–cell junction stability. KPRP (keratinocyte proline-rich protein) and KRT-associated genes further support Reactome pathways related to “Keratinization,” “Formation of the cornified envelope,” and “Intermediate filament organization.” ECM-related genes include COL8A1 (a short-chain collagen in basement membranes and vasculature), EFEMP1 and EFEMP2 (fibulins involved in elastic fiber assembly and ECM–cell signaling), and ISM2 (secreted protein with roles in angiogenesis and ECM remodeling), all mapping to Reactome’s “Extracellular matrix organization” and “Collagen formation” branches. Immune/inflammatory signaling is driven by CARD10 (a CARD–MAGUK scaffold that couples GPCRs and receptor tyrosine kinases to NF‑κB activation) and ARID5A (RNA-binding protein that stabilizes inflammatory cytokine mRNAs, especially IL6, and modulates NF‑κB/STAT3 pathways). Ion and water homeostasis are represented by AQP1 (water channel in endothelial cells, astrocytes, and some neurons), CNNM3 (Mg2+ transporter involved in metal ion homeostasis), and CATSPER1 (Ca2+ channel; canonical in sperm but informative for Ca2+ signaling modules). GLRX3 (glutaredoxin-3) links to redox regulation and iron–sulfur cluster biogenesis, intersecting with oxidative stress pathways.",
+      "pathway_selection_rationale": "Based on these functional clusters, the 8 Reactome pathways I would predict (and justify) are:\n\n1. **Intermediate Filament Organization / Keratinization (REAC: “Intermediate filament organization”, “Keratinization”, “Formation of the cornified envelope”)**  \n   - Driven by the large keratin cluster (KRT1, KRT10, KRT13–16, KRT18–20, KRT27, KRT33B, KRT35, KRT36, KRT38) and KPRP. Reactome explicitly annotates these proteins in pathways governing intermediate filament assembly, desmosome/hemidesmosome stability, and terminal differentiation of epithelial cells. The presence of multiple type I and type II keratins strongly enriches for these pathways.\n\n2. **Extracellular Matrix Organization / Collagen Formation (REAC: “Extracellular matrix organization”, “Collagen formation”, “Elastic fibre formation”)**  \n   - COL8A1, EFEMP1, EFEMP2, and ISM2 are all annotated in ECM-related processes. Reactome groups these into ECM assembly, collagen biosynthesis and modification, and elastic fiber formation. EFEMP1/2 (fibulin-3/4) are key ECM glycoproteins that bind collagens and elastin, while COL8A1 is a structural collagen in vascular basement membranes. Their co-occurrence strongly supports ECM organization pathways.\n\n3. **Cell–Cell Junction Organization / Cell–Cell Communication (REAC: “Cell–cell junction organization”, “Adherens junctions interactions”)**  \n   - Keratins (especially KRT14, KRT15, KRT16, KRT18–20) are integral to desmosomes and hemidesmosomes, linking to Reactome’s cell–cell junction modules. EFEMP1/2 and COL8A1 also contribute to basement membrane integrity and cell–ECM adhesion, which Reactome nests under cell–cell and cell–matrix junction organization. This pathway is a mechanistic bridge between cytoskeletal and ECM modules.\n\n4. **Innate Immune System / NF‑κB Activation (REAC: “Innate Immune System”, “Signaling by NF‑κB”, “Toll-like receptor cascades”)**  \n   - CARD10 is a canonical scaffold in GPCR- and RTK-induced NF‑κB activation (CARD10–BCL10–MALT1 complex), and ARID5A stabilizes IL6 and other inflammatory transcripts downstream of NF‑κB and TLR signaling. GLRX3 participates in redox control of signaling proteins. Reactome places these proteins in innate immune and NF‑κB signaling pathways, which are central to neuroinflammation in ALS.\n\n5. **Cytokine Signaling in Immune System (REAC: “Cytokine signaling in immune system”, “Interleukin-6 signaling”)**  \n   - ARID5A is specifically known to stabilize IL6 mRNA and modulate IL-6/STAT3 signaling. Reactome’s IL-6 signaling pathway includes transcriptional and post-transcriptional regulators of IL6, and ARID5A is curated there. CARD10’s NF‑κB activation also feeds into cytokine production. This justifies a cytokine signaling pathway prediction, particularly IL-6–related.\n\n6. **Ion Homeostasis / Transport of Small Molecules (REAC: “Ion homeostasis”, “Transport of small molecules”, “Aquaporin-mediated transport”)**  \n   - AQP1 is directly annotated in “Aquaporin-mediated transport” and “Water transport across cell membranes” in Reactome. CNNM3 is part of “Metal ion transport” and “Ion homeostasis” modules, and CATSPER1 contributes to Ca2+ influx pathways (Reactome groups CatSper channels under Ca2+ transport and sperm motility, but mechanistically they are Ca2+ channels). Together, these support Reactome pathways dealing with ion and water homeostasis.\n\n7. **Signaling by Receptor Tyrosine Kinases / FGFR Signaling (REAC: “Signaling by FGFR”, “Signaling by receptor tyrosine kinases”)**  \n   - FRS3 is an adaptor protein in fibroblast growth factor receptor (FGFR) signaling, linking activated FGFRs to downstream MAPK and PI3K pathways. Reactome annotates FRS3 in “FGFR2/3/4 ligand binding and activation” and “Downstream signaling of activated FGFRs.” Given FRS3’s presence and the ECM/angiogenesis genes (EFEMP1/2, ISM2), RTK/FGFR signaling pathways are a logical inclusion.\n\n8. **Response to Oxidative Stress / Cellular Responses to Stress (REAC: “Cellular responses to stress”, “Detoxification of reactive oxygen species”)**  \n   - GLRX3 (glutaredoxin-3) is involved in redox homeostasis and iron–sulfur cluster assembly, and Reactome includes glutaredoxins in ROS detoxification and stress response pathways. ARID5A and CARD10 are also induced by inflammatory and oxidative stress. This supports a Reactome pathway related to cellular stress responses, which is mechanistically central in ALS.\n\nThese pathways are thematically connected: cytoskeletal and ECM organization (1–3) define tissue architecture and barrier function; immune and cytokine signaling (4–5) define inflammatory activation; ion/transport and RTK signaling (6–7) modulate cell excitability and survival; and stress responses (8) integrate damage signals. Together they form a coherent Reactome-level explanation of the gene module.",
+      "biological_evidence": "In ALS, neuroinflammation and cytokine dysregulation are well-established: elevated IL-6, TNF, and NF‑κB activation are observed in patient CSF, blood, and spinal cord, and ARID5A’s role in stabilizing IL6 mRNA directly supports the “Cytokine signaling” and “Innate immune system” Reactome predictions. Microvascular and blood–brain/spinal cord barrier disruption are also documented in ALS, with changes in endothelial AQP1 expression and ECM remodeling (collagens, fibulins) contributing to barrier leakage and altered water/ion homeostasis, aligning with the “ECM organization,” “Cell–cell junction organization,” and “Aquaporin-mediated transport” pathways. Oxidative stress and redox imbalance are core ALS mechanisms, and GLRX3’s role in ROS handling and iron–sulfur cluster maintenance fits Reactome’s “Cellular responses to stress” modules that are repeatedly implicated in ALS omics studies.",
+      "cell_context": "- Keratinization: Keratinization in stratified squamous epithelia, particularly epidermal keratinocytes in the skin.\n- Formation of the cornified envelope: Formation of the cornified envelope in terminally differentiating epidermal keratinocytes of the skin.",
+      "relevance_strength_with_disease": "High – The predicted Reactome pathways (ECM organization, cell–cell junctions, innate immune/NF‑κB and cytokine signaling, ion/water homeostasis, and oxidative stress responses) map directly onto well-established ALS mechanisms: neuroinflammation, blood–brain/spinal cord barrier breakdown, microvascular remodeling, and redox stress. While the strong keratinization signal reflects epithelial biology that is not motor neuron-intrinsic, it is still relevant to barrier tissues and systemic inflammatory responses that modulate ALS progression. Overall, the convergence of multiple genes on these Reactome pathways, combined with independent ALS literature support, yields high mechanistic plausibility for these pathway predictions."
+    }
+  }
+}
