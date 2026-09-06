@@ -401,8 +401,9 @@ const PRODUCT_TOUR_STEPS = [
 
 let productTourIndex = 0;
 let productTourReturnFocus = null;
+let productTourContinuation = '';
 
-function hideProductTour() {
+function hideProductTour({ followContinuation = true } = {}) {
     const tour = document.getElementById('product-tour');
     document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
     tour?.classList.add('hidden');
@@ -410,6 +411,11 @@ function hideProductTour() {
         productTourReturnFocus.focus();
     }
     productTourReturnFocus = null;
+    const continuation = productTourContinuation;
+    productTourContinuation = '';
+    if (followContinuation && continuation) {
+        window.location.assign(continuation);
+    }
 }
 
 function renderProductTourStep() {
@@ -433,7 +439,20 @@ function showProductTour({ force = false } = {}) {
     const tour = document.getElementById('product-tour');
     if (!tour) return;
     const params = new URLSearchParams(window.location.search);
-    if (!force && (params.get('demo') === '1' || window.location.hash.startsWith('#docs/'))) return;
+    const isPostLoginTour = params.get('tour') === '1';
+    if (!force && !isPostLoginTour && (params.get('demo') === '1' || window.location.hash.startsWith('#docs/'))) return;
+    productTourContinuation = '';
+    if (isPostLoginTour) {
+        const continuation = String(params.get('after_tour') || '').trim();
+        if (continuation.startsWith('/') && !continuation.startsWith('//') && continuation !== '/') {
+            productTourContinuation = continuation;
+        }
+        params.delete('tour');
+        params.delete('after_tour');
+        const remainingQuery = params.toString();
+        const cleanUrl = `${window.location.pathname}${remainingQuery ? `?${remainingQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState(window.history.state, '', cleanUrl);
+    }
     productTourReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     productTourIndex = 0;
     tour.classList.remove('hidden');
@@ -7083,7 +7102,7 @@ let historyData = [];
 
 function showHistoryPanel() {
     document.body.classList.remove('analysis-running-view');
-    hideProductTour();
+    hideProductTour({ followContinuation: false });
     document.getElementById('hero-section').classList.add('hidden');
     document.getElementById('hero-section').style.display = 'none';
     const resultsSection = document.getElementById('results-section');
@@ -7337,7 +7356,7 @@ function getDocumentationHashId() {
 
 function showDocsPanel(requestedDocId = '') {
     document.body.classList.remove('analysis-running-view');
-    hideProductTour();
+    hideProductTour({ followContinuation: false });
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector('.nav-link[data-view="docs"]').classList.add('active');
 

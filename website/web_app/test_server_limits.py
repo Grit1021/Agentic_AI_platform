@@ -124,6 +124,8 @@ class ServerLimitTests(unittest.TestCase):
         )
         self.assertIn("window.setTimeout(() => showProductTour(), 250)", javascript)
         self.assertIn("trapProductTourFocus(event)", javascript)
+        self.assertIn("const isPostLoginTour = params.get('tour') === '1'", javascript)
+        self.assertIn("window.location.assign(continuation)", javascript)
 
     def test_index_shell_is_componentized_and_hosted_html_is_hydrated(self):
         source_path = os.path.join(os.path.dirname(__file__), "index.html")

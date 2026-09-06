@@ -3,6 +3,7 @@ import io
 import os
 import unittest
 import warnings
+from unittest import mock
 
 import jinja2
 import markupsafe
@@ -74,6 +75,33 @@ class AdminDashboardTests(unittest.TestCase):
         self.assertEqual(footer.status_code, 200)
         favicon.close()
         footer.close()
+
+    def test_successful_login_starts_tour_then_resumes_safe_deep_link(self):
+        fake_cognito = mock.Mock()
+        fake_cognito.authorize_access_token.return_value = {
+            "userinfo": {
+                "sub": "reader-sub",
+                "email": "reader@example.com",
+                "email_verified": True,
+            }
+        }
+        with self.client.session_transaction() as browser_session:
+            browser_session["post_login_next"] = "/?demo=1&example=AD"
+
+        with mock.patch.object(server, "cognito_client", fake_cognito), mock.patch.object(
+            server, "AUTH_CONFIG_READY", True
+        ):
+            response = self.client.get("/auth/callback")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.headers["Location"],
+            "/?tour=1&after_tour=%2F%3Fdemo%3D1%26example%3DAD",
+        )
+
+    def test_post_login_tour_never_forwards_to_external_url(self):
+        self.assertEqual(server.build_post_login_tour_url("//example.org/path"), "/?tour=1")
+        self.assertEqual(server.build_post_login_tour_url("https://example.org"), "/?tour=1")
 
     def test_entry_point_is_hidden_until_admin_identity_is_loaded(self):
         self.login("reader@example.com", "reader-sub")

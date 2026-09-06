@@ -1887,6 +1887,18 @@ def auth_login():
     return cognito_client.authorize_redirect(callback_url)
 
 
+def build_post_login_tour_url(next_path='/'):
+    """Start the signed-in session on the homepage tour, then resume a safe deep link."""
+    next_path = str(next_path or '/').strip()
+    if not next_path.startswith('/') or next_path.startswith('//'):
+        next_path = '/'
+
+    query = {'tour': '1'}
+    if next_path != '/':
+        query['after_tour'] = next_path
+    return f'/?{urlencode(query)}'
+
+
 @app.route('/auth/callback')
 def auth_callback():
     if not AUTH_ENABLED:
@@ -1922,7 +1934,7 @@ def auth_callback():
             )
         except QuotaUnavailable as exc:
             print(f'⚠️ Unable to register quota profile: {exc}')
-        return redirect(next_path if next_path.startswith('/') else '/')
+        return redirect(build_post_login_tour_url(next_path))
     except Exception as exc:
         print(f'⚠️ Cognito callback failed: {exc}')
         session.clear()
