@@ -12731,15 +12731,13 @@ body.local-pdf-print .main {
 }
 
 .product-tour {
-    position: fixed;
-    inset: 0;
-    z-index: 300;
     pointer-events: none;
 }
 
 .product-tour-backdrop {
-    position: absolute;
+    position: fixed;
     inset: 0;
+    z-index: 300;
     background: rgba(22, 34, 45, 0.42);
     pointer-events: auto;
 }
