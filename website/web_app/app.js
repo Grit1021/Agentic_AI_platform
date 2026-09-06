@@ -376,7 +376,6 @@ function initWorkflowNavigation() {
     setActiveWorkflowStep('input');
 }
 
-const PRODUCT_TOUR_STORAGE_KEY = 'genepathway-tour-20260903';
 const PRODUCT_TOUR_STEPS = [
     {
         target: '.input-workspace-group--disease',
@@ -401,16 +400,16 @@ const PRODUCT_TOUR_STEPS = [
 ];
 
 let productTourIndex = 0;
+let productTourReturnFocus = null;
 
-function setProductTourSeen() {
-    try { window.localStorage.setItem(PRODUCT_TOUR_STORAGE_KEY, '1'); } catch (_) {}
-}
-
-function hideProductTour({ remember = true } = {}) {
+function hideProductTour() {
     const tour = document.getElementById('product-tour');
     document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
     tour?.classList.add('hidden');
-    if (remember) setProductTourSeen();
+    if (productTourReturnFocus instanceof HTMLElement && document.contains(productTourReturnFocus)) {
+        productTourReturnFocus.focus();
+    }
+    productTourReturnFocus = null;
 }
 
 function renderProductTourStep() {
@@ -435,15 +434,38 @@ function showProductTour({ force = false } = {}) {
     if (!tour) return;
     const params = new URLSearchParams(window.location.search);
     if (!force && (params.get('demo') === '1' || window.location.hash.startsWith('#docs/'))) return;
-    if (!force) {
-        try {
-            if (window.localStorage.getItem(PRODUCT_TOUR_STORAGE_KEY) === '1') return;
-        } catch (_) {}
-    }
+    productTourReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     productTourIndex = 0;
     tour.classList.remove('hidden');
     renderProductTourStep();
     document.getElementById('product-tour-next')?.focus();
+}
+
+function skipCurrentProductTourStep() {
+    if (productTourIndex >= PRODUCT_TOUR_STEPS.length - 1) {
+        hideProductTour();
+        return;
+    }
+    productTourIndex += 1;
+    renderProductTourStep();
+    document.getElementById('product-tour-skip')?.focus();
+}
+
+function trapProductTourFocus(event) {
+    if (event.key !== 'Tab') return;
+    const tour = document.getElementById('product-tour');
+    if (!tour || tour.classList.contains('hidden')) return;
+    const controls = Array.from(tour.querySelectorAll('button:not([disabled])'));
+    if (!controls.length) return;
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
 }
 
 function initProductTour() {
@@ -451,8 +473,9 @@ function initProductTour() {
         showAnalysisView();
         showProductTour({ force: true });
     });
-    document.getElementById('product-tour-close')?.addEventListener('click', () => hideProductTour());
-    document.getElementById('product-tour-skip')?.addEventListener('click', () => hideProductTour());
+    document.getElementById('product-tour-close')?.addEventListener('click', hideProductTour);
+    document.getElementById('product-tour-skip-all')?.addEventListener('click', hideProductTour);
+    document.getElementById('product-tour-skip')?.addEventListener('click', skipCurrentProductTourStep);
     document.getElementById('product-tour-back')?.addEventListener('click', () => {
         productTourIndex = Math.max(0, productTourIndex - 1);
         renderProductTourStep();
@@ -466,7 +489,12 @@ function initProductTour() {
         renderProductTourStep();
     });
     document.getElementById('product-tour')?.addEventListener('keydown', event => {
-        if (event.key === 'Escape') hideProductTour();
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            hideProductTour();
+            return;
+        }
+        trapProductTourFocus(event);
     });
     window.setTimeout(() => showProductTour(), 250);
 }
@@ -7055,7 +7083,7 @@ let historyData = [];
 
 function showHistoryPanel() {
     document.body.classList.remove('analysis-running-view');
-    hideProductTour({ remember: false });
+    hideProductTour();
     document.getElementById('hero-section').classList.add('hidden');
     document.getElementById('hero-section').style.display = 'none';
     const resultsSection = document.getElementById('results-section');
@@ -7309,7 +7337,7 @@ function getDocumentationHashId() {
 
 function showDocsPanel(requestedDocId = '') {
     document.body.classList.remove('analysis-running-view');
-    hideProductTour({ remember: false });
+    hideProductTour();
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector('.nav-link[data-view="docs"]').classList.add('active');
 

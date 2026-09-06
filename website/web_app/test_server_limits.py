@@ -99,6 +99,32 @@ class ServerLimitTests(unittest.TestCase):
         self.assertNotIn('class="workflow-figure"', html)
         response.close()
 
+    def test_product_tour_reopens_on_each_homepage_load_and_supports_two_skip_levels(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('id="product-tour-skip"', html)
+        self.assertIn('aria-label="Skip this tour step"', html)
+        self.assertIn('id="product-tour-skip-all"', html)
+        self.assertIn('>Skip all<', html)
+        response.close()
+
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertNotIn("PRODUCT_TOUR_STORAGE_KEY", javascript)
+        self.assertNotIn("localStorage.getItem", javascript)
+        self.assertIn("function skipCurrentProductTourStep()", javascript)
+        self.assertIn(
+            "document.getElementById('product-tour-skip')?.addEventListener('click', skipCurrentProductTourStep)",
+            javascript,
+        )
+        self.assertIn(
+            "document.getElementById('product-tour-skip-all')?.addEventListener('click', hideProductTour)",
+            javascript,
+        )
+        self.assertIn("window.setTimeout(() => showProductTour(), 250)", javascript)
+        self.assertIn("trapProductTourFocus(event)", javascript)
+
     def test_index_shell_is_componentized_and_hosted_html_is_hydrated(self):
         source_path = os.path.join(os.path.dirname(__file__), "index.html")
         with open(source_path, encoding="utf-8") as source_file:

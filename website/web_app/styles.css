@@ -12761,7 +12761,8 @@ body.local-pdf-print .main {
 
 .product-tour-progress,
 .product-tour-actions,
-.product-tour-actions > div {
+.product-tour-actions > div,
+.product-tour-dismiss {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -12784,6 +12785,29 @@ body.local-pdf-print .main {
     border: 0;
     border-radius: 7px;
     cursor: pointer;
+}
+
+.product-tour-progress .product-tour-skip-all {
+    width: auto;
+    min-height: 30px;
+    padding: 4px 8px;
+    color: var(--accent-primary);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.product-tour-progress button:hover,
+.product-tour-progress button:focus-visible {
+    color: var(--accent-dark);
+    background: var(--bg-elevated);
+}
+
+.product-tour-progress button:focus-visible,
+.product-tour-actions button:focus-visible {
+    outline: 3px solid rgba(49, 95, 133, 0.28);
+    outline-offset: 2px;
 }
 
 .product-tour-card h2 {
@@ -12819,6 +12843,11 @@ body.local-pdf-print .main {
 .product-tour-actions button:disabled {
     opacity: 0.42;
     cursor: default;
+}
+
+.product-tour-actions button:active:not(:disabled),
+.product-tour-progress button:active {
+    transform: translateY(1px);
 }
 
 .product-tour-actions .product-tour-next {
