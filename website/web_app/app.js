@@ -5007,7 +5007,11 @@ function sanitizeUserFacingAnalysisText(value) {
         .replace(/\bscientific reviewers?\b/gi, 'research users')
         .replace(/\breviewers?\b/gi, 'users')
         .replace(/\bmanuscript\b/gi, 'analysis')
-        .replace(/\bpaper-level\b/gi, 'analysis-level');
+        .replace(/\bpaper-level\b/gi, 'analysis-level')
+        .replace(/\b(?:protein|gene|network) modules\b/gi, 'gene lists')
+        .replace(/\b(?:protein|gene|network) module\b/gi, 'gene list')
+        .replace(/\bmodules\b/gi, 'gene lists')
+        .replace(/\bmodule\b/gi, 'gene list');
 }
 
 function normalizeReasoningText(value) {
@@ -6635,7 +6639,7 @@ function formatPValue(pval) {
 function formatMarkdown(md) {
     if (!md) return '';
 
-    let html = md;
+    let html = sanitizeUserFacingAnalysisText(md);
 
     // Code blocks (must be before inline code)
     html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
