@@ -164,11 +164,11 @@
                     </section>
 
                     <section class="analysis-shared-resources" aria-label="Example inputs and finished results">
+                            <strong class="analysis-example-label">Examples</strong>
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
-                                    <span class="gene-list-loader-title"><strong>Load example data</strong></span>
                                     <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
-                                        Choose disease and genes <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                                        Load disease and genes <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
                                     </button>
                                 </div>
                                 <div class="gene-list-panel hidden" id="gene-list-panel">
@@ -198,12 +198,11 @@
                                 </div>
                             </div>
 
-                            <section id="featured-examples" class="featured-examples" aria-labelledby="featured-examples-title">
-                                <div class="featured-examples-copy"><strong id="featured-examples-title">Open a finished result</strong></div>
+                            <section id="featured-examples" class="featured-examples" aria-label="Finished example results">
                                 <div class="featured-example-list">
-                                    <button type="button" class="featured-example-button featured-example-button--primary" data-disease="AD" onclick="openFeaturedCompletedExample('AD')"><strong>Alzheimer's disease</strong></button>
-                                    <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More results <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
+                                    <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">View finished results <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
                                     <div id="featured-more-examples" class="featured-more-examples hidden">
+                                        <button type="button" class="featured-example-button" data-disease="AD" onclick="openFeaturedCompletedExample('AD')"><strong>Alzheimer's disease</strong></button>
                                         <button type="button" class="featured-example-button" data-disease="IBD" onclick="openFeaturedCompletedExample('IBD')"><strong>Inflammatory bowel disease</strong></button>
                                         <button type="button" class="featured-example-button" data-disease="MS" onclick="openFeaturedCompletedExample('MS')"><strong>Multiple sclerosis</strong></button>
                                         <button type="button" class="featured-example-button" data-disease="T2D" onclick="openFeaturedCompletedExample('T2D')"><strong>Type 2 diabetes</strong></button>
