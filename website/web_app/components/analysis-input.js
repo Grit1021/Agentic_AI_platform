@@ -163,12 +163,12 @@
                         </div>
                     </section>
 
-                    <section class="analysis-shared-resources" aria-label="Disease and gene examples">
+                    <section class="analysis-shared-resources" aria-label="Example inputs and finished results">
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
-                                    <span class="gene-list-loader-title"><strong>Complete input</strong></span>
+                                    <span class="gene-list-loader-title"><strong>Load example data</strong></span>
                                     <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
-                                        Browse <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                                        Choose disease and genes <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
                                     </button>
                                 </div>
                                 <div class="gene-list-panel hidden" id="gene-list-panel">
@@ -199,10 +199,10 @@
                             </div>
 
                             <section id="featured-examples" class="featured-examples" aria-labelledby="featured-examples-title">
-                                <div class="featured-examples-copy"><strong id="featured-examples-title">Completed analyses</strong></div>
+                                <div class="featured-examples-copy"><strong id="featured-examples-title">Open a finished result</strong></div>
                                 <div class="featured-example-list">
                                     <button type="button" class="featured-example-button featured-example-button--primary" data-disease="AD" onclick="openFeaturedCompletedExample('AD')"><strong>Alzheimer's disease</strong></button>
-                                    <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More examples <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
+                                    <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More results <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
                                     <div id="featured-more-examples" class="featured-more-examples hidden">
                                         <button type="button" class="featured-example-button" data-disease="IBD" onclick="openFeaturedCompletedExample('IBD')"><strong>Inflammatory bowel disease</strong></button>
                                         <button type="button" class="featured-example-button" data-disease="MS" onclick="openFeaturedCompletedExample('MS')"><strong>Multiple sclerosis</strong></button>

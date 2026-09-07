@@ -1383,6 +1383,38 @@ body.results-view .workflow-rail {
     }
 }
 
+/* Each example path names its outcome before presenting the action. */
+.analysis-shared-resources .gene-list-loader-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 8px;
+}
+
+.analysis-shared-resources .gene-list-toggle-btn {
+    justify-content: center;
+    width: 100%;
+    min-height: 40px;
+    color: var(--accent-dark);
+    background: #ffffff;
+    border: 1px solid #cbd8e1;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.analysis-shared-resources > .featured-examples {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+    gap: 8px;
+}
+
+.analysis-shared-resources .gene-list-loader-title strong,
+.analysis-shared-resources .featured-examples-copy strong {
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
 .hero-content {
     max-width: 1040px;
     margin: 0 auto;

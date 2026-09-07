@@ -1203,7 +1203,7 @@ function toggleGeneListPanel() {
     if (btn) {
         btn.innerHTML = isHidden
             ? 'Close <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
-            : 'Browse <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
+            : 'Choose disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
     }
 }
 
@@ -2363,7 +2363,7 @@ async function loadSelectedGeneList() {
             const toggleBtn = document.getElementById('gene-list-toggle');
             if (panel && !panel.classList.contains('hidden')) {
                 panel.classList.add('hidden');
-                toggleBtn.innerHTML = 'Browse <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
+                toggleBtn.innerHTML = 'Choose disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
             }
         }, 2200);
 
