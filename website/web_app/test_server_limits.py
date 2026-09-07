@@ -129,6 +129,14 @@ class ServerLimitTests(unittest.TestCase):
             css = source.read()
         self.assertRegex(css, r"\.analysis-shared-resources\s*\{[^}]*grid-column:\s*1\s*/\s*-1")
         self.assertRegex(css, r"\.analysis-action-row\s*\{[^}]*justify-content:\s*center")
+        self.assertRegex(
+            css,
+            r"\.input-workspace-group--genes\s*>\s*\.open-targets-gene-import\s*\{[^}]*border-left:\s*0",
+        )
+        self.assertRegex(
+            css,
+            r"\.analysis-shared-resources\s*>\s*\.gene-list-loader,[^{]*\{[^}]*border:\s*0",
+        )
 
     def test_complete_input_examples_have_at_least_100_genes(self):
         payload = self.client.get("/api/frontend-data").get_json()

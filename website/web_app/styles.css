@@ -14047,3 +14047,61 @@ body.results-view .workflow-rail {
         width: 132px;
     }
 }
+
+/* Secondary input paths share one canvas; examples sit in a bottom tray. */
+.input-workspace-group--genes > .open-targets-gene-import {
+    padding-left: 0;
+    border-left: 0;
+}
+
+.analysis-shared-resources {
+    grid-template-columns: minmax(240px, 0.72fr) minmax(420px, 1.28fr);
+    gap: 18px;
+    width: min(100%, 980px);
+    margin: 0 auto;
+    padding: 14px 16px;
+    background: #f6f9fb;
+    border: 1px solid #d9e3e9;
+    border-radius: 10px;
+}
+
+.analysis-shared-resources > .gene-list-loader,
+.analysis-shared-resources > .featured-examples {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+
+.analysis-shared-resources .gene-list-loader-header {
+    min-height: 40px;
+    padding: 0;
+}
+
+.analysis-shared-resources .gene-list-panel {
+    padding: 12px 0 0;
+    border-top: 0;
+}
+
+.analysis-shared-resources > .featured-examples {
+    display: grid;
+    grid-template-columns: 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.analysis-shared-resources .featured-example-list {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 760px) {
+    .analysis-shared-resources {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .analysis-shared-resources > .featured-examples {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+}

@@ -105,7 +105,7 @@
                         <div class="open-targets-gene-import" aria-labelledby="open-targets-gene-import-title">
                             <div class="open-targets-gene-import-copy">
                                 <strong id="open-targets-gene-import-title">Import disease-associated genes</strong>
-                                <p>Open Targets ranks gene–disease associations with an overall score from 0 to 1, combining weighted evidence across data sources. It is a ranking score, not a probability.</p>
+                                <p>Open Targets ranks gene-disease associations with an overall score from 0 to 1, combining weighted evidence across data sources. It is a ranking score, not a probability.</p>
                                 <a href="https://platform-docs.opentargets.org/associations" target="_blank" rel="noopener">How the score is calculated <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>
                             </div>
                             <div class="open-targets-gene-import-controls">
@@ -166,7 +166,7 @@
                     <section class="analysis-shared-resources" aria-label="Disease and gene examples">
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
-                                    <span class="gene-list-loader-title"><strong>Load a complete input</strong></span>
+                                    <span class="gene-list-loader-title"><strong>Complete input</strong></span>
                                     <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
                                         Browse <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
                                     </button>
@@ -199,7 +199,7 @@
                             </div>
 
                             <section id="featured-examples" class="featured-examples" aria-labelledby="featured-examples-title">
-                                <div class="featured-examples-copy"><strong id="featured-examples-title">View completed analyses</strong></div>
+                                <div class="featured-examples-copy"><strong id="featured-examples-title">Completed analyses</strong></div>
                                 <div class="featured-example-list">
                                     <button type="button" class="featured-example-button featured-example-button--primary" data-disease="AD" onclick="openFeaturedCompletedExample('AD')"><strong>Alzheimer's disease</strong></button>
                                     <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More examples <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
