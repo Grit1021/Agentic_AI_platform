@@ -9,7 +9,7 @@
                 <span class="logo-text">GenePathwayAI</span>
             </a>
             <nav class="nav">
-                <a href="#" class="nav-link active" data-view="analysis" onclick="showAnalysisView()">Analysis</a>
+                <a href="/" class="nav-link active" data-view="analysis" onclick="showAnalysisView(); return false;">Analysis</a>
                 <div class="nav-featured-menu">
                     <button type="button" class="nav-link nav-featured-trigger" id="featured-examples-menu-button"
                         aria-haspopup="menu" aria-expanded="false" aria-controls="featured-examples-menu">

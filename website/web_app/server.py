@@ -1267,8 +1267,8 @@ def get_open_targets_associated_genes():
         limit = int(request.args.get('limit', '100'))
     except (TypeError, ValueError):
         limit = 0
-    if limit < 25 or limit > 500:
-        return jsonify({'error': 'Limit must be between 25 and 500'}), 400
+    if limit < 25:
+        return jsonify({'error': 'Limit must be at least 25'}), 400
 
     cache_key = (disease_id, limit)
     with _associated_gene_lock:

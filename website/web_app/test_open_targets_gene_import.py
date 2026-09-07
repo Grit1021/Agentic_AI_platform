@@ -47,17 +47,17 @@ class OpenTargetsGeneImportTests(unittest.TestCase):
                 }}
             })
             response = self.client.get(
-                "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=150"
+                "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=522"
             )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(post.call_args.kwargs["json"]["variables"]["size"], 150)
+        self.assertEqual(post.call_args.kwargs["json"]["variables"]["size"], 522)
 
-    def test_rejects_out_of_range_limit(self):
+    def test_rejects_limit_below_minimum(self):
         response = self.client.get(
-            "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=501"
+            "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=24"
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.get_json()["error"], "Limit must be between 25 and 500")
+        self.assertEqual(response.get_json()["error"], "Limit must be at least 25")
 
     def test_requires_ontology_identifier(self):
         response = self.client.get(

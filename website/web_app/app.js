@@ -1340,7 +1340,7 @@ const DISEASE_SUGGESTION_SEEDS = [
 ];
 
 const diseaseContextState = {
-    lastPresetCode: 'AD',
+    lastPresetCode: '',
     activeSuggestionIndex: -1,
     selectedMatch: null,
     searchTimer: null,
@@ -1511,8 +1511,8 @@ async function importOpenTargetsAssociatedGenes(limit) {
         });
         return;
     }
-    if (!Number.isInteger(limit) || limit < 25 || limit > 500) {
-        renderOpenTargetsGeneImportStatus('Choose between 25 and 500 genes.', { state: 'error' });
+    if (!Number.isInteger(limit) || limit < 25) {
+        renderOpenTargetsGeneImportStatus('Choose at least 25 genes.', { state: 'error' });
         return;
     }
 
@@ -1726,13 +1726,13 @@ function renderDiseasePresetOptions() {
 
     const customActive = Boolean(getDiseaseInput()?.value.trim());
     const selectedMatch = findDiseaseOption(getDiseaseHidden()?.value) ||
-        findDiseaseOption(diseaseContextState.lastPresetCode) || DISEASE_OPTIONS[0];
+        findDiseaseOption(diseaseContextState.lastPresetCode);
     select.replaceChildren();
 
     const placeholder = document.createElement('option');
     placeholder.value = '';
     placeholder.textContent = 'Select a disease example';
-    placeholder.disabled = true;
+    placeholder.selected = true;
     select.appendChild(placeholder);
 
     DISEASE_OPTIONS.forEach(option => {
@@ -1812,9 +1812,21 @@ function setDiseaseCombobox(value, { syncCurated = true } = {}) {
     if (!input || !hidden || !presetSelect) return;
     let selectedPreset = null;
 
-    if (match || !normalizedValue) {
-        selectedPreset = match || findDiseaseOption(diseaseContextState.lastPresetCode) || DISEASE_OPTIONS[0];
-        diseaseContextState.lastPresetCode = selectedPreset?.value || 'AD';
+    if (!normalizedValue) {
+        diseaseContextState.lastPresetCode = '';
+        diseaseContextState.selectedMatch = null;
+        presetSelect.value = '';
+        input.value = '';
+        hidden.value = '';
+        updateDiseaseContextStatus();
+        hideDiseaseSuggestions();
+        if (syncCurated) syncCuratedDiseaseSelect('');
+        return;
+    }
+
+    if (match) {
+        selectedPreset = match;
+        diseaseContextState.lastPresetCode = selectedPreset?.value || '';
         const authority = getDiseaseAuthority(selectedPreset);
         diseaseContextState.selectedMatch = authority ? {
             ...authority,
@@ -1897,10 +1909,10 @@ function onCustomDiseaseInput() {
         }
     } else {
         diseaseContextState.selectedMatch = null;
-        const fallback = findDiseaseOption(diseaseContextState.lastPresetCode) || DISEASE_OPTIONS[0];
-        presetSelect.value = fallback?.value || '';
-        hidden.value = fallback?.value || '';
-        syncCuratedDiseaseSelect(fallback?.value || '');
+        diseaseContextState.lastPresetCode = '';
+        presetSelect.value = '';
+        hidden.value = '';
+        syncCuratedDiseaseSelect('');
     }
     updateDiseaseContextStatus();
 }
@@ -2283,7 +2295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderDiseasePresetOptions();
     initDiseaseSearch();
     initOpenTargetsGeneImport();
-    setDiseaseCombobox('AD');
+    setDiseaseCombobox('');
 });
 
 window.onDiseasePresetChange = onDiseasePresetChange;
@@ -7342,6 +7354,21 @@ function showHistoryPanel() {
 }
 
 function showAnalysisView({ preserveActiveJob = false } = {}) {
+    const url = new URL(window.location.href);
+    const returningFromCompletedExample = url.searchParams.get('demo') === '1';
+    if (returningFromCompletedExample) {
+        url.searchParams.delete('demo');
+        url.searchParams.delete('example');
+        url.hash = '';
+        window.history.replaceState(null, '', `${url.pathname}${url.search}`);
+        setDiseaseCombobox('');
+        setSelectedGenes([]);
+        clearOpenTargetsGeneImportState();
+        getFeaturedExamplesMenuItems().forEach(item => {
+            item.classList.remove('is-current');
+            item.removeAttribute('aria-current');
+        });
+    }
     document.body.classList.remove('analysis-running-view');
     document.body.classList.remove('results-view');
     document.getElementById('history-section').style.display = 'none';

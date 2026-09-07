@@ -109,9 +109,9 @@
                                 <a href="https://platform-docs.opentargets.org/associations" target="_blank" rel="noopener">How the score is calculated <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>
                             </div>
                             <div class="open-targets-gene-import-controls">
-                                <label for="open-targets-limit-input">Number of genes</label>
+                                <label for="open-targets-limit-input">Number of genes (minimum 25)</label>
                                 <div class="open-targets-limit-row">
-                                    <input type="number" id="open-targets-limit-input" min="25" max="500" step="25" value="100" inputmode="numeric" />
+                                    <input type="number" id="open-targets-limit-input" min="25" step="1" value="100" inputmode="numeric" />
                                     <div class="open-targets-limit-presets" aria-label="Common gene counts">
                                         <button type="button" data-open-targets-preset="100">100</button>
                                         <button type="button" data-open-targets-preset="150">150</button>
@@ -150,6 +150,7 @@
                             </div>
                             <p id="disease-input-error" class="input-validation-error hidden" role="alert"></p>
                             <select id="disease-preset-select" hidden aria-hidden="true" tabindex="-1">
+                                <option value="" selected>Select a disease or phenotype</option>
                                 <option value="AD">Alzheimer's Disease (AD)</option>
                                 <option value="ALS">Amyotrophic Lateral Sclerosis (ALS)</option>
                                 <option value="IBD">Inflammatory Bowel Disease (IBD)</option>
@@ -158,10 +159,11 @@
                                 <option value="RA">Rheumatoid Arthritis (RA)</option>
                                 <option value="T2D">Type 2 Diabetes (T2D)</option>
                             </select>
-                            <input type="hidden" id="disease-select" value="AD" />
+                            <input type="hidden" id="disease-select" value="" />
                         </div>
+                    </section>
 
-                        <div class="disease-example-stack">
+                    <section class="analysis-shared-resources" aria-label="Disease and gene examples">
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
                                     <span class="gene-list-loader-title"><strong>Load a complete input</strong></span>
@@ -211,7 +213,6 @@
                                     </div>
                                 </div>
                             </section>
-                        </div>
                     </section>
                 </div>
 

@@ -106,6 +106,29 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("body.results-view .workflow-rail", css)
         self.assertRegex(css, r"\.workflow-rail\s*\{\s*display:\s*none")
 
+    def test_homepage_starts_empty_and_examples_are_shared_between_inputs(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('id="disease-select" value=""', html)
+        self.assertIn('<option value="" selected>Select a disease or phenotype</option>', html)
+        self.assertIn('class="analysis-shared-resources"', html)
+        self.assertIn('aria-label="Disease and gene examples"', html)
+        self.assertIn('id="featured-examples"', html)
+        self.assertIn('id="open-targets-limit-input" min="25"', html)
+        self.assertNotIn('id="open-targets-limit-input" min="25" max=', html)
+        response.close()
+
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertIn("setDiseaseCombobox('');", javascript)
+        self.assertIn("url.searchParams.delete('demo')", javascript)
+
+        with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
+            css = source.read()
+        self.assertRegex(css, r"\.analysis-shared-resources\s*\{[^}]*grid-column:\s*1\s*/\s*-1")
+        self.assertRegex(css, r"\.analysis-action-row\s*\{[^}]*justify-content:\s*center")
+
     def test_complete_input_examples_have_at_least_100_genes(self):
         payload = self.client.get("/api/frontend-data").get_json()
         for disease_code, disease in payload["gene_lists"].items():
