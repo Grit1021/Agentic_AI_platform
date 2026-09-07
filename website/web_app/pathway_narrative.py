@@ -156,7 +156,7 @@ HARD CONSTRAINTS:
   over-representation results; "associated with" or "found in" understates what was tested.
 - If the term name carries a regulation direction ("negative regulation of ...", "positive
   regulation of ..."), preserve that direction. Do not collapse it to the parent process.
-- The test compares the submitted gene module against the annotated genome background, not against
+- The test compares the submitted gene list against the annotated genome background, not against
   a control condition. Never describe the result as up- or down-regulation."""
 
 
@@ -501,7 +501,10 @@ def sanitize_narrative_paragraph(value):
     text = re.sub(r'\bassociated proteins\b', 'associated genes', text, flags=re.I)
     text = re.sub(r'\benriched proteins\b', 'enriched genes', text, flags=re.I)
     text = re.sub(r'\bintersection proteins\b', 'intersection genes', text, flags=re.I)
-    text = re.sub(r'\bprotein module\b', 'gene module', text, flags=re.I)
+    text = re.sub(r'\b(?:protein|gene|network) modules\b', 'gene lists', text, flags=re.I)
+    text = re.sub(r'\b(?:protein|gene|network) module\b', 'gene list', text, flags=re.I)
+    text = re.sub(r'\bmodules\b', 'gene lists', text, flags=re.I)
+    text = re.sub(r'\bmodule\b', 'gene list', text, flags=re.I)
     text = re.sub(
         r'\bthe proteins listed for this record\b',
         'the genes listed for this record',

@@ -179,9 +179,9 @@
                                                 <option value="">Select an example</option>
                                             </select>
                                         </div>
-                                        <div class="gene-list-select-group" id="gene-list-module-group" style="display:none;">
-                                            <label class="input-label" for="gene-list-module-select">Gene list</label>
-                                            <select id="gene-list-module-select" class="filter-select gene-list-select" onchange="onGeneListModuleChange()">
+                                        <div class="gene-list-select-group" id="gene-list-choice-group" style="display:none;">
+                                            <label class="input-label" for="gene-list-choice-select">Gene list</label>
+                                            <select id="gene-list-choice-select" class="filter-select gene-list-select" onchange="onGeneListChoiceChange()">
                                                 <option value="">Select a list</option>
                                             </select>
                                         </div>

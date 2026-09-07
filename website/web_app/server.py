@@ -3504,8 +3504,8 @@ Your role is to identify GO:BP terms that plausibly connect the input gene list 
 Constraints:
 1. Use OFFICIAL GO:BP term names (e.g., "response to oxidative stress").
 2. Do NOT fabricate IDs. If you provide an ID (GO:#######), ensure it is correct.
-3. Select terms that accurately reflect the granularity of the input module.
-4. Do NOT use generic terms like "Biological process" or "Cellular process" unless the module is extremely broad.
+3. Select terms that accurately reflect the granularity of the submitted gene list.
+4. Do NOT use generic terms like "Biological process" or "Cellular process" unless the gene list is extremely broad.
 5. Prioritize specific terms (e.g., "Interleukin-23-mediated signaling") if supported by the genes.""",
 
         'GO:MF': """You are an expert in discovering disease-related molecular functions (GO:MF).
@@ -3519,7 +3519,7 @@ Constraints:
 Your role is to identify cellular locations or complexes relevant to the disease.
 Constraints:
 1. Use OFFICIAL GO:CC term names.
-2. Focus on where the core interaction of the module occurs.""",
+2. Focus on where the core interaction of the gene list occurs.""",
 
         'KEGG': """You are an expert in KEGG pathways.
 Your role is to identify KEGG pathways that connect the input genes to the disease.
@@ -3529,7 +3529,7 @@ Constraints:
 3. Ensure the pathway is biologically supported by the input genes.""",
 
         'REAC': """You are an expert in Reactome pathways.
-Your role is to identify Reactome pathways that represent the biological consensus of the module.
+Your role is to identify Reactome pathways that represent the biological consensus of the submitted gene list.
 Constraints:
 1. Use OFFICIAL Reactome pathway names.
 2. Avoid broad top-level terms (e.g., "Signal Transduction") if a specific sub-pathway applies.
@@ -3544,8 +3544,8 @@ Constraints:
         
         system_prompt = SYSTEM_PROMPTS.get(category_code, f"You are an expert in {disease_name} and {category_name} pathways.")
         
-        prompt = f"""TASK: Analyze the provided gene list as a functional module for {disease_name}.
-Identify the top 10 {category_name} terms/pathways that best describe this module.
+        prompt = f"""TASK: Analyze the provided gene list for {disease_name}.
+Identify the top 10 {category_name} terms/pathways that best describe this gene list.
 
 INPUT GENES: {', '.join(genes)}
 DISEASE: {disease_name}
@@ -3646,10 +3646,10 @@ Respond using markdown ## headers for EACH section below. Include ALL sections e
 [3-4 sentences explaining your analytical approach. How did you map genes to {category_code} terms? What biological principles guided your predictions? Be specific about methodology, not generic statements.]
 
 ## Gene Analysis
-[3-4 sentences. Inspect the gene list and describe the dominant functional themes you observe. Group genes by function (e.g., synaptic, immune, metabolic). What kind of network module does this gene set represent?]
+[3-4 sentences. Inspect the gene list and describe the dominant functional themes you observe. Group genes by function (e.g., synaptic, immune, metabolic). What biological pattern does this gene list represent?]
 
 ## Database Focus
-[2-3 sentences. Why is {category_code} appropriate for interpreting this gene module? What resolution or annotation level does it provide? How does it complement other categories?]
+[2-3 sentences. Why is {category_code} appropriate for interpreting this gene list? What resolution or annotation level does it provide? How does it complement other categories?]
 
 ## Key Gene Functions
 [3-4 sentences. Identify specific genes and their known annotations relevant to {category_code}. Reference gene families, protein complexes, or functional groups. Be concrete about which genes drive which predictions.]
@@ -3679,7 +3679,7 @@ N/A (Iteration 2+ only)
 N/A (Iteration 2+ only)
 
 ## Cell Context
-[2-3 sentences identifying the primary cell types, tissues, or anatomical structures where this module's genes are most active. Ground your pathway predictions to specific cellular contexts relevant to {disease_name}. For example, specify neuron subtypes for neurological diseases, or immune cell types for inflammatory diseases.]
+[2-3 sentences identifying the primary cell types, tissues, or anatomical structures where genes in this list are most active. Ground your pathway predictions to specific cellular contexts relevant to {disease_name}. For example, specify neuron subtypes for neurological diseases, or immune cell types for inflammatory diseases.]
 
 ## Relevance Strength with Disease
 [High/Medium/Low] - [2-3 sentences assessing confidence. What mechanistic links connect your {category_code} predictions to {disease_name}? Consider biological plausibility and expected statistical validation.]
@@ -3888,10 +3888,10 @@ Respond using markdown ## headers for EACH section below. Include ALL sections w
 [3-4 sentences. First explain how you interpret the gene set's functional signature from iteration 1 validated pathways. Then explain your approach for generating NEW predictions while avoiding duplicates. What biological themes are you building upon vs exploring anew?]
 
 ## Gene Analysis
-[3-4 sentences. Re-examine the gene list in light of iteration 1 results. Which functional clusters were validated? Which were not supported? How does this refine your understanding of the module's dominant biology?]
+[3-4 sentences. Re-examine the gene list in light of iteration 1 results. Which functional clusters were validated? Which were not supported? How does this refine your understanding of the gene list's dominant biology?]
 
 ## Database Focus
-[2-3 sentences. Why is {category_code} appropriate for this module given iteration 1 results? What resolution level works best? How does the category complement other validated categories?]
+[2-3 sentences. Why is {category_code} appropriate for this gene list given iteration 1 results? What resolution level works best? How does the category complement other validated categories?]
 
 ## Key Gene Functions
 [3-4 sentences. Which specific genes drove successful predictions in iteration 1? What additional gene functions should you leverage for iteration 2? Reference gene families, protein complexes, or functional groups.]
@@ -3903,7 +3903,7 @@ Respond using markdown ## headers for EACH section below. Include ALL sections w
 [2-3 sentences. What experimental or literature evidence supports these NEW pathway predictions in the context of {disease_name}? Reference known disease mechanisms, omics findings, or model organism studies that distinguish iteration 2 predictions from iteration 1.]
 
 ## Learned from Previous Iteration
-[3-4 sentences. The retained {category_code} terms reveal core biological themes that validated well. What patterns emerged? What does this tell you about the module's functions? How does this guide iteration 2?]
+[3-4 sentences. The retained {category_code} terms reveal core biological themes that validated well. What patterns emerged? What does this tell you about the gene list's functions? How does this guide iteration 2?]
 
 ## Pathway Guidance
 [3-4 sentences. How do retained {category_code} pathways inform NEW predictions? What related but distinct pathways should you explore? What mechanistic connections guide your focus?]
@@ -3921,7 +3921,7 @@ Respond using markdown ## headers for EACH section below. Include ALL sections w
 [2-3 sentences. Did {category_code} underperform relative to other categories in iteration 1? If so, diagnose why and explain your correction strategy.]
 
 ## Cell Context
-[2-3 sentences identifying the primary cell types, tissues, or anatomical structures where this module's genes are most active. Ground your pathway predictions to specific cellular contexts relevant to {disease_name}. How does the cellular context inform your iteration 2 predictions?]
+[2-3 sentences identifying the primary cell types, tissues, or anatomical structures where genes in this list are most active. Ground your pathway predictions to specific cellular contexts relevant to {disease_name}. How does the cellular context inform your iteration 2 predictions?]
 
 ## Relevance Strength with Disease
 [High/Medium/Low] - [2-3 sentences assessing how NEW {category_code} predictions relate to {disease_name} pathophysiology. What mechanistic connections support your confidence?]

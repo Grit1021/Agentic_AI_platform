@@ -354,7 +354,7 @@
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
                                     <span class="doc-phase-badge">1</span>
-                                    <h3>Module Review</h3>
+                                    <h3>Gene List Review</h3>
                                 </div>
                                 <p>After the first prompt pass and statistical validation. Review which pathway hypotheses received corrected statistical support and decide whether to continue, ask questions, or quit.</p>
                             </div>

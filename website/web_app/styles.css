@@ -11626,6 +11626,12 @@ button.selected-gene-more:hover {
     line-height: 1.45;
 }
 
+.external-evidence-official-links a {
+    color: #5e4c94;
+    font-weight: 750;
+    text-underline-offset: 2px;
+}
+
 .external-evidence-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));

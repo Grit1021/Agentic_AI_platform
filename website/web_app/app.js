@@ -1116,8 +1116,8 @@ async function initGeneListLoader(backendGeneLists = {}) {
         DISEASE_OPTIONS.forEach(({ value, label }) => {
             const opt = document.createElement('option');
             opt.value = value;
-            const topModule = getTopExampleModule(value);
-            const count = Number(topModule?.gene_count ?? topModule?.genes?.length);
+            const exampleGeneList = getExampleGeneList(value);
+            const count = Number(exampleGeneList?.gene_count ?? exampleGeneList?.genes?.length);
             opt.textContent = Number.isFinite(count)
                 ? `${label.replace(/\s+\([^)]+\)$/, '')}, ${count} genes`
                 : label;
@@ -1130,7 +1130,7 @@ async function initGeneListLoader(backendGeneLists = {}) {
     }
 }
 
-function getTopExampleModule(diseaseCode) {
+function getExampleGeneList(diseaseCode) {
     const lists = geneListState.allLists?.[diseaseCode]?.lists || [];
     return lists.find(item => /top[_ -]?module/i.test(String(item.id || item.label || '')))
         || lists.find(item => Array.isArray(item.genes) && item.genes.length)
@@ -1154,10 +1154,10 @@ function updateFeaturedExampleButtons() {
             button.disabled = false;
             return;
         }
-        const module = getTopExampleModule(button.dataset.disease);
-        const count = Number(module?.gene_count ?? module?.genes?.length);
+        const exampleGeneList = getExampleGeneList(button.dataset.disease);
+        const count = Number(exampleGeneList?.gene_count ?? exampleGeneList?.genes?.length);
         if (detail && Number.isFinite(count)) detail.textContent = 'Load example';
-        button.disabled = !module;
+        button.disabled = !exampleGeneList;
     });
 }
 
@@ -1173,19 +1173,19 @@ function showFeaturedExamples(event) {
 
 async function loadFeaturedInput(diseaseCode) {
     const button = document.querySelector(`.featured-example-button[data-disease="${diseaseCode}"]`);
-    const module = getTopExampleModule(diseaseCode);
-    if (!module?.genes?.length) {
+    const exampleGeneList = getExampleGeneList(diseaseCode);
+    if (!exampleGeneList?.genes?.length) {
         if (button) button.title = 'This example is not available in the current preview.';
         return;
     }
 
-    setSelectedGenes(module.genes);
+    setSelectedGenes(exampleGeneList.genes);
     setDiseaseCombobox(diseaseCode);
     if (button) {
         button.classList.add('is-loaded');
         const original = button.querySelector('span')?.textContent;
         const detail = button.querySelector('span');
-        if (detail) detail.textContent = `Loaded ${module.genes.length} genes`;
+        if (detail) detail.textContent = `Loaded ${exampleGeneList.genes.length} genes`;
         setTimeout(() => {
             button.classList.remove('is-loaded');
             if (detail && original) detail.textContent = original;
@@ -1209,19 +1209,19 @@ function toggleGeneListPanel() {
 
 function onGeneListDiseaseChange({ syncContext = true } = {}) {
     const diseaseCode = document.getElementById('gene-list-disease-select').value;
-    const moduleGroup = document.getElementById('gene-list-module-group');
-    const moduleSelect = document.getElementById('gene-list-module-select');
+    const choiceGroup = document.getElementById('gene-list-choice-group');
+    const choiceSelect = document.getElementById('gene-list-choice-select');
     const metaPanel = document.getElementById('gene-list-meta');
 
     // reset
-    moduleSelect.innerHTML = '<option value="">Select a list</option>';
+    choiceSelect.innerHTML = '<option value="">Select a list</option>';
     metaPanel.classList.add('hidden');
     geneListState.selectedDisease = diseaseCode;
     geneListState.selectedListId = null;
     geneListState.selectedMeta = null;
 
     if (!diseaseCode || !geneListState.allLists[diseaseCode]) {
-        moduleGroup.style.display = 'none';
+        choiceGroup.style.display = 'none';
         return;
     }
 
@@ -1229,20 +1229,20 @@ function onGeneListDiseaseChange({ syncContext = true } = {}) {
         setDiseaseCombobox(diseaseCode, { syncCurated: false });
     }
 
-    // One choice only: each disease resolves to its compact module-level list.
-    const selected = getTopExampleModule(diseaseCode);
-    moduleGroup.style.display = 'none';
+    // One choice only: each disease resolves to its curated example gene list.
+    const selected = getExampleGeneList(diseaseCode);
+    choiceGroup.style.display = 'none';
     if (!selected) return;
     const opt = document.createElement('option');
     opt.value = selected.id;
     opt.textContent = selected.label || diseaseCode;
-    moduleSelect.appendChild(opt);
-    moduleSelect.value = selected.id;
-    onGeneListModuleChange();
+    choiceSelect.appendChild(opt);
+    choiceSelect.value = selected.id;
+    onGeneListChoiceChange();
 }
 
-function onGeneListModuleChange() {
-    const listId = document.getElementById('gene-list-module-select').value;
+function onGeneListChoiceChange() {
+    const listId = document.getElementById('gene-list-choice-select').value;
     const metaPanel = document.getElementById('gene-list-meta');
     geneListState.selectedListId = listId;
 
@@ -2304,7 +2304,7 @@ window.onCustomDiseaseInput = onCustomDiseaseInput;
 // Make gene list functions globally accessible for inline onclick handlers
 window.toggleGeneListPanel = toggleGeneListPanel;
 window.onGeneListDiseaseChange = onGeneListDiseaseChange;
-window.onGeneListModuleChange = onGeneListModuleChange;
+window.onGeneListChoiceChange = onGeneListChoiceChange;
 window.loadSelectedGeneList = loadSelectedGeneList;
 window.showFeaturedExamples = showFeaturedExamples;
 window.loadFeaturedInput = loadFeaturedInput;
@@ -2350,8 +2350,8 @@ async function loadSelectedGeneList() {
 
         const diseasePicker = document.getElementById('gene-list-disease-select');
         if (diseasePicker) diseasePicker.value = '';
-        const modulePicker = document.getElementById('gene-list-module-select');
-        if (modulePicker) modulePicker.innerHTML = '<option value="">Select a list</option>';
+        const geneListPicker = document.getElementById('gene-list-choice-select');
+        if (geneListPicker) geneListPicker.innerHTML = '<option value="">Select a list</option>';
         document.getElementById('gene-list-meta')?.classList.add('hidden');
         geneListState.selectedDisease = null;
         geneListState.selectedListId = null;
@@ -5544,7 +5544,10 @@ function sanitizeNarrativeText(value) {
         .replace(/\bassociated proteins\b/gi, 'associated genes')
         .replace(/\benriched proteins\b/gi, 'enriched genes')
         .replace(/\bintersection proteins\b/gi, 'intersection genes')
-        .replace(/\b(?:protein|gene|network) module\b/gi, 'gene set')
+        .replace(/\b(?:protein|gene|network) modules\b/gi, 'gene lists')
+        .replace(/\b(?:protein|gene|network) module\b/gi, 'gene list')
+        .replace(/\bmodules\b/gi, 'gene lists')
+        .replace(/\bmodule\b/gi, 'gene list')
         .replace(/\bthe proteins listed for this record\b/gi, 'the genes listed for this record')
         .replace(/\s+/g, ' ')
         .trim();
@@ -6052,9 +6055,6 @@ function renderExternalEvidenceGenes(pathway) {
     const entries = (current.length ? current : legacy).filter(entry => entry?.gene);
     if (!entries.length) return '';
 
-    const note = pathway?.external_evidence_note
-        || pathway?.independent_evidence_note
-        || 'External literature evidence; not used for enrichment or ranking.';
     const sourceLinks = entry => {
         const supplied = Array.isArray(entry?.pmids) ? entry.pmids : [];
         const recovered = (Array.isArray(entry?.source_refs) ? entry.source_refs : [])
@@ -6071,14 +6071,21 @@ function renderExternalEvidenceGenes(pathway) {
     };
 
     return `
-        <details class="external-evidence-block">
+        <details class="external-evidence-block detailed-report-only">
             <summary>
-                <span>External corroborating genes</span>
-                <small>${entries.length} gene${entries.length === 1 ? '' : 's'}; not used for enrichment or ranking</small>
+                <span>Additional pathway evidence genes</span>
+                <small>Context only</small>
                 <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
             </summary>
             <div class="external-evidence-body">
-                <p>${escapeHtml(note)}</p>
+                <p class="external-evidence-scope">Genes identified in the linked pathway–disease literature but absent from the submitted gene list and its pathway intersection. They provide supplementary context only and are not used for enrichment, ranking, driver selection or functional clusters.</p>
+                <p class="external-evidence-official-links">
+                    <a href="https://www.ncbi.nlm.nih.gov/research/pubtator3/" target="_blank" rel="noopener">NCBI PubTator3</a>
+                    identifies literature mentions; gene symbols link to
+                    <a href="https://www.genenames.org/" target="_blank" rel="noopener">HGNC</a>
+                    and citations link to
+                    <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener">PubMed</a>.
+                </p>
                 <div class="external-evidence-grid">
                     ${entries.map(entry => `
                         <div class="external-evidence-gene">
@@ -6250,6 +6257,7 @@ function renderEvidenceSectionsView(pathways) {
                                     <span class="evidence-detail-label">Input-pathway intersection genes</span>
                                     ${renderExpandableEvidenceGenes(genes, geneChipClass, geneEvidence.note)}
                                 </div>
+                                ${renderExternalEvidenceGenes(p)}
                             </div>
                             <div class="evidence-source-block">
                                 <span class="evidence-detail-label">Literature</span>
