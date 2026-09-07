@@ -79,14 +79,16 @@ class ServerLimitTests(unittest.TestCase):
         self.assertNotIn("offline_gene_lists.js", html)
         response.close()
 
-    def test_homepage_uses_vertical_workflow_visible_options_and_shared_footer(self):
+    def test_homepage_hides_workflow_and_uses_collapsible_settings_and_shared_footer(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
         self.assertIn('class="workflow-rail"', html)
         self.assertEqual(html.count('data-workflow-step='), 5)
         self.assertIn('class="analysis-options"', html)
-        self.assertIn('>Multiple runs<', html)
+        self.assertIn('>Feedback<', html)
+        self.assertIn('GPT-5.1 (default)', html)
+        self.assertIn('id="input-pathways-per-database"', html)
         self.assertRegex(
             html,
             r'href="/assets/examples/gene_list_examples\.[0-9a-f]{12}\.zip"',
@@ -98,6 +100,21 @@ class ServerLimitTests(unittest.TestCase):
         )
         self.assertNotIn('class="workflow-figure"', html)
         response.close()
+
+        with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
+            css = source.read()
+        self.assertIn("body.results-view .workflow-rail", css)
+        self.assertRegex(css, r"\.workflow-rail\s*\{\s*display:\s*none")
+
+    def test_complete_input_examples_have_at_least_100_genes(self):
+        payload = self.client.get("/api/frontend-data").get_json()
+        for disease_code, disease in payload["gene_lists"].items():
+            compact = next(
+                (item for item in disease["lists"] if "top_module" in item["id"]),
+                None,
+            )
+            self.assertIsNotNone(compact, disease_code)
+            self.assertGreaterEqual(len(compact.get("genes") or []), 100, disease_code)
 
     def test_product_tour_reopens_on_each_homepage_load_and_supports_two_skip_levels(self):
         response = self.client.get("/")
@@ -511,8 +528,8 @@ class ServerLimitTests(unittest.TestCase):
         self.assertTrue(header.startswith("Database,Pathway ID,Database Rank,Pathway,"))
         self.assertIn("Driving Genes", header)
         self.assertIn("Functional Clusters", header)
-        self.assertIn("External Corroborating Genes", header)
-        self.assertIn("External Evidence PMIDs", header)
+        self.assertNotIn("External Corroborating Genes", header)
+        self.assertNotIn("External Evidence PMIDs", header)
 
     def test_archived_demo_csv_native_download(self):
         response = self.client.get("/api/export/85bd55b2/csv?download=1")

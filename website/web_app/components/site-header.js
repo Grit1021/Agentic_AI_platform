@@ -20,25 +20,25 @@
                         aria-labelledby="featured-examples-menu-button" hidden>
                         <strong class="nav-featured-heading">Completed analyses</strong>
                         <a href="/?demo=1&amp;example=AD" role="menuitem" data-example-code="AD">
-                            <span>Alzheimer's disease</span><span class="nav-featured-code">AD</span>
+                            <span>Alzheimer's disease</span>
                         </a>
                         <a href="/?demo=1&amp;example=IBD" role="menuitem" data-example-code="IBD">
-                            <span>Inflammatory bowel disease</span><span class="nav-featured-code">IBD</span>
+                            <span>Inflammatory bowel disease</span>
                         </a>
                         <a href="/?demo=1&amp;example=MS" role="menuitem" data-example-code="MS">
-                            <span>Multiple sclerosis</span><span class="nav-featured-code">MS</span>
+                            <span>Multiple sclerosis</span>
                         </a>
                         <a href="/?demo=1&amp;example=T2D" role="menuitem" data-example-code="T2D">
-                            <span>Type 2 diabetes</span><span class="nav-featured-code">T2D</span>
+                            <span>Type 2 diabetes</span>
                         </a>
                         <a href="/?demo=1&amp;example=PD" role="menuitem" data-example-code="PD">
-                            <span>Parkinson disease</span><span class="nav-featured-code">PD</span>
+                            <span>Parkinson disease</span>
                         </a>
                         <a href="/?demo=1&amp;example=RA" role="menuitem" data-example-code="RA">
-                            <span>Rheumatoid arthritis</span><span class="nav-featured-code">RA</span>
+                            <span>Rheumatoid arthritis</span>
                         </a>
                         <a href="/?demo=1&amp;example=ALS" role="menuitem" data-example-code="ALS">
-                            <span>Amyotrophic lateral sclerosis</span><span class="nav-featured-code">ALS</span>
+                            <span>Amyotrophic lateral sclerosis</span>
                         </a>
                     </div>
                 </div>
@@ -57,4 +57,3 @@
     </header>
 `);
 })();
-

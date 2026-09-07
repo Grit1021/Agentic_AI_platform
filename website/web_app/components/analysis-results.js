@@ -10,7 +10,7 @@
                     <span><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-left"></use></svg> Back to analysis</span>
                 </button>
                     <button id="retry-narratives-btn" class="export-button hidden" type="button">
-                    <span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrows-clockwise"></use></svg> Regenerate narratives</span>
+                    <span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrows-clockwise"></use></svg> Refresh interpretations</span>
                 </button>
                 <div class="export-dropdown-wrapper">
                     <button id="export-btn" class="export-button">
@@ -95,8 +95,7 @@
                 <section class="evidence-register-card">
                     <div class="evidence-register-header">
                         <div>
-                            <h3>Ranked pathway evidence</h3>
-                            <p>Validated pathways grouped by source database.</p>
+                            <h3>Highlighted pathways with interpretations</h3>
                         </div>
                         <label class="pathway-limit-control" for="pathways-per-database">Show per database
                             <select id="pathways-per-database" class="filter-select">
@@ -115,4 +114,3 @@
         </section>
 `);
 })();
-

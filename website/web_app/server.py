@@ -628,7 +628,7 @@ def fallback_disease_interpretation(pathway_name, pathway_definition, genes, dis
     if len(clean_genes) > len(shown_genes):
         gene_text += f", and {len(clean_genes) - len(shown_genes)} additional intersection genes"
     gene_statement = (
-        f"The submitted module maps to this term through {gene_text}."
+        f"The submitted gene set maps to this term through {gene_text}."
         if gene_text else
         "The source result did not retain a structured input–pathway intersection, so gene-level mechanism cannot be resolved here."
     )
@@ -1017,6 +1017,12 @@ COGNITO_CLIENT_ID = os.environ.get('COGNITO_CLIENT_ID', '')
 COGNITO_CLIENT_SECRET = os.environ.get('COGNITO_CLIENT_SECRET', '')
 COGNITO_DOMAIN = os.environ.get('COGNITO_DOMAIN', '').rstrip('/')
 APP_BASE_URL = os.environ.get('APP_BASE_URL', '').rstrip('/')
+SES_REGION = os.environ.get('SES_REGION', COGNITO_REGION or 'us-east-1').strip() or 'us-east-1'
+SES_FROM_EMAIL = os.environ.get('SES_FROM_EMAIL', '').strip().lower()
+ANALYSIS_EMAIL_NOTIFICATIONS = (
+    os.environ.get('ANALYSIS_EMAIL_NOTIFICATIONS', 'false').strip().lower()
+    in {'1', 'true', 'yes', 'on'}
+)
 ALLOWED_EMAILS = {
     email.strip().lower()
     for email in os.environ.get('ALLOWED_EMAILS', '').split(',')
@@ -1252,7 +1258,7 @@ def _normalize_open_targets_disease_id(value):
 
 @app.route('/api/open-targets/associated-genes', methods=['GET'])
 def get_open_targets_associated_genes():
-    """Return the top 100 or 200 disease-associated human genes by OT score."""
+    """Return a requested number of disease-associated human genes by OT score."""
     disease_id = _normalize_open_targets_disease_id(request.args.get('disease_id', ''))
     if not disease_id:
         return jsonify({'error': 'Select an ontology-backed disease or phenotype first'}), 400
@@ -1261,8 +1267,8 @@ def get_open_targets_associated_genes():
         limit = int(request.args.get('limit', '100'))
     except (TypeError, ValueError):
         limit = 0
-    if limit not in {100, 200}:
-        return jsonify({'error': 'Limit must be 100 or 200'}), 400
+    if limit < 25 or limit > 500:
+        return jsonify({'error': 'Limit must be between 25 and 500'}), 400
 
     cache_key = (disease_id, limit)
     with _associated_gene_lock:
@@ -1657,6 +1663,8 @@ class AnalysisSession:
         self.progress_detail = "Waiting for an analysis worker."
         self.progress_state = "queued"
         self.progress_updated_at = datetime.now()
+        self.checkpoint_deadline = None
+        self.notification_sent = False
         self._progress_lock = threading.Lock()
         
         # Iterative mode support
@@ -1707,6 +1715,10 @@ class AnalysisSession:
                 "state": self.progress_state,
                 "updated_at": self.progress_updated_at.isoformat(),
                 "elapsed_seconds": elapsed_seconds,
+                "checkpoint_remaining_seconds": max(
+                    0,
+                    int((self.checkpoint_deadline - datetime.now()).total_seconds()),
+                ) if self.checkpoint_deadline else None,
             }
         return {
             "session_id": self.session_id,
@@ -1734,39 +1746,37 @@ sessions = {}
 
 CHECKPOINTS = {
     "network_biology": {
-        "name": "Module Annotation Query",
+        "name": "Gene set question",
         "phase": 1,
-        "description": "Annotate network-defined modules with biological functions",
+        "description": "Optional: explore the submitted genes before pathway analysis",
         "suggested_questions": [
-            "What biological process does this network-defined module most plausibly represent?",
+            "What biological processes do these genes most plausibly represent?",
             "What are the functions these {disease}-related genes implicated in?",
-            "What biological support exists for this module? (tissue-level, organ-level, etc)",
-            "Given these {disease} GWAS genes, what other genes are functionally connected in the human interactome?"
+            "Which tissues or cell types are most relevant to these genes?"
         ],
         "actions": ["query", "skip"]
     },
     "module_review": {
-        "name": "Module Pathway Review",
+        "name": "Validated pathway review",
         "phase": 1,
-        "description": "Review GPT-ranked pathways for this module",
+        "description": "Review the statistically validated pathways for this gene set",
         "actions": ["approve", "modify", "skip", "quit"]
     },
     "pathway_query": {
-        "name": "Gene Analysis Query",
+        "name": "Pathway question",
         "phase": 1,
         "description": "Identify key genes and disease drivers in pathways",
         "suggested_questions": [
-            "Which genes in these modules are both network-central and biologically plausible disease drivers?",
+            "Which genes in these pathways are biologically plausible disease drivers?",
             "Highlight the genes which share the same biological support (same pathways)?",
-            "In cases where the nearest gene to a GWAS locus lacks functional relevance, which distal candidates can be prioritized based on strong network connectivity to established disease mechanisms?",
             "What genes are most important in {pathway_name} for {disease}?"
         ],
         "actions": ["query", "skip"]
     },
     "aggregation_review": {
-        "name": "Aggregation Review",
+        "name": "Final pathway review",
         "phase": 2,
-        "description": "Review combined pathways from all modules",
+        "description": "Review the combined validated pathways",
         "actions": ["approve", "quit"]
     }
 }
@@ -2030,10 +2040,49 @@ def release_job_slot() -> None:
     _job_slots.release()
 
 
+def send_analysis_completion_email(analysis_session) -> bool:
+    """Send one best-effort completion email when SES is explicitly configured."""
+    if (
+        not ANALYSIS_EMAIL_NOTIFICATIONS
+        or not SES_FROM_EMAIL
+        or not analysis_session.owner_email
+        or analysis_session.notification_sent
+        or analysis_session.status not in {'completed', 'error'}
+    ):
+        return False
+    outcome = 'complete' if analysis_session.status == 'completed' else 'stopped'
+    disease_name = analysis_session.disease_name or analysis_session.disease or 'your gene set'
+    result_url = APP_BASE_URL
+    body = (
+        f"Your GenePathwayAI analysis for {disease_name} is {outcome}.\n\n"
+        f"Submitted genes: {len(analysis_session.genes)}\n"
+        f"Status: {analysis_session.status}\n"
+        f"Open GenePathwayAI: {result_url or 'Return to the application'}\n"
+    )
+    try:
+        import boto3
+        boto3.client('sesv2', region_name=SES_REGION).send_email(
+            FromEmailAddress=SES_FROM_EMAIL,
+            Destination={'ToAddresses': [analysis_session.owner_email]},
+            Content={
+                'Simple': {
+                    'Subject': {'Data': f'GenePathwayAI analysis {outcome}: {disease_name}'},
+                    'Body': {'Text': {'Data': body}},
+                }
+            },
+        )
+        analysis_session.notification_sent = True
+        return True
+    except Exception as exc:
+        app.logger.warning('SES completion email failed for %s: %s', analysis_session.session_id, exc)
+        return False
+
+
 def run_analysis_with_slot(analysis_session) -> None:
     try:
         run_analysis_workflow(analysis_session)
     finally:
+        send_analysis_completion_email(analysis_session)
         release_job_slot()
 
 
@@ -2069,6 +2118,9 @@ def get_status():
         "auth_ready": AUTH_CONFIG_READY,
         "static_assets": "whitenoise",
         "asset_version": STATIC_ASSET_VERSION,
+        "email_notifications_configured": bool(
+            ANALYSIS_EMAIL_NOTIFICATIONS and SES_FROM_EMAIL
+        ),
     }
 
     user = get_request_user()
@@ -2262,7 +2314,7 @@ def start_analysis():
         if REAL_ANALYSIS_AVAILABLE:
             analysis_session.add_message("system", "✅ Live hypothesis generation, statistical validation and literature retrieval enabled")
         else:
-            analysis_session.add_message("system", f"⚠️ Analysis modules unavailable - using demo mode")
+            analysis_session.add_message("system", "⚠️ Live analysis components unavailable; using the demonstration workflow")
         
         # Start analysis thread
         thread = threading.Thread(target=run_analysis_with_slot, args=(analysis_session,))
@@ -2501,7 +2553,7 @@ def get_export_session(session_id):
 
 
 def retry_pathway_narratives_with_slot(analysis_session):
-    """Regenerate narratives without rerunning enrichment or pathway ranking."""
+    """Refresh interpretations without rerunning enrichment or pathway ranking."""
     try:
         analysis_session.analysis_started_at = datetime.now()
         analysis_session.set_progress(
@@ -2514,7 +2566,7 @@ def retry_pathway_narratives_with_slot(analysis_session):
         )
         analysis_session.add_message(
             'system',
-            f'Regenerating validated pathway narratives for all {len(pathways)} pathways...',
+            f'Refreshing interpretations for all {len(pathways)} validated pathways...',
         )
         attach_pathway_narratives(
             pathways,
@@ -2544,30 +2596,31 @@ def retry_pathway_narratives_with_slot(analysis_session):
         analysis_session.status = 'completed'
         analysis_session.set_progress(
             100,
-            'Narrative regeneration complete',
+            'Interpretation refresh complete',
             f'Prepared {generated} model-generated narratives; {fallback} used fallback text.',
             state='completed',
         )
         analysis_session.add_message(
             'system',
-            f'Narrative regeneration complete: {generated} generated, {fallback} fallback.',
+            f'Interpretation refresh complete: {generated} generated, {fallback} fallback.',
         )
         save_run_to_history(analysis_session)
     except Exception as exc:
         analysis_session.status = 'error'
         analysis_session.set_progress(
             analysis_session.progress_percent,
-            'Narrative regeneration stopped',
+            'Interpretation refresh stopped',
             pathway_narrative.exception_summary(exc),
             state='error',
         )
         analysis_session.add_message(
             'error',
-            f'Narrative regeneration failed: {pathway_narrative.exception_summary(exc)}',
+            f'Interpretation refresh failed: {pathway_narrative.exception_summary(exc)}',
         )
         import traceback
         traceback.print_exc()
     finally:
+        send_analysis_completion_email(analysis_session)
         release_job_slot()
 
 
@@ -2609,7 +2662,7 @@ def retry_pathway_narratives(session_id):
         release_job_slot()
         slot_acquired = False
         return jsonify({
-            'error': 'Narrative regeneration is unavailable because usage limits cannot be verified.',
+            'error': 'Interpretation refresh is unavailable because usage limits cannot be verified.',
             'code': 'quota_unavailable',
             'detail': str(exc),
         }), 503
@@ -2630,13 +2683,13 @@ def retry_pathway_narratives(session_id):
         retry_session.set_progress(
             1,
             'Queued',
-            'Narrative regeneration was accepted.',
+            'Interpretation refresh was accepted.',
             state='queued',
         )
         retry_session.results = copy.deepcopy(source_session.results)
         retry_session.results['session_id'] = retry_session_id
         retry_session.messages = copy.deepcopy(source_session.messages)
-        retry_session.add_message('system', 'Starting pathway narrative regeneration...')
+        retry_session.add_message('system', 'Starting pathway interpretation refresh...')
         sessions[retry_session_id] = retry_session
 
         thread = threading.Thread(
@@ -2726,8 +2779,7 @@ def export_data(session_id, fmt):
             'Adjusted P-value', 'Pathway Size', 'Overlap Count',
             'Intersection Genes', 'GPT_Predicted', 'Description',
             'Pathway Narrative', 'Narrative Generated', 'Driving Genes',
-            'Functional Clusters', 'External Corroborating Genes',
-            'External Evidence PMIDs', 'Cell/Tissue Context',
+            'Functional Clusters', 'Cell/Tissue Context',
             'Pathway-level Cell Context PMIDs (not claim-mapped)', 'PMIDs'
         ])
         database_ranks = {}
@@ -2755,26 +2807,6 @@ def export_data(session_id, fmt):
                 for cluster in narrative.get('clusters', [])
                 if isinstance(cluster, dict)
             )
-            external_entries = (
-                pw.get('external_evidence_genes')
-                or pw.get('independent_evidence_genes')
-                or []
-            )
-            external_genes = ';'.join(
-                str(entry.get('gene') or '').strip()
-                for entry in external_entries
-                if isinstance(entry, dict) and str(entry.get('gene') or '').strip()
-            )
-            external_pmids = '; '.join(
-                f"{str(entry.get('gene') or '').strip()}:"
-                + '|'.join(
-                    str(pmid).strip()
-                    for pmid in entry.get('pmids', [])
-                    if str(pmid).strip()
-                )
-                for entry in external_entries
-                if isinstance(entry, dict) and entry.get('gene') and entry.get('pmids')
-            )
             writer.writerow([
                 category, get_pathway_identifier(pw) or 'ID unavailable',
                 database_ranks[category], pw.get('name', ''),
@@ -2788,8 +2820,6 @@ def export_data(session_id, fmt):
                 narrative.get('generated') is True,
                 driver_genes,
                 clusters,
-                external_genes,
-                external_pmids,
                 pw.get('cell_context', ''),
                 ';'.join(str(pmid) for pmid in pw.get('cell_context_pmids', []) if pmid),
                 pmids
@@ -2805,7 +2835,11 @@ def export_data(session_id, fmt):
         return jsonify({"data": csv_text, "filename": csv_filename, "mime": "text/csv"})
 
     elif fmt == 'json':
-        non_result_fields = {'score', 'gpt_score', 'evidence_score', 'relevance_score'}
+        non_result_fields = {
+            'score', 'gpt_score', 'evidence_score', 'relevance_score',
+            'external_evidence_genes', 'independent_evidence_genes',
+            'external_evidence_note', 'independent_evidence_note',
+        }
 
         def sanitize_public_value(value, field_name=''):
             if isinstance(value, dict):
@@ -4850,6 +4884,7 @@ def wait_for_checkpoint(session: AnalysisSession, checkpoint_type: str, data: di
     # Wait for response (5 min timeout)
     timeout = 300
     start_time = time.time()
+    session.checkpoint_deadline = datetime.now() + timedelta(seconds=timeout)
     while session.waiting_for_user and (time.time() - start_time) < timeout:
         time.sleep(0.5)
     
@@ -4857,6 +4892,7 @@ def wait_for_checkpoint(session: AnalysisSession, checkpoint_type: str, data: di
         session.checkpoint_data['user_response'] = 'approve'
         session.waiting_for_user = False
         session.add_message("system", "⏰ Timeout - auto-approving")
+    session.checkpoint_deadline = None
     session.set_progress(
         checkpoint_progress,
         'Resuming analysis',
@@ -4907,7 +4943,7 @@ def process_user_query(session: AnalysisSession, query: str, context: str) -> di
             # Module information if available
             module_context = ""
             if hasattr(session, 'module_pathways') and session.module_pathways:
-                module_context = f"\\nAnalyzed {len(session.module_pathways)} network modules."
+                module_context = f"\\nAnalyzed {len(session.module_pathways)} functional gene groups."
             
             # Retained pathways context
             retained_context = ""
@@ -4977,12 +5013,12 @@ Category Distribution: {category_summary}
 2. **{top_genes[1]}** - High degree connectivity  
 3. **{top_genes[2]}** - Bridges multiple pathways
 
-These genes typically have high betweenness centrality and connect disparate functional modules.""",
+These genes typically have high betweenness centrality and connect distinct functional groups.""",
             "data": {"type": "hub_analysis"}
         }
     elif 'centrality' in query_lower:
         return {
-            "answer": f"Genes with high betweenness centrality often include major regulators like {session.genes[0]} and {session.genes[1]}, acting as bridges between different functional modules.",
+            "answer": f"Genes with high betweenness centrality often include major regulators like {session.genes[0]} and {session.genes[1]}, acting as bridges between different functional groups.",
             "data": {"type": "centrality_analysis"}
         }
     elif 'complex' in query_lower:
@@ -5680,38 +5716,6 @@ def generate_full_export_pdf(
             safe_text(', '.join(genes) if genes else 'Not available in the source result.'),
             styles['body'],
         ))
-
-        external_entries = (
-            pathway.get('external_evidence_genes')
-            or pathway.get('independent_evidence_genes')
-            or []
-        )
-        external_entries = [
-            entry for entry in external_entries
-            if isinstance(entry, dict) and entry.get('gene')
-        ]
-        if external_entries:
-            story.append(Paragraph('<b>External corroborating genes</b>', styles['h3']))
-            external_note = (
-                pathway.get('external_evidence_note')
-                or pathway.get('independent_evidence_note')
-                or 'External evidence; not used for enrichment or ranking.'
-            )
-            story.append(Paragraph(safe_text(external_note), styles['small']))
-            for entry in external_entries:
-                pmids_for_gene = [
-                    str(pmid).strip() for pmid in entry.get('pmids', []) if str(pmid).strip()
-                ]
-                links = ', '.join(
-                    f'<link href="https://pubmed.ncbi.nlm.nih.gov/{safe_text(pmid)}/" '
-                    f'color="#5e4c94">PMID:{safe_text(pmid)}</link>'
-                    for pmid in pmids_for_gene
-                )
-                suffix = f' — {links}' if links else ''
-                story.append(Paragraph(
-                    f"<b>{safe_text(entry.get('gene'))}</b>{suffix}",
-                    styles['small'],
-                ))
 
         literature = pathway.get('literature') or []
         pmids = list(dict.fromkeys(

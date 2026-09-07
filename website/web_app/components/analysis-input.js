@@ -23,25 +23,43 @@
                     <div>
                         <h2 class="input-title">Run an analysis</h2>
                     </div>
-                    <div class="analysis-options" aria-label="Analysis options">
-                        <div class="analysis-option analysis-option--multiple-runs">
-                            <span class="analysis-setting-copy">
-                                <strong>Multiple runs</strong>
-                            </span>
-                            <label class="settings-switch" aria-label="Use multiple analysis runs">
-                                <input type="checkbox" id="iterative-checkbox" class="iterative-checkbox" checked>
-                                <span aria-hidden="true"></span>
+                    <details class="analysis-options" aria-label="Analysis settings">
+                        <summary><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-gear-six"></use></svg> Feedback and output</summary>
+                        <div class="analysis-options-panel">
+                            <div class="analysis-option analysis-option--multiple-runs">
+                                <span class="analysis-setting-copy">
+                                    <strong>Feedback</strong>
+                                    <small>Use a second pass informed by validation.</small>
+                                </span>
+                                <label class="settings-switch" aria-label="Use feedback during analysis">
+                                    <input type="checkbox" id="iterative-checkbox" class="iterative-checkbox" checked>
+                                    <span aria-hidden="true"></span>
+                                </label>
+                            </div>
+                            <label class="analysis-option analysis-option--model" for="openai-model-select">
+                                <span>Model</span>
+                                <select id="openai-model-select" class="settings-model-select">
+                                    <option value="gpt-5.1" selected>GPT-5.1 (default)</option>
+                                    <option value="gpt-5-mini">GPT-5 mini</option>
+                                    <option value="gpt-4.1">GPT-4.1</option>
+                                </select>
+                            </label>
+                            <label class="analysis-option analysis-option--pathway-limit" for="input-pathways-per-database">
+                                <span>Highlighted pathways per database</span>
+                                <select id="input-pathways-per-database" class="settings-model-select">
+                                    <option value="3">Top 3</option>
+                                    <option value="5" selected>Top 5</option>
+                                    <option value="10">Top 10</option>
+                                    <option value="all">All</option>
+                                </select>
                             </label>
                         </div>
-                        <label class="analysis-option analysis-option--model" for="openai-model-select">
-                            <span>Model</span>
-                            <select id="openai-model-select" class="settings-model-select">
-                                <option value="gpt-5.1" selected>GPT-5.1</option>
-                                <option value="gpt-5-mini">GPT-5 mini</option>
-                                <option value="gpt-4.1">GPT-4.1</option>
-                            </select>
-                        </label>
-                    </div>
+                    </details>
+                </div>
+
+                <div id="active-job-banner" class="active-job-banner hidden" aria-live="polite">
+                    <span id="active-job-banner-text">Analysis continues in the background.</span>
+                    <button type="button" id="view-active-job">View progress</button>
                 </div>
 
                 <div class="analysis-context-grid">
@@ -84,44 +102,28 @@
                             </div>
                         </div>
 
-                        <div class="input-secondary-tools input-secondary-tools--single">
-                            <div class="gene-list-loader">
-                                <div class="gene-list-loader-header">
-                                    <span class="gene-list-loader-title">
-                                        <strong>Load an example</strong>
-                                    </span>
-                                    <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
-                                        Browse <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
-                                    </button>
+                        <div class="open-targets-gene-import" aria-labelledby="open-targets-gene-import-title">
+                            <div class="open-targets-gene-import-copy">
+                                <strong id="open-targets-gene-import-title">Import disease-associated genes</strong>
+                                <p>Open Targets ranks gene–disease associations with an overall score from 0 to 1, combining weighted evidence across data sources. It is a ranking score, not a probability.</p>
+                                <a href="https://platform-docs.opentargets.org/associations" target="_blank" rel="noopener">How the score is calculated <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>
+                            </div>
+                            <div class="open-targets-gene-import-controls">
+                                <label for="open-targets-limit-input">Number of genes</label>
+                                <div class="open-targets-limit-row">
+                                    <input type="number" id="open-targets-limit-input" min="25" max="500" step="25" value="100" inputmode="numeric" />
+                                    <div class="open-targets-limit-presets" aria-label="Common gene counts">
+                                        <button type="button" data-open-targets-preset="100">100</button>
+                                        <button type="button" data-open-targets-preset="150">150</button>
+                                        <button type="button" data-open-targets-preset="200">200</button>
+                                    </div>
                                 </div>
-                                <div class="gene-list-panel hidden" id="gene-list-panel">
-                                    <div class="gene-list-selectors">
-                                        <div class="gene-list-select-group">
-                                            <label class="input-label" for="gene-list-disease-select">Example</label>
-                                            <select id="gene-list-disease-select" class="filter-select gene-list-select" onchange="onGeneListDiseaseChange()">
-                                                <option value="">Select an example</option>
-                                            </select>
-                                        </div>
-                                        <div class="gene-list-select-group" id="gene-list-module-group" style="display:none;">
-                                            <label class="input-label" for="gene-list-module-select">Gene List / Module</label>
-                                            <select id="gene-list-module-select" class="filter-select gene-list-select" onchange="onGeneListModuleChange()">
-                                                <option value="">Select a list</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="gene-list-meta hidden" id="gene-list-meta">
-                                        <span id="gene-list-source" hidden></span>
-                                        <span id="gene-list-desc" hidden></span>
-                                        <div class="gene-list-meta-row">
-                                            <span class="gene-list-meta-label">Genes:</span>
-                                            <span class="gene-list-meta-value" id="gene-list-count"></span>
-                                        </div>
-                                        <button type="button" class="gene-list-load-btn" id="gene-list-load-btn" onclick="loadSelectedGeneList()">
-                                            Load example
-                                        </button>
-                                    </div>
+                                <div class="open-targets-gene-import-actions">
+                                    <button type="button" id="open-targets-import-button" class="open-targets-gene-import-button" disabled>Import genes</button>
+                                    <button type="button" id="clear-open-targets-import-button" class="gene-query-action gene-query-action--clear hidden">Clear import</button>
                                 </div>
                             </div>
+                            <div id="open-targets-gene-import-status" class="open-targets-gene-import-status hidden" aria-live="polite"></div>
                         </div>
                     </section>
 
@@ -158,41 +160,57 @@
                             </select>
                             <input type="hidden" id="disease-select" value="AD" />
                         </div>
-                        <div class="open-targets-gene-import" aria-labelledby="open-targets-gene-import-title">
-                            <div class="open-targets-gene-import-copy">
-                                <strong id="open-targets-gene-import-title">Import by Open Targets score</strong>
-                            </div>
-                            <div class="open-targets-gene-import-actions" aria-label="Import Open Targets genes">
-                                <button type="button" class="open-targets-gene-import-button" data-open-targets-limit="100" disabled>
-                                    Import Top 100
-                                </button>
-                                <button type="button" class="open-targets-gene-import-button" data-open-targets-limit="200" disabled>
-                                    Import Top 200
-                                </button>
-                            </div>
-                            <div id="open-targets-gene-import-status" class="open-targets-gene-import-status hidden" aria-live="polite"></div>
-                        </div>
-                    </section>
-                </div>
 
-                <div class="analysis-resource-grid analysis-resource-grid--single" aria-label="Finished examples">
-                    <section id="featured-examples" class="featured-examples" aria-labelledby="featured-examples-title">
-                        <div class="featured-examples-copy">
-                            <strong id="featured-examples-title">Completed analyses</strong>
-                        </div>
-                        <div class="featured-example-list">
-                            <button type="button" class="featured-example-button featured-example-button--primary" data-disease="AD" onclick="openFeaturedCompletedExample('AD')">
-                                <strong>Alzheimer's disease</strong>
-                            </button>
-                            <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More examples <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
-                            <div id="featured-more-examples" class="featured-more-examples hidden">
-                                <button type="button" class="featured-example-button" data-disease="IBD" onclick="openFeaturedCompletedExample('IBD')"><strong>Inflammatory bowel disease</strong></button>
-                                <button type="button" class="featured-example-button" data-disease="MS" onclick="openFeaturedCompletedExample('MS')"><strong>Multiple sclerosis</strong></button>
-                                <button type="button" class="featured-example-button" data-disease="T2D" onclick="openFeaturedCompletedExample('T2D')"><strong>Type 2 diabetes</strong></button>
-                                <button type="button" class="featured-example-button" data-disease="PD" onclick="openFeaturedCompletedExample('PD')"><strong>Parkinson disease</strong></button>
-                                <button type="button" class="featured-example-button" data-disease="RA" onclick="openFeaturedCompletedExample('RA')"><strong>Rheumatoid arthritis</strong></button>
-                                <button type="button" class="featured-example-button" data-disease="ALS" onclick="openFeaturedCompletedExample('ALS')"><strong>Amyotrophic lateral sclerosis</strong></button>
+                        <div class="disease-example-stack">
+                            <div class="gene-list-loader">
+                                <div class="gene-list-loader-header">
+                                    <span class="gene-list-loader-title"><strong>Load a complete input</strong></span>
+                                    <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
+                                        Browse <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                                    </button>
+                                </div>
+                                <div class="gene-list-panel hidden" id="gene-list-panel">
+                                    <div class="gene-list-selectors">
+                                        <div class="gene-list-select-group">
+                                            <label class="input-label" for="gene-list-disease-select">Disease and gene example</label>
+                                            <select id="gene-list-disease-select" class="filter-select gene-list-select" onchange="onGeneListDiseaseChange()">
+                                                <option value="">Select an example</option>
+                                            </select>
+                                        </div>
+                                        <div class="gene-list-select-group" id="gene-list-module-group" style="display:none;">
+                                            <label class="input-label" for="gene-list-module-select">Gene list</label>
+                                            <select id="gene-list-module-select" class="filter-select gene-list-select" onchange="onGeneListModuleChange()">
+                                                <option value="">Select a list</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="gene-list-meta hidden" id="gene-list-meta">
+                                        <span id="gene-list-source" hidden></span>
+                                        <span id="gene-list-desc" hidden></span>
+                                        <div class="gene-list-meta-row">
+                                            <span class="gene-list-meta-label">Input size</span>
+                                            <span class="gene-list-meta-value" id="gene-list-count"></span>
+                                        </div>
+                                        <button type="button" class="gene-list-load-btn" id="gene-list-load-btn" onclick="loadSelectedGeneList()">Load disease and genes</button>
+                                    </div>
+                                </div>
                             </div>
+
+                            <section id="featured-examples" class="featured-examples" aria-labelledby="featured-examples-title">
+                                <div class="featured-examples-copy"><strong id="featured-examples-title">View completed analyses</strong></div>
+                                <div class="featured-example-list">
+                                    <button type="button" class="featured-example-button featured-example-button--primary" data-disease="AD" onclick="openFeaturedCompletedExample('AD')"><strong>Alzheimer's disease</strong></button>
+                                    <button type="button" class="featured-more-button" aria-expanded="false" onclick="toggleMoreFeaturedExamples(this)">More examples <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-caret-down"></use></svg></button>
+                                    <div id="featured-more-examples" class="featured-more-examples hidden">
+                                        <button type="button" class="featured-example-button" data-disease="IBD" onclick="openFeaturedCompletedExample('IBD')"><strong>Inflammatory bowel disease</strong></button>
+                                        <button type="button" class="featured-example-button" data-disease="MS" onclick="openFeaturedCompletedExample('MS')"><strong>Multiple sclerosis</strong></button>
+                                        <button type="button" class="featured-example-button" data-disease="T2D" onclick="openFeaturedCompletedExample('T2D')"><strong>Type 2 diabetes</strong></button>
+                                        <button type="button" class="featured-example-button" data-disease="PD" onclick="openFeaturedCompletedExample('PD')"><strong>Parkinson disease</strong></button>
+                                        <button type="button" class="featured-example-button" data-disease="RA" onclick="openFeaturedCompletedExample('RA')"><strong>Rheumatoid arthritis</strong></button>
+                                        <button type="button" class="featured-example-button" data-disease="ALS" onclick="openFeaturedCompletedExample('ALS')"><strong>Amyotrophic lateral sclerosis</strong></button>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </section>
                 </div>

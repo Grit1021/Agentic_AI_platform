@@ -11,13 +11,18 @@
                             <span class="analysis-progress-label">Live analysis progress</span>
                             <strong id="analysis-progress-stage">Starting analysis</strong>
                         </div>
-                        <span id="analysis-progress-percent" class="analysis-progress-percent">0%</span>
+                        <div class="analysis-progress-heading-actions">
+                            <span id="analysis-progress-percent" class="analysis-progress-percent">0%</span>
+                            <button type="button" id="analysis-background-btn" class="analysis-background-btn">Continue in background</button>
+                        </div>
                     </div>
                     <progress id="analysis-progress-bar" class="analysis-progress-bar" max="100" value="0">0%</progress>
                     <div class="analysis-progress-meta">
                         <span id="analysis-progress-detail">Submitting the analysis request.</span>
                         <time id="analysis-progress-elapsed">Elapsed 0:00</time>
+                        <span id="analysis-progress-remaining">Estimating time remaining</span>
                     </div>
+                    <p id="analysis-progress-email" class="analysis-progress-email">You may leave this view while the analysis continues.</p>
                 </div>
             </div>
             <div class="chat-container">

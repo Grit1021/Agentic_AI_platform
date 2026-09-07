@@ -61,7 +61,15 @@ USER_DAILY_JOB_LIMIT=3
 MAX_USER_DAILY_JOB_LIMIT=200
 GLOBAL_DAILY_JOB_LIMIT=30
 MAX_CONCURRENT_JOBS=1
+ANALYSIS_EMAIL_NOTIFICATIONS=false
+SES_REGION=us-east-1
+SES_FROM_EMAIL=notifications@YOUR_VERIFIED_DOMAIN
 ```
+
+完成邮件只有在 SES 发件身份已验证后才能开启。`SES_FROM_EMAIL` 必须位于同一
+`SES_REGION`，实例角色需要 `ses:SendEmail` 权限；若 SES 仍在 sandbox，收件人也必须
+先验证。域名身份应配置 SPF、DKIM 和 DMARC 后再把
+`ANALYSIS_EMAIL_NOTIFICATIONS` 改为 `true`。
 
 以下内容属于 secret，不要写入 ZIP 或 Git：
 

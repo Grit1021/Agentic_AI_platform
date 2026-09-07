@@ -37,12 +37,27 @@ class OpenTargetsGeneImportTests(unittest.TestCase):
         server._associated_gene_cache.clear()
         self.client = server.app.test_client()
 
-    def test_rejects_unknown_limit(self):
+    def test_accepts_custom_limit(self):
+        with patch("server.requests.post") as post:
+            post.return_value = _FakeResponse({
+                "data": {"disease": {
+                    "id": "HP_0003124",
+                    "name": "Hypercholesterolemia",
+                    "associatedTargets": {"count": 0, "rows": []},
+                }}
+            })
+            response = self.client.get(
+                "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=150"
+            )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(post.call_args.kwargs["json"]["variables"]["size"], 150)
+
+    def test_rejects_out_of_range_limit(self):
         response = self.client.get(
-            "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=50"
+            "/api/open-targets/associated-genes?disease_id=HP_0003124&limit=501"
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.get_json()["error"], "Limit must be 100 or 200")
+        self.assertEqual(response.get_json()["error"], "Limit must be between 25 and 500")
 
     def test_requires_ontology_identifier(self):
         response = self.client.get(
