@@ -7709,6 +7709,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (docId) showDocsPanel(docId);
 });
 
+function syncViewToLocation() {
+    const params = new URLSearchParams(window.location.search);
+    const isCompletedExampleRoute = params.get('demo') === '1';
+    const isDocumentationRoute = Boolean(getDocumentationHashId());
+    if (!isCompletedExampleRoute && !isDocumentationRoute) showAnalysisView();
+}
+
+// A restored browser page can retain the previous result DOM even when its URL
+// is the homepage. Treat the URL as the source of truth on both cold loads and
+// back-forward cache restores.
+document.addEventListener('DOMContentLoaded', syncViewToLocation);
+window.addEventListener('pageshow', syncViewToLocation);
+
 async function clearAllHistory() {
     if (!confirm('Are you sure you want to clear all history? This cannot be undone.')) return;
 

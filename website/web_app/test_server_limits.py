@@ -134,6 +134,10 @@ class ServerLimitTests(unittest.TestCase):
             javascript = source.read()
         self.assertIn("setDiseaseCombobox('');", javascript)
         self.assertIn("url.searchParams.delete('demo')", javascript)
+        self.assertIn("document.addEventListener('DOMContentLoaded', syncViewToLocation)", javascript)
+        self.assertIn("window.addEventListener('pageshow', syncViewToLocation)", javascript)
+        self.assertIn("params.get('demo') === '1'", javascript)
+        self.assertIn("!isCompletedExampleRoute && !isDocumentationRoute", javascript)
 
         with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
             css = source.read()
