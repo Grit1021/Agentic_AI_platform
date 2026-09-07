@@ -5,6 +5,7 @@ import re
 import shutil
 import unittest
 import warnings
+import zipfile
 from unittest.mock import Mock, patch
 
 import jinja2
@@ -246,6 +247,26 @@ class ServerLimitTests(unittest.TestCase):
         example_files = self.client.get("/examples/gene_list_examples.zip")
         self.assertEqual(example_files.status_code, 200)
         self.assertTrue(example_files.data.startswith(b"PK"))
+        with zipfile.ZipFile(io.BytesIO(example_files.data)) as archive:
+            self.assertEqual(
+                set(archive.namelist()),
+                {"hgnc_symbols.txt", "ensembl_gene_ids.txt", "mixed_identifiers.csv"},
+            )
+            symbol_tokens = re.findall(
+                r"[A-Z0-9][A-Z0-9.-]*",
+                archive.read("hgnc_symbols.txt").decode("utf-8"),
+            )
+            ensembl_tokens = re.findall(
+                r"ENSG\d{11}",
+                archive.read("ensembl_gene_ids.txt").decode("utf-8"),
+            )
+            mixed_tokens = re.findall(
+                r"(?:ENSG\d{11}|[A-Z0-9][A-Z0-9.-]*)",
+                archive.read("mixed_identifiers.csv").decode("utf-8"),
+            )
+            self.assertEqual(len(symbol_tokens), 120)
+            self.assertEqual(len(ensembl_tokens), 120)
+            self.assertEqual(len(mixed_tokens), 120)
         example_files.close()
         favicon = self.client.get("/favicon.svg")
         self.assertEqual(favicon.status_code, 200)
