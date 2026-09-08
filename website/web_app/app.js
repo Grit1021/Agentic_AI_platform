@@ -6077,12 +6077,12 @@ function renderExternalEvidenceGenes(pathway) {
     return `
         <details class="external-evidence-block detailed-report-only">
             <summary>
-                <span>Additional pathway evidence genes</span>
+                <span>Additional genes mentioned in literature</span>
                 <small>Context only</small>
                 <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
             </summary>
             <div class="external-evidence-body">
-                <p class="external-evidence-scope">Genes identified in the linked pathway–disease literature but absent from the submitted gene list and its pathway intersection. They provide supplementary context only and are not used for enrichment, ranking, driver selection or functional clusters.</p>
+                <p class="external-evidence-scope">Gene mentions extracted from the linked pathway–disease literature but absent from the submitted gene list and its pathway intersection. They provide supplementary context only and are not used for enrichment, ranking, driver selection or functional clusters.</p>
                 <p class="external-evidence-official-links">
                     <a href="https://www.ncbi.nlm.nih.gov/research/pubtator3/" target="_blank" rel="noopener">NCBI PubTator3</a>
                     identifies literature mentions; gene symbols link to
