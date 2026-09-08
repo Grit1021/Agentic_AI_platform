@@ -13,7 +13,7 @@
                         </div>
                         <div class="analysis-progress-heading-actions">
                             <span id="analysis-progress-percent" class="analysis-progress-percent">0%</span>
-                            <button type="button" id="analysis-background-btn" class="analysis-background-btn">Continue in background</button>
+                            <button type="button" id="analysis-background-btn" class="analysis-background-btn">Back to homepage</button>
                         </div>
                     </div>
                     <progress id="analysis-progress-bar" class="analysis-progress-bar" max="100" value="0">0%</progress>
@@ -23,6 +23,7 @@
                         <span id="analysis-progress-remaining">Estimating time remaining</span>
                     </div>
                     <p id="analysis-progress-email" class="analysis-progress-email">You may leave this view while the analysis continues.</p>
+                    <p id="analysis-progress-mode" class="analysis-progress-mode">Running automatically. Optional questions are off.</p>
                 </div>
             </div>
             <div class="chat-container">

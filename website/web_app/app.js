@@ -17,9 +17,13 @@ const state = {
     analysisStartedAt: null,
     backgrounded: false,
     backgroundResults: null,
+    activeJobLabel: '',
+    interactiveQuestions: false,
     userEmail: '',
     emailNotificationsAvailable: false
 };
+
+const ACTIVE_JOB_STORAGE_KEY = 'genepathway-active-analysis';
 
 const frontendDataState = {
     geneLists: {},
@@ -104,10 +108,16 @@ const elements = {
     analysisProgressElapsed: document.getElementById('analysis-progress-elapsed'),
     analysisProgressRemaining: document.getElementById('analysis-progress-remaining'),
     analysisProgressEmail: document.getElementById('analysis-progress-email'),
+    analysisProgressMode: document.getElementById('analysis-progress-mode'),
     analysisBackgroundBtn: document.getElementById('analysis-background-btn'),
     activeJobBanner: document.getElementById('active-job-banner'),
     activeJobBannerText: document.getElementById('active-job-banner-text'),
+    activeJobBannerStage: document.getElementById('active-job-banner-stage'),
+    activeJobBannerRemaining: document.getElementById('active-job-banner-remaining'),
+    activeJobBannerPercent: document.getElementById('active-job-banner-percent'),
+    activeJobIndicator: document.getElementById('active-job-indicator'),
     viewActiveJob: document.getElementById('view-active-job'),
+    dismissActiveJob: document.getElementById('dismiss-active-job'),
 
     // Results View Elements
     backToProcess: document.getElementById('back-to-process'),
@@ -192,9 +202,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     elements.analysisBackgroundBtn?.addEventListener('click', backgroundAnalysis);
     elements.viewActiveJob?.addEventListener('click', showActiveJob);
+    elements.dismissActiveJob?.addEventListener('click', dismissActiveJob);
     document.querySelectorAll('[data-report-view]').forEach(button => {
         button.addEventListener('click', () => setReportView(button.dataset.reportView));
     });
+
+    restoreActiveJobState();
 
 });
 
@@ -3088,6 +3101,7 @@ async function startAnalysis() {
     const disease = elements.diseaseSelect.value;
     const selectedDisease = diseaseContextState.selectedMatch;
     const useIterative = document.getElementById('iterative-checkbox').checked;
+    const interactiveQuestions = document.getElementById('interactive-questions-checkbox')?.checked === true;
     const selectedModel = document.getElementById('openai-model-select')?.value || 'gpt-5.1';
     const diseaseError = getBiomedicalTextError(
         document.getElementById('disease-input')?.value || disease,
@@ -3111,6 +3125,8 @@ async function startAnalysis() {
     state.analysisStartedAt = Date.now();
     state.backgrounded = false;
     state.backgroundResults = null;
+    state.activeJobLabel = selectedDisease?.canonicalName || selectedDisease?.label || disease || 'Pathway analysis';
+    state.interactiveQuestions = interactiveQuestions;
     document.body.classList.remove('results-view');
     updateActiveJobBanner();
     elements.startBtn.disabled = true;
@@ -3134,6 +3150,7 @@ async function startAnalysis() {
                     url: selectedDisease.authorityUrl || ''
                 } : null,
                 use_iterative: useIterative,
+                interactive_questions: interactiveQuestions,
                 model: selectedModel
             })
         });
@@ -3147,6 +3164,7 @@ async function startAnalysis() {
         if (data.quota) updateQuotaStatus(data.quota);
 
         state.sessionId = data.session_id;
+        saveActiveJobState('running');
 
         // Switch to chat view
         document.body.classList.add('analysis-running-view');
@@ -3154,6 +3172,7 @@ async function startAnalysis() {
         elements.inputSection.classList.add('hidden');
         elements.chatSection.classList.remove('hidden');
         updateProgressNotificationCopy();
+        updateProgressModeCopy();
         setActiveWorkflowStep('hypothesize');
         updateAnalysisProgress({
             percent: 1,
@@ -3178,6 +3197,7 @@ async function startAnalysis() {
             alert('Failed to start analysis: ' + message);
         }
         resetStartButton();
+        clearActiveJobState();
     }
 }
 
@@ -3215,6 +3235,12 @@ async function pollProgress() {
 
         if (data.error) {
             console.error('Poll error:', data.error);
+            if (response.status === 404 || response.status === 403) {
+                stopPolling();
+                state.isAnalyzing = false;
+                clearActiveJobState();
+                updateActiveJobBanner({ failed: true });
+            }
             return;
         }
 
@@ -3238,6 +3264,7 @@ async function pollProgress() {
             showTyping(false);
             if (state.backgrounded) {
                 state.backgroundResults = data.results;
+                saveActiveJobState('completed');
                 resetStartButton();
                 updateActiveJobBanner({ completed: true });
             } else {
@@ -3247,6 +3274,7 @@ async function pollProgress() {
             stopPolling();
             showTyping(false);
             resetStartButton();
+            clearActiveJobState();
             updateActiveJobBanner({ failed: true });
         }
 
@@ -3286,8 +3314,59 @@ function updateProgressNotificationCopy() {
     if (state.emailNotificationsAvailable && state.userEmail) {
         elements.analysisProgressEmail.textContent = `Completion email will be sent to ${state.userEmail}.`;
     } else {
-        elements.analysisProgressEmail.textContent = 'You may return to the analysis page while this job continues in the background.';
+        elements.analysisProgressEmail.textContent = 'You can return to the homepage; this job will continue in the background.';
     }
+}
+
+function updateProgressModeCopy() {
+    if (!elements.analysisProgressMode) return;
+    elements.analysisProgressMode.textContent = state.interactiveQuestions
+        ? 'If you are curious, the analysis will pause twice for an optional question.'
+        : 'Running automatically. Optional questions are off.';
+}
+
+function saveActiveJobState(status = 'running') {
+    if (!state.sessionId) return;
+    try {
+        sessionStorage.setItem(ACTIVE_JOB_STORAGE_KEY, JSON.stringify({
+            sessionId: state.sessionId,
+            analysisStartedAt: state.analysisStartedAt,
+            label: state.activeJobLabel,
+            interactiveQuestions: state.interactiveQuestions,
+            status,
+        }));
+    } catch (_) {
+        // The live in-memory task still works when browser storage is unavailable.
+    }
+}
+
+function clearActiveJobState() {
+    try {
+        sessionStorage.removeItem(ACTIVE_JOB_STORAGE_KEY);
+    } catch (_) {
+        // Browser storage may be disabled.
+    }
+}
+
+function restoreActiveJobState() {
+    if (state.sessionId || currentResults) return;
+    let saved = null;
+    try {
+        saved = JSON.parse(sessionStorage.getItem(ACTIVE_JOB_STORAGE_KEY) || 'null');
+    } catch (_) {
+        clearActiveJobState();
+        return;
+    }
+    if (!saved || !/^[a-f0-9]{32}$/i.test(String(saved.sessionId || ''))) return;
+    state.sessionId = saved.sessionId;
+    state.analysisStartedAt = Number(saved.analysisStartedAt) || Date.now();
+    state.activeJobLabel = String(saved.label || 'Pathway analysis');
+    state.interactiveQuestions = saved.interactiveQuestions === true;
+    state.isAnalyzing = saved.status !== 'completed';
+    state.backgrounded = true;
+    updateProgressModeCopy();
+    updateActiveJobBanner({ completed: saved.status === 'completed' });
+    startPolling();
 }
 
 function updateActiveJobBanner({ completed = false, failed = false } = {}) {
@@ -3295,19 +3374,42 @@ function updateActiveJobBanner({ completed = false, failed = false } = {}) {
     const visible = state.backgrounded || Boolean(state.backgroundResults) || failed;
     elements.activeJobBanner.classList.toggle('hidden', !visible);
     if (!visible) return;
-    if (failed) elements.activeJobBannerText.textContent = 'The background analysis stopped before completion.';
-    else if (completed || state.backgroundResults) elements.activeJobBannerText.textContent = 'Your analysis is complete.';
-    else {
-        const percent = Math.round(Number(elements.analysisProgressBar?.value) || 0);
-        elements.activeJobBannerText.textContent = `Analysis continues in the background (${percent}%).`;
+    const percent = Math.round(Number(elements.analysisProgressBar?.value) || 0);
+    const isComplete = completed || Boolean(state.backgroundResults);
+    const label = state.activeJobLabel || 'Pathway analysis';
+    elements.activeJobBanner.dataset.state = failed ? 'failed' : (isComplete ? 'completed' : 'running');
+    elements.activeJobBannerText.textContent = failed
+        ? `${label} stopped`
+        : isComplete ? `${label} is ready` : label;
+    if (elements.activeJobBannerStage) {
+        elements.activeJobBannerStage.textContent = failed
+            ? 'Analysis could not continue'
+            : isComplete ? 'Analysis complete' : (elements.analysisProgressStage?.textContent || 'Analysis in progress');
     }
-    if (elements.viewActiveJob) elements.viewActiveJob.textContent = state.backgroundResults ? 'View result' : 'View progress';
+    if (elements.activeJobBannerRemaining) {
+        elements.activeJobBannerRemaining.textContent = failed
+            ? 'Open the analysis page for details'
+            : isComplete ? 'Open the completed result' : (elements.analysisProgressRemaining?.textContent || 'Estimating time remaining');
+    }
+    if (elements.activeJobBannerPercent) elements.activeJobBannerPercent.textContent = isComplete ? '100%' : `${percent}%`;
+    elements.activeJobIndicator?.classList.toggle('is-idle', failed || isComplete);
+    elements.dismissActiveJob?.classList.toggle('hidden', !failed && !isComplete);
+    if (elements.viewActiveJob) elements.viewActiveJob.textContent = isComplete ? 'View result' : 'Open';
 }
 
 function backgroundAnalysis() {
     if (!state.isAnalyzing || !state.sessionId) return;
     state.backgrounded = true;
+    saveActiveJobState('running');
     showAnalysisView({ preserveActiveJob: true });
+    updateActiveJobBanner();
+}
+
+function dismissActiveJob() {
+    if (state.isAnalyzing && !state.backgroundResults) return;
+    state.backgrounded = false;
+    state.backgroundResults = null;
+    clearActiveJobState();
     updateActiveJobBanner();
 }
 
@@ -4283,6 +4385,10 @@ function showResults(results) {
     if (!results) return;
 
     state.isAnalyzing = false;
+    state.backgrounded = false;
+    state.backgroundResults = null;
+    clearActiveJobState();
+    updateActiveJobBanner();
     resetStartButton();
 
     // Store results globally for filtering

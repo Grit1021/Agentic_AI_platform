@@ -350,6 +350,64 @@ class ServerLimitTests(unittest.TestCase):
         analysis.set_progress(42, "Late message")
         self.assertEqual(analysis.progress_percent, 54)
 
+    def test_default_analysis_skips_all_manual_checkpoints(self):
+        analysis = server.AnalysisSession("automatic", ["A", "B", "C"], "Disease")
+        self.assertFalse(analysis.interactive_questions)
+        server.wait_for_checkpoint(analysis, "network_biology", {"gene_count": 3})
+        self.assertFalse(analysis.waiting_for_user)
+        self.assertIsNone(analysis.current_checkpoint)
+        self.assertEqual(analysis.checkpoint_data["user_response"], "approve")
+        self.assertTrue(analysis.checkpoint_data["auto_advanced"])
+        self.assertFalse(any(message["type"] == "checkpoint" for message in analysis.messages))
+
+    def test_analysis_api_accepts_explicit_optional_question_mode(self):
+        with patch.object(server.threading, "Thread", CompletedThread):
+            response = self.client.post(
+                "/api/analyze",
+                json={
+                    "genes": ["APOE", "APP", "PSEN1"],
+                    "disease": "AD",
+                    "interactive_questions": True,
+                },
+            )
+        self.assertEqual(response.status_code, 200)
+        analysis = server.sessions[response.get_json()["session_id"]]
+        self.assertTrue(analysis.interactive_questions)
+        self.assertTrue(analysis.to_dict()["interactive_questions"])
+
+    def test_optional_question_mode_skips_non_question_reviews(self):
+        analysis = server.AnalysisSession("curious", ["A", "B", "C"], "Disease")
+        analysis.interactive_questions = True
+        server.wait_for_checkpoint(analysis, "module_review", {"pathway_count": 5})
+        self.assertFalse(analysis.waiting_for_user)
+        self.assertIsNone(analysis.current_checkpoint)
+        self.assertEqual(analysis.checkpoint_data["user_response"], "approve")
+
+    def test_homepage_has_opt_in_questions_and_persistent_floating_job_status(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('id="interactive-questions-checkbox"', html)
+        self.assertNotRegex(html, r'id="interactive-questions-checkbox"[^>]*checked')
+        self.assertIn('If you are curious', html)
+        self.assertIn('id="active-job-banner"', html)
+        self.assertIn('id="active-job-banner-stage"', html)
+        self.assertIn('id="active-job-banner-remaining"', html)
+        self.assertIn('id="active-job-banner-percent"', html)
+        self.assertIn('>Back to homepage<', html)
+        response.close()
+
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertIn("interactive_questions: interactiveQuestions", javascript)
+        self.assertIn("sessionStorage.setItem(ACTIVE_JOB_STORAGE_KEY", javascript)
+        self.assertIn("restoreActiveJobState();", javascript)
+        self.assertIn("startPolling();", javascript)
+
+        with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
+            css = source.read()
+        self.assertRegex(css, r"\.active-job-banner\s*\{[^}]*position:\s*fixed")
+
     def test_disease_search_preserves_open_targets_ranking(self):
         upstream = Mock()
         upstream.raise_for_status.return_value = None

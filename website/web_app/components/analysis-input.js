@@ -36,6 +36,16 @@
                                     <span aria-hidden="true"></span>
                                 </label>
                             </div>
+                            <div class="analysis-option analysis-option--curious">
+                                <span class="analysis-setting-copy">
+                                    <strong>Questions during analysis</strong>
+                                    <small>If you are curious, pause at two optional points to ask about the genes or pathways.</small>
+                                </span>
+                                <label class="settings-switch" aria-label="Pause for optional questions during analysis">
+                                    <input type="checkbox" id="interactive-questions-checkbox" class="iterative-checkbox">
+                                    <span aria-hidden="true"></span>
+                                </label>
+                            </div>
                             <label class="analysis-option analysis-option--model" for="openai-model-select">
                                 <span>Model</span>
                                 <select id="openai-model-select" class="settings-model-select">
@@ -57,10 +67,21 @@
                     </details>
                 </div>
 
-                <div id="active-job-banner" class="active-job-banner hidden" aria-live="polite">
-                    <span id="active-job-banner-text">Analysis continues in the background.</span>
-                    <button type="button" id="view-active-job">View progress</button>
-                </div>
+                <aside id="active-job-banner" class="active-job-banner hidden" aria-live="polite" aria-label="Active analysis">
+                    <span id="active-job-indicator" class="active-job-indicator" aria-hidden="true">
+                        <svg class="ph ph-spin"><use href="#ph-circle-notch"></use></svg>
+                    </span>
+                    <span class="active-job-copy">
+                        <strong id="active-job-banner-text">Analysis in progress</strong>
+                        <small id="active-job-banner-stage">Preparing analysis</small>
+                        <small id="active-job-banner-remaining">Estimating time remaining</small>
+                    </span>
+                    <span id="active-job-banner-percent" class="active-job-percent">0%</span>
+                    <button type="button" id="view-active-job">Open</button>
+                    <button type="button" id="dismiss-active-job" class="active-job-dismiss hidden" aria-label="Dismiss analysis notification">
+                        <svg class="ph ph-xs" aria-hidden="true"><use href="#ph-x"></use></svg>
+                    </button>
+                </aside>
 
                 <div class="analysis-context-grid">
                     <section class="input-workspace-group input-workspace-group--genes" aria-labelledby="gene-input-heading">

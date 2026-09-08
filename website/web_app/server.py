@@ -1669,6 +1669,7 @@ class AnalysisSession:
         
         # Iterative mode support
         self.use_iterative = False  # Whether to run 2 iterations
+        self.interactive_questions = False  # Optional pauses; normal runs remain uninterrupted
         self.current_iteration = 0   # Current iteration (1-2)
         self.retained_pathways = []  # FDR-filtered pathways from previous iteration
         
@@ -1731,6 +1732,7 @@ class AnalysisSession:
             "current_phase": self.current_phase,
             "current_checkpoint": self.current_checkpoint,
             "waiting_for_user": self.waiting_for_user,
+            "interactive_questions": self.interactive_questions,
             "progress": progress,
             "messages": self.messages,
             "results": self.results,
@@ -2247,6 +2249,7 @@ def start_analysis():
             if context_error:
                 return jsonify({'error': context_error, 'code': 'unsafe_free_text'}), 400
         use_iterative = data.get('use_iterative', False)  # NEW: Iterative mode flag
+        interactive_questions = data.get('interactive_questions') is True
         try:
             requested_model = normalize_requested_model(data.get('model'))
         except ValueError as exc:
@@ -2298,6 +2301,7 @@ def start_analysis():
             model=requested_model,
         )
         analysis_session.use_iterative = use_iterative  # Set iterative mode
+        analysis_session.interactive_questions = interactive_questions
         analysis_session.set_progress(
             1,
             'Queued',
@@ -4826,6 +4830,19 @@ def wait_for_checkpoint(session: AnalysisSession, checkpoint_type: str, data: di
     import time
     
     checkpoint = CHECKPOINTS.get(checkpoint_type, {})
+    question_enabled = 'query' in checkpoint.get('actions', [])
+    if not session.interactive_questions or not question_enabled:
+        session.current_checkpoint = None
+        session.checkpoint_data = {
+            "type": checkpoint_type,
+            "data": data,
+            "user_response": "approve",
+            "auto_advanced": True,
+        }
+        session.waiting_for_user = False
+        session.checkpoint_deadline = None
+        return
+
     session.current_checkpoint = checkpoint_type
     session.checkpoint_data = {"type": checkpoint_type, "data": data}
     session.waiting_for_user = True
