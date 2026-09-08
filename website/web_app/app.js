@@ -434,14 +434,33 @@ const PRODUCT_TOUR_STEPS = [
     },
 ];
 
+const PRODUCT_TOUR_STORAGE_KEY = 'genepathway-product-tour-seen-v1';
 let productTourIndex = 0;
 let productTourReturnFocus = null;
 let productTourContinuation = '';
 
+function hasSeenProductTour() {
+    try {
+        return window.localStorage.getItem(PRODUCT_TOUR_STORAGE_KEY) === '1';
+    } catch (_error) {
+        return false;
+    }
+}
+
+function rememberProductTourSeen() {
+    try {
+        window.localStorage.setItem(PRODUCT_TOUR_STORAGE_KEY, '1');
+    } catch (_error) {
+        // Storage can be unavailable in private or restricted browser contexts.
+    }
+}
+
 function hideProductTour({ followContinuation = true } = {}) {
     const tour = document.getElementById('product-tour');
+    const wasVisible = Boolean(tour && !tour.classList.contains('hidden'));
     document.querySelectorAll('.tour-highlight').forEach(element => element.classList.remove('tour-highlight'));
     tour?.classList.add('hidden');
+    if (wasVisible) rememberProductTourSeen();
     if (productTourReturnFocus instanceof HTMLElement && document.contains(productTourReturnFocus)) {
         productTourReturnFocus.focus();
     }
@@ -487,6 +506,12 @@ function showProductTour({ force = false } = {}) {
         const remainingQuery = params.toString();
         const cleanUrl = `${window.location.pathname}${remainingQuery ? `?${remainingQuery}` : ''}${window.location.hash}`;
         window.history.replaceState(window.history.state, '', cleanUrl);
+    }
+    if (!force && hasSeenProductTour()) {
+        const continuation = productTourContinuation;
+        productTourContinuation = '';
+        if (continuation) window.location.assign(continuation);
+        return;
     }
     productTourReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     productTourIndex = 0;
@@ -542,6 +567,7 @@ function initProductTour() {
         productTourIndex += 1;
         renderProductTourStep();
     });
+    document.querySelector('.product-tour-backdrop')?.addEventListener('click', hideProductTour);
     document.getElementById('product-tour')?.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
             event.preventDefault();
@@ -1215,8 +1241,9 @@ function toggleGeneListPanel() {
     panel.classList.toggle('hidden', !isHidden);
     if (btn) {
         btn.innerHTML = isHidden
-            ? 'Close <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
+            ? 'Close examples <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
             : 'Load disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
+        btn.setAttribute('aria-expanded', String(isHidden));
     }
 }
 
@@ -2937,11 +2964,6 @@ function addGeneSymbol(symbol) {
     elements.geneSearchInput.focus();
 }
 
-function removeGeneSymbol(symbol) {
-    const remaining = parseGenes(elements.geneInput.value).filter(gene => gene !== symbol);
-    setSelectedGenes(remaining);
-}
-
 function clearSelectedGenes() {
     setSelectedGenes([]);
     if (elements.geneSearchInput) {
@@ -2963,16 +2985,7 @@ function renderSelectedGeneChips(genes) {
     visibleGenes.forEach(gene => {
         const chip = document.createElement('span');
         chip.className = 'selected-gene-chip';
-
-        const label = document.createElement('span');
-        label.textContent = gene;
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.textContent = '×';
-        remove.setAttribute('aria-label', `Remove ${gene}`);
-        remove.addEventListener('click', () => removeGeneSymbol(gene));
-
-        chip.append(label, remove);
+        chip.textContent = gene;
         container.appendChild(chip);
     });
 

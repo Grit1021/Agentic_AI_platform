@@ -162,7 +162,7 @@ class ServerLimitTests(unittest.TestCase):
             self.assertIsNotNone(compact, disease_code)
             self.assertGreaterEqual(len(compact.get("genes") or []), 100, disease_code)
 
-    def test_product_tour_reopens_on_each_homepage_load_and_supports_two_skip_levels(self):
+    def test_product_tour_is_first_visit_only_and_supports_two_skip_levels(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
@@ -174,8 +174,10 @@ class ServerLimitTests(unittest.TestCase):
 
         with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
             javascript = source.read()
-        self.assertNotIn("PRODUCT_TOUR_STORAGE_KEY", javascript)
-        self.assertNotIn("localStorage.getItem", javascript)
+        self.assertIn("const PRODUCT_TOUR_STORAGE_KEY", javascript)
+        self.assertIn("window.localStorage.getItem(PRODUCT_TOUR_STORAGE_KEY)", javascript)
+        self.assertIn("window.localStorage.setItem(PRODUCT_TOUR_STORAGE_KEY, '1')", javascript)
+        self.assertIn("if (!force && hasSeenProductTour())", javascript)
         self.assertIn("function skipCurrentProductTourStep()", javascript)
         self.assertIn(
             "document.getElementById('product-tour-skip')?.addEventListener('click', skipCurrentProductTourStep)",
@@ -186,9 +188,27 @@ class ServerLimitTests(unittest.TestCase):
             javascript,
         )
         self.assertIn("window.setTimeout(() => showProductTour(), 250)", javascript)
+        self.assertIn("document.querySelector('.product-tour-backdrop')?.addEventListener('click', hideProductTour)", javascript)
         self.assertIn("trapProductTourFocus(event)", javascript)
         self.assertIn("const isPostLoginTour = params.get('tour') === '1'", javascript)
         self.assertIn("window.location.assign(continuation)", javascript)
+
+    def test_gene_preview_has_no_per_gene_delete_controls_and_layout_is_stable(self):
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
+            css = source.read()
+
+        chip_renderer = javascript.split("function renderSelectedGeneChips(genes)", 1)[1].split(
+            "function updateGeneCount()", 1
+        )[0]
+        self.assertNotIn("Remove ${gene}", chip_renderer)
+        self.assertNotIn("removeGeneSymbol(gene)", chip_renderer)
+        self.assertNotIn("function removeGeneSymbol", javascript)
+        self.assertIn("chip.textContent = gene", chip_renderer)
+        self.assertRegex(css, r"\.analysis-shared-resources \.gene-list-toggle-btn\s*\{[^}]*width:\s*196px")
+        self.assertIn("@keyframes analysis-progress-flow", css)
+        self.assertIn("animation: analysis-progress-flow", css)
 
     def test_index_shell_is_componentized_and_hosted_html_is_hydrated(self):
         source_path = os.path.join(os.path.dirname(__file__), "index.html")

@@ -14265,3 +14265,136 @@ body.results-view .workflow-rail {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* ============================================================================
+   2026-09-08 interaction polish: stable controls, compact canvas, live motion
+   ============================================================================ */
+
+:root {
+    --container-max: 1600px;
+}
+
+.header-content,
+.main {
+    padding-inline: clamp(14px, 1.8vw, 28px);
+}
+
+.nav,
+.nav-link,
+.nav-tour-button {
+    align-items: center;
+}
+
+.nav-link,
+.nav-tour-button {
+    display: inline-flex;
+    min-height: 40px;
+    gap: 6px;
+    line-height: 1;
+}
+
+.main {
+    padding-top: 76px;
+    padding-bottom: 28px;
+}
+
+.hero {
+    padding: 22px 0 12px;
+}
+
+.hero-subtitle {
+    margin-top: 8px;
+}
+
+.input-section {
+    padding-top: 4px;
+}
+
+.input-card-header {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+}
+
+.analysis-context-grid {
+    padding: 20px clamp(18px, 2vw, 28px);
+}
+
+.analysis-context-grid > .input-workspace-group--disease {
+    padding-bottom: 18px;
+}
+
+.analysis-context-grid > .input-workspace-group--genes {
+    column-gap: clamp(24px, 2.4vw, 40px);
+    padding: 18px 0;
+}
+
+.input-workspace-group--genes .gene-query-textarea {
+    min-height: 132px;
+}
+
+.selected-gene-strip {
+    max-height: 74px;
+    overflow-y: auto;
+}
+
+.selected-gene-chip {
+    padding: 0.25rem 0.55rem;
+}
+
+.selected-gene-chip button {
+    display: none;
+}
+
+.analysis-shared-resources {
+    padding-top: 14px;
+}
+
+.analysis-shared-resources .gene-list-toggle-btn {
+    width: 196px;
+    justify-content: center;
+}
+
+.analysis-action-row {
+    margin-top: 12px;
+}
+
+@keyframes analysis-progress-flow {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
+}
+
+.analysis-progress-bar::-webkit-progress-value {
+    background-color: var(--accent-primary);
+    background-image: linear-gradient(105deg, var(--accent-primary) 0 38%, #2c8fbb 48%, var(--accent-primary) 58% 100%);
+    background-size: 220% 100%;
+    animation: analysis-progress-flow 1.7s linear infinite;
+}
+
+.analysis-progress-bar::-moz-progress-bar {
+    background-color: var(--accent-primary);
+    background-image: linear-gradient(105deg, var(--accent-primary) 0 38%, #2c8fbb 48%, var(--accent-primary) 58% 100%);
+    background-size: 220% 100%;
+    animation: analysis-progress-flow 1.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .analysis-progress-bar::-webkit-progress-value,
+    .analysis-progress-bar::-moz-progress-bar {
+        animation: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .main {
+        padding-top: 66px;
+        padding-bottom: 20px;
+    }
+
+    .analysis-context-grid {
+        padding: 18px 16px;
+    }
+
+    .analysis-shared-resources .gene-list-toggle-btn {
+        width: 100%;
+    }
+}

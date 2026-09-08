@@ -188,7 +188,7 @@
                             <strong class="analysis-example-label">Examples</strong>
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
-                                    <button class="gene-list-toggle-btn" id="gene-list-toggle" onclick="toggleGeneListPanel()">
+                                    <button class="gene-list-toggle-btn" id="gene-list-toggle" aria-expanded="false" aria-controls="gene-list-panel" onclick="toggleGeneListPanel()">
                                         Load disease and genes <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
                                     </button>
                                 </div>
