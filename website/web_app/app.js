@@ -7472,6 +7472,11 @@ function showHistoryPanel() {
 }
 
 function showAnalysisView({ preserveActiveJob = false } = {}) {
+    if (state.isAnalyzing && state.sessionId) {
+        state.backgrounded = true;
+        preserveActiveJob = true;
+        saveActiveJobState('running');
+    }
     const url = new URL(window.location.href);
     const returningFromCompletedExample = url.searchParams.get('demo') === '1';
     if (returningFromCompletedExample) {
@@ -7508,7 +7513,7 @@ function showAnalysisView({ preserveActiveJob = false } = {}) {
     const analysisLink = document.querySelector('.nav-link[data-view="analysis"]');
     if (analysisLink) analysisLink.classList.add('active');
     setActiveWorkflowStep('input');
-    if (!preserveActiveJob) updateActiveJobBanner();
+    updateActiveJobBanner();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

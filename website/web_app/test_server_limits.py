@@ -403,6 +403,8 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("sessionStorage.setItem(ACTIVE_JOB_STORAGE_KEY", javascript)
         self.assertIn("restoreActiveJobState();", javascript)
         self.assertIn("startPolling();", javascript)
+        self.assertIn("if (state.isAnalyzing && state.sessionId)", javascript)
+        self.assertIn("state.backgrounded = true;", javascript)
 
         with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
             css = source.read()
