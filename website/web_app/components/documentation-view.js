@@ -23,7 +23,7 @@
                         <span class="docs-nav-group">Using the analysis</span>
                         <button type="button" class="docs-nav-link" data-doc="analysis-pipeline" onclick="switchDoc('analysis-pipeline', this)">Analysis Pipeline</button>
                         <button type="button" class="docs-nav-link" data-doc="pathway-categories" onclick="switchDoc('pathway-categories', this)">Pathway Categories</button>
-                        <button type="button" class="docs-nav-link" data-doc="checkpoints" onclick="switchDoc('checkpoints', this)">Interactive Checkpoints</button>
+                        <button type="button" class="docs-nav-link" data-doc="checkpoints" onclick="switchDoc('checkpoints', this)">Optional Questions</button>
                         <span class="docs-nav-group">Understanding results</span>
                         <button type="button" class="docs-nav-link" data-doc="results" onclick="switchDoc('results', this)">Reading the Results</button>
                         <button type="button" class="docs-nav-link" data-doc="export-history" onclick="switchDoc('export-history', this)">Export &amp; History</button>
@@ -40,7 +40,7 @@
                     <!-- What is GenePathwayAI -->
                     <div class="doc-page active" id="doc-what-is">
                         <h1>What is GenePathwayAI?</h1>
-                        <p class="doc-intro">GenePathwayAI turns a submitted gene list and matched disease concept into statistically supported, database-ranked pathway evidence. Input mapping, pathway overlap, literature support and biological interpretation remain traceable in the result.</p>
+                        <p class="doc-intro">GenePathwayAI tests pathway hypotheses for a submitted gene list in a selected disease context. The result connects input mapping, corrected enrichment, within-database ranking, pathway interpretation and supporting literature.</p>
 
                         <h3>Key Capabilities</h3>
                         <div class="doc-feature-grid">
@@ -48,35 +48,42 @@
                                 <span class="doc-feature-icon">01</span>
                                 <div>
                                     <strong>Identifier-Aware Input</strong>
-                                    <p>Accepts HGNC symbols and Ensembl Gene IDs, removes duplicate submissions, resolves them in the human-gene namespace, and reports mapping coverage before interpretation.</p>
+                                    <p>Accepts HGNC symbols and Ensembl Gene IDs, removes duplicates, resolves human genes and reports mapping coverage before pathway interpretation.</p>
                                 </div>
                             </div>
                             <div class="doc-feature">
                                 <span class="doc-feature-icon">02</span>
                                 <div>
                                     <strong>Pathway Hypothesis Generation</strong>
-                                    <p>The language-model step generates 50 candidate pathway hypotheses (10 per category) across GO:BP, GO:MF, GO:CC, KEGG and Reactome. Each candidate is treated as a testable hypothesis.</p>
+                                    <p>The selected model proposes candidate pathways across GO:BP, GO:MF, GO:CC, KEGG and Reactome. Every proposal is treated as a hypothesis to be tested.</p>
                                 </div>
                             </div>
                             <div class="doc-feature">
                                 <span class="doc-feature-icon">03</span>
                                 <div>
                                     <strong>Statistical Validation</strong>
-                                    <p>Each pathway hypothesis is tested against the submitted gene set with multiple-testing correction. Only statistically supported hypotheses advance to biological ranking.</p>
+                                    <p>Each pathway hypothesis is tested against the submitted gene list with multiple-testing correction. Only statistically supported hypotheses advance to biological ranking.</p>
                                 </div>
                             </div>
                             <div class="doc-feature">
                                 <span class="doc-feature-icon">04</span>
                                 <div>
                                     <strong>Evidence-Based Ranking</strong>
-                                    <p>Validated pathways are ranked by integrating pathway descriptions, disease pathology (NCBI MeSH), enrichment significance, intersection genes, and dynamically retrieved PubMed literature.</p>
+                                    <p>Validated pathways are ranked independently within each database using pathway definitions, disease context, enrichment evidence, input-pathway intersection genes and retrieved PubMed literature.</p>
                                 </div>
                             </div>
                             <div class="doc-feature doc-feature--wide">
                                 <span class="doc-feature-icon">05</span>
                                 <div>
-                                    <strong>Multiple-run validation feedback</strong>
-                                    <p>An optional feedback step summarizes unsupported hypotheses, retained pathways and database-specific gaps for a refined second pass. Model parameters are not updated.</p>
+                                    <strong>Interpretation and traceable output</strong>
+                                    <p>Each pathway can show a concise interpretation, driving genes, functional clusters, cell or tissue context, literature and database-level reasoning details.</p>
+                                </div>
+                            </div>
+                            <div class="doc-feature doc-feature--wide">
+                                <span class="doc-feature-icon">06</span>
+                                <div>
+                                    <strong>Visible progress and background running</strong>
+                                    <p>The analysis page shows the current stage, percentage, elapsed time and an estimated remaining time. You can return to the homepage and follow the same job from the floating status panel.</p>
                                 </div>
                             </div>
                         </div>
@@ -93,43 +100,54 @@
                     <!-- Quick Start Guide -->
                     <div class="doc-page" id="doc-quick-start">
                         <h1>Quick Start Guide</h1>
-                        <p class="doc-intro">Get started with GenePathwayAI in three simple steps.</p>
+                        <p class="doc-intro">Start a new analysis from the homepage or open a finished example without submitting a job.</p>
 
                         <div class="doc-steps">
                             <div class="doc-step">
                                 <div class="doc-step-number">1</div>
                                 <div class="doc-step-content">
-                                    <h3>Enter Your Gene List</h3>
-                                    <p>Paste HGNC gene symbols (e.g., <code>APOE, APP, PSEN1, MAPT, TREM2</code>) or Ensembl Gene IDs (e.g., <code>ENSG00000130203</code>). Commas, spaces and newlines are accepted, and the two identifier types can be mixed. The run summary reports how many submitted identifiers were recognized.</p>
+                                    <h3>Select a Disease or Phenotype</h3>
+                                    <p>Search by name, abbreviation or ontology term, then select the intended Open Targets match. The selected canonical label and MONDO or EFO identifier provide the disease context for ranking and interpretation.</p>
                                 </div>
                             </div>
                             <div class="doc-step">
                                 <div class="doc-step-number">2</div>
                                 <div class="doc-step-content">
-                                    <h3>Select Disease Context</h3>
-                                    <p>Search by disease name, abbreviation or partial term and select the intended ontology-backed match. Common project diseases are available as quick choices, while other matched disease or phenotype concepts can be used directly. The selected canonical name and database ID guide pathway ranking and interpretation.</p>
-                                    <div class="doc-callout">
-                                        <strong>Multiple runs:</strong> Enable the main-page switch for a two-pass analysis. Validation results, enriched gene intersections and database-specific guidance inform the second set of hypotheses. Model parameters remain unchanged.
-                                    </div>
+                                    <h3>Add the Gene List</h3>
+                                    <p>Paste or upload HGNC symbols and Ensembl Gene IDs, download a tested input file, or import disease-associated genes from Open Targets. Open Targets presets provide 100, 150 or 200 genes; any whole number of at least 25 can also be entered.</p>
                                 </div>
                             </div>
                             <div class="doc-step">
                                 <div class="doc-step-number">3</div>
                                 <div class="doc-step-content">
-                                    <h3>Review Results</h3>
-                                    <p>After the analysis completes, review the results in one evidence-first Overview:</p>
-                                    <ul>
-                                        <li><strong>Pipeline summary and ranked pathway evidence</strong> - Initial LLM hypotheses versus statistically validated output, followed by complete within-database pathway rankings, pathway size, input overlap, interpretations and PubMed evidence</li>
-                                    </ul>
+                                    <h3>Choose Settings and Start</h3>
+                                    <p>Feedback is enabled by default for a two-pass analysis, while optional questions are off so the workflow runs automatically. Choose the model and the number of highlighted pathways per database, then select <strong>Start analysis</strong>. Progress remains available if you return to the homepage.</p>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="doc-callout">
+                            <strong>Examples:</strong> <strong>Load disease and genes</strong> fills both inputs for an editable new run. <strong>View finished results</strong> opens an archived analysis and does not consume a live-analysis job.
+                        </div>
+
+                        <h3>Feedback and output settings</h3>
+                        <table class="doc-table">
+                            <thead>
+                                <tr><th>Setting</th><th>Default</th><th>What it changes</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>Feedback</strong></td><td>On</td><td>Runs a second hypothesis pass informed by first-pass validation. It does not train or update the selected model. Turn it off for one pass.</td></tr>
+                                <tr><td><strong>Questions during analysis</strong></td><td>Off</td><td>Keeps the job running automatically. When enabled, the analysis pauses at two optional points where you can ask a focused question or select Skip.</td></tr>
+                                <tr><td><strong>Model</strong></td><td>GPT-5.1</td><td>Selects the model used for hypothesis generation, feedback and interpretation. GPT-5 mini and GPT-4.1 are also available in the current deployment.</td></tr>
+                                <tr><td><strong>Highlighted pathways per database</strong></td><td>Top 5</td><td>Controls the initial number shown in each database section: Top 3, Top 5, Top 10 or All. It does not alter validation or ranking. PDF scope is selected separately during export.</td></tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Genes and Disease Input -->
                     <div class="doc-page" id="doc-inputs">
                         <h1>Genes &amp; Disease Input</h1>
-                        <p class="doc-intro">Each new analysis requires a gene set and a disease context. Featured examples open completed archived results; use the analysis inputs below when you want an editable gene set.</p>
+                        <p class="doc-intro">Each new analysis requires a disease or phenotype and a gene list. The homepage presents these two inputs together.</p>
 
                         <h3>Supported gene identifiers</h3>
                         <ul class="doc-list">
@@ -150,11 +168,14 @@
                             <strong>How mapping works:</strong> Gene mapping is an explicit input-quality step, not a pathway result. See <button type="button" class="doc-inline-link" onclick="switchDoc('gene-mapping')">Gene Mapping &amp; QC</button> for normalization rules, mapped/unresolved definitions and the difference between recognized genes and pathway-overlap genes.
                         </div>
 
-                        <h3>Disease context</h3>
-                        <p>Search by disease name, abbreviation or partial term. The autocomplete first uses project examples, then retrieves matching disease and phenotype concepts from Open Targets. Selecting a match preserves its canonical name and MONDO/EFO identifier; a MeSH cross-reference is retained when available. For an ontology-backed selection, the Top 100 or Top 200 associated gene symbols can be imported directly, ordered by the Open Targets overall association score. A custom label can still be submitted when no ontology match is appropriate.</p>
+                        <h3>Disease or phenotype</h3>
+                        <p>Search by disease name, abbreviation or partial term. Suggestions include local examples and disease or phenotype concepts from Open Targets. Selecting a match preserves its canonical name and MONDO or EFO identifier; a MeSH cross-reference is retained when available. Pressing Tab accepts the active suggestion.</p>
+
+                        <h3>Import disease-associated genes</h3>
+                        <p>After selecting an ontology-backed disease, Open Targets can replace the current gene list with the highest-ranked associated genes. The presets are 100, 150 and 200, and a custom whole number of at least 25 is accepted without a fixed upper limit. The overall association score combines weighted evidence across Open Targets data sources. It is a ranking score from 0 to 1, not a disease probability.</p>
 
                         <div class="doc-callout">
-                            <strong>Featured examples:</strong> Selecting an example opens its completed ranked pathways, biological evidence and PubMed records. To start a new analysis, enter or load a gene set in the input controls.
+                            <strong>Examples:</strong> <strong>Load disease and genes</strong> fills an editable disease-gene pair. <strong>View finished results</strong> opens an archived result. The downloadable HGNC, Ensembl and mixed-identifier files are tested input templates with at least 100 genes each.
                         </div>
                     </div>
 
@@ -221,73 +242,77 @@
                     <!-- Analysis Pipeline -->
                     <div class="doc-page" id="doc-analysis-pipeline">
                         <h1>Analysis Pipeline</h1>
-                        <p class="doc-intro">GenePathwayAI uses four functional stages: pathway hypothesis generation, statistical validation, evidence-based ranking, and optional multiple-run feedback. Each pathway is treated as a hypothesis to be tested, not a direct generative output.</p>
+                        <p class="doc-intro">The running analysis and the result sidebar use the same five stages: Input, Hypothesize, Validate, Rank and Interpret. Candidate pathways do not enter the result until they pass statistical validation.</p>
 
                         <div class="doc-pipeline">
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">Phase 1</span>
+                                    <span class="doc-phase-badge">Input</span>
+                                    <h3>Genes and Disease</h3>
+                                </div>
+                                <p>The service normalizes the submitted identifiers, resolves human genes and preserves the selected disease concept before generating pathway hypotheses.</p>
+                                <div class="doc-detail-list">
+                                    <div class="doc-detail-item"><span class="doc-tag">Input</span> Gene list and selected disease or phenotype</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">QC</span> Normalize, deduplicate, resolve and report unmapped identifiers</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> Recognized human genes and a canonical disease context</div>
+                                </div>
+                            </div>
+
+                            <div class="doc-phase">
+                                <div class="doc-phase-header">
+                                    <span class="doc-phase-badge">Hypothesize</span>
                                     <h3>Pathway Hypothesis Generation</h3>
                                 </div>
-                                <p>The selected language model generates 10 candidate pathway hypotheses for each of five functional sources (GO:BP, GO:MF, GO:CC, KEGG and Reactome), for a nominal budget of 50 hypotheses per gene list and prompt pass. If a source returns too few candidates, generation is repeated with an exclusion list so retries fill missing slots without duplicating prior proposals. Each candidate is tested before it enters the result.</p>
+                                <p>The selected model proposes 10 candidate pathways for each of five databases: GO:BP, GO:MF, GO:CC, KEGG and Reactome. If feedback is enabled, validation results from the first pass guide a refined second pass without changing model parameters.</p>
                                 <div class="doc-detail-list">
-                                    <div class="doc-detail-item"><span class="doc-tag">Input</span> Gene list + disease context</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Budget</span> 50 hypotheses per prompt pass (10 per category)</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> Candidate pathway names plus one structured reasoning record per database category and prompt pass</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Budget</span> 50 hypotheses per pass, 10 per database</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Feedback</span> Enabled by default; uses retained and unsupported hypotheses to guide pass 2</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> Candidate database terms for statistical testing</div>
                                 </div>
                             </div>
 
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">Phase 2</span>
+                                    <span class="doc-phase-badge">Validate</span>
                                     <h3>Statistical Validation</h3>
                                 </div>
-                                <p>A <strong>statistical-validation agent</strong> tests whether each proposed database term is enriched in the same submitted gene list. Multiple-testing correction is applied before a hypothesis can advance, eliminating plausible-sounding but unsupported outputs.</p>
+                                <p>Each proposed term is tested for over-representation in the same submitted gene list. Multiple-testing correction is applied before a pathway can advance.</p>
                                 <div class="doc-detail-list">
                                     <div class="doc-detail-item"><span class="doc-tag">Method</span> Functional over-representation analysis with multiple-testing correction</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Gate</span> Hypothesis accepted only if enriched in the input gene list</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> Validated pathways with adjusted P-values and intersection genes</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Gate</span> Only statistically supported terms become validated pathways</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> Adjusted P-values, pathway sizes and input-pathway intersection genes</div>
                                 </div>
                             </div>
 
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">Phase 3</span>
+                                    <span class="doc-phase-badge">Rank</span>
                                     <h3>Evidence-Based Ranking</h3>
                                 </div>
-                                <p>A <strong>biological-ranking agent</strong> ranks validated pathways independently within each database by integrating pathway description, disease pathology from NCBI MeSH, intersection genes between the pathway and the gene list, enrichment significance, and dynamically retrieved PubMed literature. The output is an ordered pathway list with a documented selection rationale, not a numerical disease-relevance score.</p>
+                                <p>Validated pathways are ordered independently within each database using pathway definitions, disease pathology from NCBI MeSH, input-pathway intersection genes, enrichment strength and retrieved PubMed literature. The rank is an evidence ordering, not a numerical disease-relevance probability.</p>
                                 <div class="doc-detail-list">
-                                    <div class="doc-detail-item"><span class="doc-tag">Evidence</span> Pathway description, MeSH disease pathology, intersection genes, enrichment strength and PubMed</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Ranking</span> Ordered independently within GO:BP, GO:MF, GO:CC, KEGG, and Reactome</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Method record</span> One structured record per database and prompt pass, covering gene signals, biological context and validation feedback</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Evidence</span> Pathway definition, disease context, overlap genes, enrichment and PubMed</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Scope</span> Ranks restart within GO:BP, GO:MF, GO:CC, KEGG and Reactome</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Output</span> A validated pathway ranking for each database</div>
                                 </div>
                             </div>
 
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">Phase 4</span>
-                                    <h3>Multiple-run validation feedback</h3>
+                                    <span class="doc-phase-badge">Interpret</span>
+                                    <h3>Interpretation and Report</h3>
                                 </div>
-                                <p>When Multiple runs is enabled, the system summarizes retained pathway identifiers, enriched gene intersections, unsupported pathway families and database-specific gaps. This validation feedback drives a second pass without updating model parameters.</p>
+                                <p>The final report presents the pipeline summary, validated pathway table and selected pathway interpretations. Each database follows the same order: Validated pathways, Interpretation, then database-level Reasoning details in Full record view.</p>
                                 <div class="doc-detail-list">
-                                    <div class="doc-detail-item"><span class="doc-tag">Feedback</span> Unsupported pathway families, retained intersections, database-specific adjustments and coverage gaps</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Effect</span> Failed and retained hypotheses guide the second pass</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Mode</span> Single run or Multiple runs (2 passes)</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Summary</span> Ranked table and highlighted pathway interpretations</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Full record</span> Adds database-level reasoning details</div>
+                                    <div class="doc-detail-item"><span class="doc-tag">Sources</span> Official pathway records, gene links and PubMed literature when available</div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="doc-phase">
-                                <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">Phase 4b</span>
-                                    <h3>Biological Interpretation &amp; Output</h3>
-                                </div>
-                                <p>For each database channel, biological interpretation organizes the validated output into ranked pathways, driver genes and their functions, disease-relevant cell/tissue context, mechanistic themes, and an explicit disease-relevance strength. PubMed citations are dynamically retrieved per pathway.</p>
-                                <div class="doc-detail-list">
-                                    <div class="doc-detail-item"><span class="doc-tag">Validity</span> Determined by statistically corrected enrichment</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Context</span> Driver genes, cell and tissue labels, mechanistic themes and disease relevance</div>
-                                    <div class="doc-detail-item"><span class="doc-tag">Literature</span> PubMed PMID citations via NCBI Entrez</div>
-                                </div>
-                            </div>
+                        <div class="doc-callout">
+                            <strong>Progress:</strong> The running page reports the current stage, percentage, elapsed time and estimated time remaining. Returning to the homepage does not stop the job; the floating analysis panel continues to show its status.
                         </div>
                     </div>
 
@@ -337,82 +362,68 @@
                         <p>Enrichment analysis tests whether the overlap between the submitted gene list and a database term is larger than expected by chance. Multiple-testing correction is applied across the tested terms, and the corrected value is reported as the <strong>adjusted P-value</strong>. Implementation details are listed under Data Sources.</p>
                     </div>
 
-                    <!-- Interactive Checkpoints -->
+                    <!-- Optional Questions -->
                     <div class="doc-page" id="doc-checkpoints">
-                        <h1>Interactive Checkpoints</h1>
-                        <p class="doc-intro">Interactive checkpoints let the user review intermediate outputs, ask a focused question, continue the workflow or stop the run.</p>
+                        <h1>Optional Questions</h1>
+                        <p class="doc-intro">Questions during analysis are off by default, so a submitted job runs without waiting for interaction. Turn them on under Feedback and output if you want to ask about intermediate results.</p>
 
-                        <h3>Checkpoint Types</h3>
+                        <h3>Question points</h3>
                         <div class="doc-pipeline">
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">A</span>
-                                    <h3>Network Biology Query</h3>
+                                    <span class="doc-phase-badge">Genes</span>
+                                    <h3>Gene List Question</h3>
                                 </div>
-                                <p>Before statistical validation begins. You can ask questions about gene interactions, network properties, or protein complexes formed by your gene list.</p>
+                                <p>Before pathway validation, ask a focused question about gene functions, interactions or shared biological themes in the submitted list.</p>
                             </div>
                             <div class="doc-phase">
                                 <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">1</span>
-                                    <h3>Gene List Review</h3>
+                                    <span class="doc-phase-badge">Pathway</span>
+                                    <h3>Leading Pathway Question</h3>
                                 </div>
-                                <p>After the first prompt pass and statistical validation. Review which pathway hypotheses received corrected statistical support and decide whether to continue, ask questions, or quit.</p>
-                            </div>
-                            <div class="doc-phase">
-                                <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">B</span>
-                                    <h3>Pathway Query</h3>
-                                </div>
-                                <p>Focus on the leading validated pathway. Ask questions about pathway mechanisms, gene roles, cell-type context or disease connections.</p>
-                            </div>
-                            <div class="doc-phase">
-                                <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">2</span>
-                                    <h3>Aggregation Review</h3>
-                                </div>
-                                <p>After pathway aggregation across all categories. Review cross-category patterns, pathway overlap and validation feedback before optionally proceeding to the second run.</p>
-                            </div>
-                            <div class="doc-phase">
-                                <div class="doc-phase-header">
-                                    <span class="doc-phase-badge">3</span>
-                                    <h3>Final Review</h3>
-                                </div>
-                                <p>After evidence-based ranking and summary report generation. Review the full set of statistically validated, ranked pathways before exporting results.</p>
+                                <p>After initial validation, ask about the leading pathway's mechanism, intersection genes, cell or tissue context, or relationship to the selected disease.</p>
                             </div>
                         </div>
 
                         <div class="doc-callout">
-                            <strong>Tip:</strong> At each checkpoint, type "continue" or press Continue to proceed, ask a question about the current analysis, or type "quit" to cancel.
+                            <strong>What happens next:</strong> Select <strong>Ask question</strong> to receive a model response or <strong>Skip</strong> to continue immediately. After an answer is returned, the analysis advances automatically; a second Skip is not required.
                         </div>
                     </div>
 
                     <!-- Reading the Results -->
                     <div class="doc-page" id="doc-results">
                         <h1>Reading the Results</h1>
-                        <p class="doc-intro">The Overview separates run-level context from pathway-level evidence. Start with the Pipeline Output Summary, then read the ranked evidence within each source database.</p>
+                        <p class="doc-intro">Results open in Summary view. Use Full record when you need the database-level reasoning behind the displayed pathway order.</p>
 
                         <h3>Pipeline Output Summary</h3>
-                        <p>The summary records recognized gene identifiers, the normalized disease name and authority identifier, and the source-database composition of the final ranked register. Prompt-pass counts appear only when matched and validated lineage was preserved for that run. Literature and cell-context counts describe interpretation coverage without being used as statistical validation criteria.</p>
+                        <p>The first section reports the matched disease, recognized and unresolved identifiers, initial hypotheses, validated pathways, pathways with cell context, validated pathways by database and a complete ranked table. The table uses the order <strong>Database, ID, Rank, Pathway, Adjusted P-value</strong>.</p>
 
-                        <h3>Ranked pathway evidence</h3>
+                        <h3>Highlighted Pathways with Interpretations</h3>
+                        <p>Below the summary, pathways are grouped by database. The input setting controls whether the first 3, 5, 10 or all pathways per database are highlighted. The result page also lets you switch among Top 5, Top 10 and All.</p>
+
+                        <h3>Reading a pathway</h3>
                         <table class="doc-table">
                             <thead>
                                 <tr><th>Field</th><th>How to interpret it</th></tr>
                             </thead>
                             <tbody>
-                                <tr><td><strong>Database rank</strong></td><td>Biological evidence ordering within GO:BP, GO:MF, GO:CC, KEGG or Reactome; ranks are not compared across databases.</td></tr>
-                                <tr><td><strong>Pathway ID</strong></td><td>The source-database identifier. The pathway name links to the corresponding official database record when available.</td></tr>
+                                <tr><td><strong>Database rank</strong></td><td>The evidence ordering within GO:BP, GO:MF, GO:CC, KEGG or Reactome. Ranks restart in each database and are not compared across databases.</td></tr>
+                                <tr><td><strong>Pathway ID and definition</strong></td><td>The source-database identifier links to the official term when available. Definition states what the database term represents.</td></tr>
                                 <tr><td><strong>Adjusted P-value</strong></td><td>The enrichment probability after correction for testing many database terms. Values below the configured threshold pass the statistical-validation stage.</td></tr>
                                 <tr><td><strong>Input overlap / pathway size</strong></td><td>The number of submitted genes annotated to the term and the total annotated size of that term.</td></tr>
                                 <tr><td><strong>Intersection genes</strong></td><td>The submitted genes contributing to the enrichment result. Gene symbols link to the corresponding gene record.</td></tr>
-                                <tr><td><strong>Five ranking evidence sources</strong></td><td>Pathway description, disease pathology, intersection genes, enrichment strength and PubMed literature are shown in the same order used by the biological-ranking agent.</td></tr>
-                                <tr><td><strong>+1 Cell/tissue context</strong></td><td>A separate pathway-specific interpretation layer describing relevant cells, tissues or anatomical regions. Tags link to official Cell Ontology, UBERON or Gene Ontology records when available. It is not a sixth ranking source.</td></tr>
-                                <tr><td><strong>Literature</strong></td><td>Relevant PubMed links are distributed across the pathway-description, disease, intersection-gene and cell-context evidence paragraphs when supporting records are available; citation count is not a statistical score.</td></tr>
+                                <tr><td><strong>Interpretation</strong></td><td>A concise disease-aware narrative followed by driving genes, functional clusters and cell or tissue context when those fields are available.</td></tr>
+                                <tr><td><strong>Cell / tissue context</strong></td><td>Pathway-level labels for relevant cells, tissues or anatomical regions. Tags link to Cell Ontology, UBERON or Gene Ontology records when available.</td></tr>
+                                <tr><td><strong>Literature</strong></td><td>PubMed records linked to specific supporting statements when available. Citation count is not a statistical score.</td></tr>
+                                <tr><td><strong>Reasoning details</strong></td><td>A database-level record shown after its validated pathways in Full record view. It describes the ranking rationale without creating another set of pathway results.</td></tr>
                             </tbody>
                         </table>
 
+                        <h3>Result order</h3>
+                        <p>Every database uses the same reading order: <strong>Validated pathways</strong>, each selected pathway's <strong>Interpretation</strong>, then <strong>Reasoning details</strong>. Reasoning details are hidden in Summary view and shown in Full record.</p>
+
                         <h3>Cell and tissue context</h3>
-                        <p>Cell and tissue labels are extracted from each pathway's dedicated interpretation and displayed with that pathway. Database-level reasoning is not used to populate these annotations. The labels help organize biological context but are not evidence of cell-type causality.</p>
+                        <p>Cell and tissue labels are extracted from each pathway's dedicated interpretation and displayed with that pathway. Database-level reasoning is not used to populate them. A PubMed record is linked only to the statement it supports; one PMID is not assumed to validate every displayed context label. The labels organize biological context but do not establish cell-type causality.</p>
 
                         <div class="doc-callout">
                             <strong>Interpretation boundary:</strong> Enrichment supports over-representation of a term in the submitted gene list. It does not by itself establish disease causality, direction of effect or cell-type specificity.
@@ -422,7 +433,7 @@
                     <!-- Export & History -->
                     <div class="doc-page" id="doc-export-history">
                         <h1>Export & History</h1>
-                        <p class="doc-intro">GenePathwayAI provides multiple export formats and maintains a history of all completed analyses.</p>
+                        <p class="doc-intro">Exports are generated from the saved analysis data, not from the pathways currently expanded in the browser. Completed live jobs are available from History.</p>
 
                         <h3>Export Formats</h3>
                         <table class="doc-table">
@@ -435,9 +446,14 @@
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td><strong>Summary Report (.pdf)</strong></td>
+                                    <td>Pipeline output summary, ranked pathway table and concise highlighted interpretations</td>
+                                    <td>Main-text review and rapid sharing</td>
+                                </tr>
+                                <tr>
                                     <td><strong>Full Report (.pdf)</strong></td>
-                                    <td>Complete analysis: ranked statistically validated pathways, pathway sizes, input overlaps, disease interpretations, PubMed evidence, and the input appendix</td>
-                                    <td>Documentation, sharing with collaborators</td>
+                                    <td>Pipeline output summary, validated pathway evidence, interpretations, literature, source links, reasoning details and input appendix</td>
+                                    <td>Supplementary records and collaboration</td>
                                 </tr>
                                 <tr>
                                     <td><strong>Pathway Table (.csv)</strong></td>
@@ -452,8 +468,11 @@
                             </tbody>
                         </table>
 
+                        <h3>PDF pathway scope</h3>
+                        <p>Before exporting either PDF, choose All pathways or Top 3, Top 5 or Top 10 per database. This selection is independent of which pathway cards are open on the page. PDF ranking tables use Database, ID and Rank as separate columns, and pathway headings use the form <strong>1. GO:0098773: skin epidermis development</strong>. Database term descriptions are labeled <strong>Pathway definition</strong>.</p>
+
                         <h3>Run History</h3>
-                        <p>All completed analyses are automatically saved to your run history. From the <strong>History</strong> tab, you can:</p>
+                        <p>Completed live analyses are saved to the signed-in user's server-side run history. From <strong>History</strong>, you can:</p>
                         <ul class="doc-list">
                             <li><strong>View</strong> - Re-open full results from a past analysis</li>
                             <li><strong>Re-run</strong> - Pre-fill the input form with the same genes and disease for a new analysis</li>
@@ -514,7 +533,7 @@
                             </div>
                             <div class="doc-source">
                                 <h3>Open Targets Platform</h3>
-                                <p>Provides gene autocomplete and disease/phenotype concept matching. Selected disease suggestions retain the canonical label and MONDO/EFO identifier shown in the input context.</p>
+                                <p>Provides disease and phenotype matching plus ranked disease-associated genes. The website retains the selected canonical label and MONDO or EFO identifier. Imported genes are ordered by the overall association score, a 0-to-1 evidence ranking that combines weighted data sources and is not a disease probability.</p>
                                 <a href="https://platform.opentargets.org/" target="_blank" rel="noopener" class="doc-source-link">platform.opentargets.org</a>
                             </div>
                             <div class="doc-source">
@@ -523,8 +542,8 @@
                                 <a href="https://biit.cs.ut.ee/gprofiler/" target="_blank" class="doc-source-link">biit.cs.ut.ee/gprofiler</a>
                             </div>
                             <div class="doc-source">
-                                <h3>OpenAI GPT-5.1</h3>
-                                <p>Language model used for pathway hypothesis generation, structured feedback and database-specific biological interpretation.</p>
+                                <h3>OpenAI models</h3>
+                                <p>The selected model is used for pathway hypothesis generation, validation feedback and database-specific biological interpretation. GPT-5.1 is the current default; GPT-5 mini and GPT-4.1 are also available in Feedback and output settings.</p>
                                 <a href="https://openai.com" target="_blank" class="doc-source-link">openai.com</a>
                             </div>
                             <div class="doc-source">
@@ -561,6 +580,10 @@
                                 <p>Use HGNC gene symbols, Ensembl Gene IDs, or a mixture of both. Separate identifiers with commas, spaces or newlines. The run summary reports mapping coverage; the <button type="button" class="doc-inline-link" onclick="switchDoc('gene-mapping')">Gene Mapping &amp; QC</button> page explains the exact recognized and unresolved definitions.</p>
                             </details>
                             <details>
+                                <summary>What does Open Targets import do?</summary>
+                                <p>After you select an ontology-backed disease, it replaces the current gene list with the requested number of highest-ranked associated genes. Use 100, 150, 200 or any whole number of at least 25. The overall association score ranks evidence strength from 0 to 1 and is not a probability.</p>
+                            </details>
+                            <details>
                                 <summary>Why are fewer pathways shown than were initially proposed?</summary>
                                 <p>Initial LLM outputs are hypotheses. Only matched hypotheses with corrected statistical support proceed to the ranked evidence register.</p>
                             </details>
@@ -570,11 +593,23 @@
                             </details>
                             <details>
                                 <summary>Are cell-type tags pathway-level results?</summary>
-                                <p>Yes. In the current output, cell and tissue tags summarize the pathway-level interpretation and are displayed as a separate +1 context layer rather than a sixth ranking source.</p>
+                                <p>Yes. Cell and tissue tags summarize one pathway's interpretation. They organize relevant context but do not establish cell-type causality. Literature is linked to individual supporting statements when available; the website does not treat one PMID as support for every tag.</p>
                             </details>
                             <details>
-                                <summary>What changes when Multiple runs is enabled?</summary>
-                                <p>The system runs an initial pass, summarizes validation successes and failures, and uses that feedback to generate a refined second set of hypotheses. Results report the two passes separately.</p>
+                                <summary>What changes when Feedback is enabled?</summary>
+                                <p>Feedback is on by default. The system summarizes validation successes and failures from the first pass and uses them to generate a refined second set of hypotheses. The final validated pathway register is consolidated; Full record adds database-level Reasoning details.</p>
+                            </details>
+                            <details>
+                                <summary>Will the analysis wait for me to answer questions?</summary>
+                                <p>Not by default. Questions during analysis are off, so the job runs automatically. If you turn them on, you may ask at the gene-list and leading-pathway points or select Skip. The workflow advances automatically after the model answers.</p>
+                            </details>
+                            <details>
+                                <summary>Can I leave the running analysis page?</summary>
+                                <p>Yes. Return to the homepage while the job continues. A floating status panel shows progress and opens the active analysis again. If completion email is configured for the deployment, the service also sends a notification when the job finishes.</p>
+                            </details>
+                            <details>
+                                <summary>Does PDF export depend on open pathway cards?</summary>
+                                <p>No. PDF export uses the saved analysis data and includes the selected scope of All, Top 3, Top 5 or Top 10 pathways per database, regardless of which cards are expanded in the browser.</p>
                             </details>
                             <details>
                                 <summary>Where can I review the implementation?</summary>

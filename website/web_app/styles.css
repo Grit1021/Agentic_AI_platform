@@ -14398,3 +14398,151 @@ body.results-view .workflow-rail {
         width: 100%;
     }
 }
+
+/* ============================================================================
+   2026-09-10 compact homepage viewport: keep the footer in the desktop frame
+   ============================================================================ */
+
+body:not(.results-view):not(.analysis-running-view) > site-footer {
+    --site-footer-gap: 8px;
+}
+
+@media (min-width: 901px) {
+    body {
+        display: flex;
+        min-height: 100dvh;
+        flex-direction: column;
+    }
+
+    body > .main {
+        flex: 1 0 auto;
+    }
+
+    body > site-footer {
+        flex: 0 0 auto;
+    }
+}
+
+@media (min-width: 901px) and (min-height: 680px) {
+    body:not(.results-view):not(.analysis-running-view) .main {
+        min-height: 0;
+        padding-top: 69px;
+        padding-bottom: 8px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .hero {
+        padding: 11px 0 5px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .hero-title {
+        font-size: clamp(1.9rem, 2.8vw, 2.1rem);
+        line-height: 1.05;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .hero-subtitle {
+        margin-top: 3px;
+        font-size: 0.84rem;
+        line-height: 1.35;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-section {
+        padding: 0;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-card-header {
+        min-height: 38px;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-context-grid {
+        padding: 12px 18px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-context-grid > .input-workspace-group--disease {
+        gap: 18px;
+        padding-bottom: 10px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-context-grid > .input-workspace-group--genes {
+        column-gap: clamp(20px, 2vw, 32px);
+        padding: 10px 0;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes > .input-workspace-heading {
+        margin-bottom: 7px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes .gene-query-textarea {
+        height: 112px;
+        min-height: 112px;
+        margin-top: 6px;
+        padding: 10px 12px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .gene-query-formats {
+        margin-top: 6px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-helper-row {
+        margin-top: 4px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes .open-targets-gene-import {
+        gap: 7px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes .open-targets-gene-import-copy {
+        gap: 4px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes .open-targets-gene-import-copy p {
+        font-size: 0.7rem;
+        line-height: 1.35;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .input-workspace-group--genes .open-targets-gene-import-copy a {
+        font-size: 0.66rem;
+        line-height: 1.25;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .open-targets-gene-import-controls,
+    body:not(.results-view):not(.analysis-running-view) .open-targets-gene-import-controls > label {
+        gap: 4px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) #open-targets-limit-input {
+        min-height: 34px;
+        padding-block: 5px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .open-targets-limit-presets button {
+        min-height: 32px;
+        padding-block: 5px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .open-targets-gene-import-button {
+        min-height: 34px;
+        padding-block: 6px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-shared-resources {
+        padding-top: 9px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-shared-resources .gene-list-toggle-btn,
+    body:not(.results-view):not(.analysis-running-view) .analysis-shared-resources .featured-more-button {
+        min-height: 36px;
+        padding-block: 7px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-action-row {
+        margin-top: 7px;
+    }
+
+    body:not(.results-view):not(.analysis-running-view) .analysis-action-row .start-button {
+        min-height: 42px;
+        margin-top: 0;
+        padding: 9px 20px;
+    }
+}

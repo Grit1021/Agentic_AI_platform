@@ -7,7 +7,7 @@
                 <style>
                     :host { display: block; }
                     .footer {
-                        margin-top: 32px;
+                        margin-top: var(--site-footer-gap, 32px);
                         padding: 20px 24px;
                         color: #687785;
                         background: #f4f6f8;

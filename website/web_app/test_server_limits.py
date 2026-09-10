@@ -107,6 +107,36 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("body.results-view .workflow-rail", css)
         self.assertRegex(css, r"\.workflow-rail\s*\{\s*display:\s*none")
 
+    def test_history_navigation_and_settings_popover_have_explicit_behavior(self):
+        response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        html = response.get_data(as_text=True)
+        self.assertIn('href="#history" class="nav-link" data-view="history"', html)
+        response.close()
+
+        base_dir = os.path.dirname(__file__)
+        with open(os.path.join(base_dir, "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertIn('.nav-link[data-view="history"]', javascript)
+        self.assertIn("window.showHistoryPanel = showHistoryPanel", javascript)
+        self.assertIn("window.showAnalysisView = showAnalysisView", javascript)
+        self.assertIn("url.hash = 'history'", javascript)
+        self.assertIn("window.addEventListener('hashchange', syncViewToLocation)", javascript)
+        self.assertIn("!options.contains(event.target)", javascript)
+        self.assertIn("options.open = false", javascript)
+        self.assertIn("event.key !== 'Escape' || !options?.open", javascript)
+
+        with open(os.path.join(base_dir, "components", "documentation-view.js"), encoding="utf-8") as source:
+            documentation = source.read()
+        for expected in (
+            "Feedback and output settings",
+            "Questions during analysis",
+            "GPT-5.1",
+            "Highlighted pathways per database",
+            "It does not alter validation or ranking",
+        ):
+            self.assertIn(expected, documentation)
+
     def test_homepage_starts_empty_and_examples_are_shared_between_inputs(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
@@ -136,8 +166,11 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("url.searchParams.delete('demo')", javascript)
         self.assertIn("document.addEventListener('DOMContentLoaded', syncViewToLocation)", javascript)
         self.assertIn("window.addEventListener('pageshow', syncViewToLocation)", javascript)
+        self.assertIn("window.addEventListener('popstate', syncViewToLocation)", javascript)
         self.assertIn("params.get('demo') === '1'", javascript)
         self.assertIn("!isCompletedExampleRoute && !isDocumentationRoute", javascript)
+        self.assertIn("finally {", javascript)
+        self.assertIn("syncViewToLocation();", javascript)
 
         with open(os.path.join(os.path.dirname(__file__), "styles.css"), encoding="utf-8") as source:
             css = source.read()
@@ -151,6 +184,19 @@ class ServerLimitTests(unittest.TestCase):
             css,
             r"\.analysis-shared-resources\s*>\s*\.gene-list-loader,[^{]*\{[^}]*border:\s*0",
         )
+        self.assertIn("--site-footer-gap: 8px", css)
+        self.assertIn("min-height: 100dvh", css)
+        self.assertRegex(
+            css,
+            r"body:not\(\.results-view\):not\(\.analysis-running-view\)\s+\.main\s*\{[^}]*min-height:\s*0",
+        )
+
+        with open(
+            os.path.join(os.path.dirname(__file__), "components", "site-footer.js"),
+            encoding="utf-8",
+        ) as source:
+            footer_component = source.read()
+        self.assertIn("margin-top: var(--site-footer-gap, 32px)", footer_component)
 
     def test_complete_input_examples_have_at_least_100_genes(self):
         payload = self.client.get("/api/frontend-data").get_json()
@@ -192,6 +238,41 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("trapProductTourFocus(event)", javascript)
         self.assertIn("const isPostLoginTour = params.get('tour') === '1'", javascript)
         self.assertIn("window.location.assign(continuation)", javascript)
+
+        with open(
+            os.path.join(os.path.dirname(__file__), "components", "site-header.js"),
+            encoding="utf-8",
+        ) as source:
+            header = source.read()
+        self.assertIn('class="nav-link nav-tour-button">Tour</button>', header)
+        self.assertNotRegex(header, r'nav-tour-button[^<]*>Tour\s*<svg')
+
+    def test_homepage_example_popovers_close_outside_and_with_escape(self):
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        with open(
+            os.path.join(os.path.dirname(__file__), "components", "analysis-input.js"),
+            encoding="utf-8",
+        ) as source:
+            component = source.read()
+
+        self.assertIn("initHomepageExamplePopovers();", javascript)
+        self.assertIn("document.addEventListener('pointerdown'", javascript)
+        self.assertIn("!geneLoader.contains(event.target)", javascript)
+        self.assertIn("!finishedExamples.contains(event.target)", javascript)
+        self.assertIn("if (event.key !== 'Escape') return;", javascript)
+        self.assertIn("setGeneListPanelOpen(false, { returnFocus: true })", javascript)
+        self.assertIn("setMoreFeaturedExamplesOpen(false, { returnFocus: true })", javascript)
+        self.assertIn('aria-controls="gene-list-panel"', component)
+        self.assertIn('aria-controls="featured-more-examples"', component)
+
+    def test_restored_job_completion_stays_on_homepage_until_opened(self):
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertIn("restoredFromSession: false", javascript)
+        self.assertIn("state.restoredFromSession = true;", javascript)
+        self.assertIn("if (state.backgrounded || state.restoredFromSession)", javascript)
+        self.assertIn("state.restoredFromSession = false;", javascript)
 
     def test_gene_preview_has_no_per_gene_delete_controls_and_layout_is_stable(self):
         with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
@@ -704,16 +785,22 @@ class ServerLimitTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("protein ubiquitination", response.get_json()["data"])
 
-    def test_narrative_retry_creates_a_new_owned_session(self):
-        with patch.object(server.threading, "Thread", CompletedThread):
-            response = self.client.post("/api/retry-narratives/server-ms-20260821")
-
+    def test_interpretation_refresh_control_and_endpoint_are_removed(self):
+        response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        payload = response.get_json()
-        self.assertTrue(payload["session_id"].startswith("narrative-"))
-        self.assertIn(payload["session_id"], server.sessions)
-        self.assertEqual(server.sessions[payload["session_id"]].status, "running")
+        html = response.get_data(as_text=True)
+        self.assertNotIn("retry-narratives-btn", html)
+        self.assertNotIn("Refresh interpretations", html)
 
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertNotIn("/api/retry-narratives/", javascript)
+        self.assertNotIn("retryFallbackNarratives", javascript)
+
+        self.assertFalse(any(
+            rule.rule == "/api/retry-narratives/<session_id>"
+            for rule in server.app.url_map.iter_rules()
+        ))
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,9 +9,6 @@
                 <button id="back-to-process" class="back-button">
                     <span><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-left"></use></svg> Back to analysis</span>
                 </button>
-                    <button id="retry-narratives-btn" class="export-button hidden" type="button">
-                    <span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrows-clockwise"></use></svg> Refresh interpretations</span>
-                </button>
                 <div class="export-dropdown-wrapper">
                     <button id="export-btn" class="export-button">
                         <span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-download-simple"></use></svg> Export</span>

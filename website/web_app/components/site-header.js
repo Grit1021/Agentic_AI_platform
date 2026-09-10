@@ -42,9 +42,9 @@
                         </a>
                     </div>
                 </div>
-                <a href="#" class="nav-link" data-view="history" onclick="showHistoryPanel()">History</a>
+                <a href="#history" class="nav-link" data-view="history">History</a>
                 <a href="#docs/what-is" class="nav-link" data-view="docs" onclick="showDocsPanel('what-is'); return false;">Docs</a>
-                <button type="button" id="tour-replay-button" class="nav-link nav-tour-button">Tour <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-compass"></use></svg></button>
+                <button type="button" id="tour-replay-button" class="nav-link nav-tour-button">Tour</button>
                 <a href="https://github.com/Grit1021/Agentic_AI_platform" class="nav-link nav-link--external" target="_blank" rel="noopener">Pipeline <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>
             </nav>
             <span id="header-quota-status" class="header-quota-status hidden" aria-live="polite"></span>

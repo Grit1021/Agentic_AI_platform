@@ -20,7 +20,8 @@ const state = {
     activeJobLabel: '',
     interactiveQuestions: false,
     userEmail: '',
-    emailNotificationsAvailable: false
+    emailNotificationsAvailable: false,
+    restoredFromSession: false
 };
 
 const ACTIVE_JOB_STORAGE_KEY = 'genepathway-active-analysis';
@@ -121,7 +122,6 @@ const elements = {
 
     // Results View Elements
     backToProcess: document.getElementById('back-to-process'),
-    retryNarrativesBtn: document.getElementById('retry-narratives-btn'),
     exportBtn: document.getElementById('export-btn'),
     diseaseNameDisplay: document.getElementById('disease-name-display'),
     geneCountDisplay: document.getElementById('gene-count-display'),
@@ -142,11 +142,17 @@ let pathwayDisplayLimit = 5;
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.nav-link[data-view="history"]')?.addEventListener('click', event => {
+        event.preventDefault();
+        showHistoryPanel();
+    });
+
     initAuthUserMenu();
     initAnalysisSettings();
     initWorkflowNavigation();
     initProductTour();
     initFeaturedExamplesMenu();
+    initHomepageExamplePopovers();
 
     // Disease context is the first, equally weighted input.
     const contextGrid = document.querySelector('.analysis-context-grid');
@@ -193,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Results View Navigation
     elements.backToProcess?.addEventListener('click', hideResultsView);
-    elements.retryNarrativesBtn?.addEventListener('click', retryFallbackNarratives);
     document.getElementById('pathways-per-database')?.addEventListener('change', event => {
         pathwayDisplayLimit = event.target.value === 'all' ? Infinity : Number(event.target.value) || 5;
         const homeLimit = document.getElementById('input-pathways-per-database');
@@ -340,6 +345,19 @@ async function loadAnalysisSettingsConfig() {
 
 function initAnalysisSettings() {
     loadAnalysisSettingsConfig();
+    const options = document.querySelector('.analysis-options');
+    const summary = options?.querySelector(':scope > summary');
+
+    document.addEventListener('pointerdown', event => {
+        if (options?.open && !options.contains(event.target)) options.open = false;
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape' || !options?.open) return;
+        event.preventDefault();
+        options.open = false;
+        summary?.focus({ preventScroll: true });
+    });
+
     document.getElementById('input-pathways-per-database')?.addEventListener('change', event => {
         pathwayDisplayLimit = event.target.value === 'all' ? Infinity : Number(event.target.value) || 5;
         const resultsLimit = document.getElementById('pathways-per-database');
@@ -668,6 +686,10 @@ async function initializeFrontendData() {
         const exampleSelect = document.getElementById('gene-list-disease-select');
         if (exampleSelect) exampleSelect.innerHTML = '<option value="">Examples unavailable</option>';
         updateFeaturedExampleButtons();
+    } finally {
+        // Reference data arrives asynchronously. Re-apply the location-owned
+        // view so a late archived-result response cannot replace the homepage.
+        syncViewToLocation();
     }
 }
 
@@ -696,12 +718,21 @@ function describeCompletedExample(example) {
     return parts.join(', ');
 }
 
-function toggleMoreFeaturedExamples(button) {
+function setMoreFeaturedExamplesOpen(open, { returnFocus = false } = {}) {
+    const panel = document.getElementById('featured-more-examples');
+    if (!panel) return;
+    const button = document.querySelector('.featured-more-button');
+    panel.classList.toggle('hidden', !open);
+    button?.setAttribute('aria-expanded', String(open));
+    if (!open && returnFocus) button?.focus({ preventScroll: true });
+}
+
+function toggleMoreFeaturedExamples() {
     const panel = document.getElementById('featured-more-examples');
     if (!panel) return;
     const opening = panel.classList.contains('hidden');
-    panel.classList.toggle('hidden', !opening);
-    button?.setAttribute('aria-expanded', String(opening));
+    setMoreFeaturedExamplesOpen(opening);
+    if (opening) setGeneListPanelOpen(false);
 }
 
 function setReportView(view = 'summary') {
@@ -771,6 +802,7 @@ async function showCompletedExample(code) {
 }
 
 async function openFeaturedCompletedExample(code) {
+    closeHomepageExamplePopovers();
     if (window.location.protocol === 'file:') {
         if (!HOSTED_APP_URL) {
             alert('The hosted completed examples are not configured for this preview.');
@@ -1233,18 +1265,51 @@ async function loadFeaturedInput(diseaseCode) {
     document.querySelector('.analysis-context-grid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function toggleGeneListPanel() {
+function setGeneListPanelOpen(open, { returnFocus = false } = {}) {
     const panel = document.getElementById('gene-list-panel');
     const btn = document.getElementById('gene-list-toggle');
     if (!panel) return;
-    const isHidden = panel.classList.contains('hidden');
-    panel.classList.toggle('hidden', !isHidden);
+    panel.classList.toggle('hidden', !open);
     if (btn) {
-        btn.innerHTML = isHidden
+        btn.innerHTML = open
             ? 'Close examples <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
             : 'Load disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
-        btn.setAttribute('aria-expanded', String(isHidden));
+        btn.setAttribute('aria-expanded', String(open));
+        if (!open && returnFocus) btn.focus({ preventScroll: true });
     }
+}
+
+function toggleGeneListPanel() {
+    const panel = document.getElementById('gene-list-panel');
+    if (!panel) return;
+    const opening = panel.classList.contains('hidden');
+    setGeneListPanelOpen(opening);
+    if (opening) setMoreFeaturedExamplesOpen(false);
+}
+
+function closeHomepageExamplePopovers({ returnFocus = false } = {}) {
+    setGeneListPanelOpen(false, { returnFocus });
+    setMoreFeaturedExamplesOpen(false, { returnFocus });
+}
+
+function initHomepageExamplePopovers() {
+    document.addEventListener('pointerdown', event => {
+        const geneLoader = document.querySelector('.analysis-shared-resources > .gene-list-loader');
+        const finishedExamples = document.getElementById('featured-examples');
+        if (geneLoader && !geneLoader.contains(event.target)) setGeneListPanelOpen(false);
+        if (finishedExamples && !finishedExamples.contains(event.target)) setMoreFeaturedExamplesOpen(false);
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        const genePanel = document.getElementById('gene-list-panel');
+        const resultsPanel = document.getElementById('featured-more-examples');
+        const geneOpen = Boolean(genePanel && !genePanel.classList.contains('hidden'));
+        const resultsOpen = Boolean(resultsPanel && !resultsPanel.classList.contains('hidden'));
+        if (!geneOpen && !resultsOpen) return;
+        event.preventDefault();
+        if (geneOpen) setGeneListPanelOpen(false, { returnFocus: true });
+        if (resultsOpen) setMoreFeaturedExamplesOpen(false, { returnFocus: true });
+    });
 }
 
 function onGeneListDiseaseChange({ syncContext = true } = {}) {
@@ -2399,12 +2464,7 @@ async function loadSelectedGeneList() {
 
         // Collapse panel after load
         setTimeout(() => {
-            const panel = document.getElementById('gene-list-panel');
-            const toggleBtn = document.getElementById('gene-list-toggle');
-            if (panel && !panel.classList.contains('hidden')) {
-                panel.classList.add('hidden');
-                toggleBtn.innerHTML = 'Load disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
-            }
+            setGeneListPanelOpen(false);
         }, 2200);
 
     } catch (e) {
@@ -3109,6 +3169,7 @@ async function loadQuotaStatus() {
 async function startAnalysis() {
     // Reset collected reasoning for new analysis
     collectedReasoning.length = 0;
+    state.restoredFromSession = false;
 
     const genes = parseGenes(elements.geneInput.value);
     const disease = elements.diseaseSelect.value;
@@ -3275,7 +3336,7 @@ async function pollProgress() {
         if (data.status === 'completed') {
             stopPolling();
             showTyping(false);
-            if (state.backgrounded) {
+            if (state.backgrounded || state.restoredFromSession) {
                 state.backgroundResults = data.results;
                 saveActiveJobState('completed');
                 resetStartButton();
@@ -3375,6 +3436,7 @@ function restoreActiveJobState() {
     state.analysisStartedAt = Number(saved.analysisStartedAt) || Date.now();
     state.activeJobLabel = String(saved.label || 'Pathway analysis');
     state.interactiveQuestions = saved.interactiveQuestions === true;
+    state.restoredFromSession = true;
     state.isAnalyzing = saved.status !== 'completed';
     state.backgrounded = true;
     updateProgressModeCopy();
@@ -3431,6 +3493,7 @@ function showActiveJob() {
         const results = state.backgroundResults;
         state.backgroundResults = null;
         state.backgrounded = false;
+        state.restoredFromSession = false;
         updateActiveJobBanner();
         showResults(results);
         return;
@@ -4412,7 +4475,6 @@ function showResults(results) {
     const disease = results.disease || document.getElementById('disease-input')?.value || elements.diseaseSelect.value || 'Disease';
     const geneCount = results.gene_count || parseGenes(elements.geneInput.value).length;
     const pathways = results.pathways || [];
-    updateRetryNarrativesButton(pathways);
 
     // Update hero section
     if (elements.diseaseNameDisplay) elements.diseaseNameDisplay.textContent = disease;
@@ -7218,67 +7280,6 @@ function closeExportDropdown() {
     }
 }
 
-function updateRetryNarrativesButton(pathways) {
-    const button = elements.retryNarrativesBtn;
-    if (!button) return;
-    const unresolved = (pathways || []).filter(pathway =>
-        pathway?.pathway_narrative?.generated !== true
-    ).length;
-    button.classList.toggle('hidden', unresolved === 0);
-    button.disabled = false;
-    button.innerHTML = '<span><svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-arrows-clockwise"></use></svg> Refresh interpretations</span>';
-    button.title = unresolved
-        ? `${unresolved} pathway narrative${unresolved === 1 ? '' : 's'} require regeneration.`
-        : 'Every pathway narrative passed validation.';
-}
-
-async function retryFallbackNarratives() {
-    if (!state.sessionId) return;
-    const button = elements.retryNarrativesBtn;
-    const originalHtml = button?.innerHTML;
-    if (button) {
-        button.disabled = true;
-        button.innerHTML = '<span><svg class="ph ph-spin" aria-hidden="true" focusable="false"><use href="#ph-circle-notch"></use></svg> Starting…</span>';
-    }
-    try {
-        const response = await fetch(`/api/retry-narratives/${state.sessionId}`, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { Accept: 'application/json' }
-        });
-        const payload = await response.json();
-        if (!response.ok || payload.error) {
-            throw new Error(payload.error || `Interpretation refresh failed (${response.status})`);
-        }
-        if (payload.quota) updateQuotaStatus(payload.quota);
-        state.sessionId = payload.session_id;
-        state.isAnalyzing = true;
-        state.analysisStartedAt = Date.now();
-        document.body.classList.add('analysis-running-view');
-        elements.resultsSection?.classList.add('hidden');
-        elements.heroSection?.classList.add('hidden');
-        elements.inputSection?.classList.add('hidden');
-        elements.chatSection?.classList.remove('hidden');
-        setActiveWorkflowStep('interpret');
-        updateAnalysisProgress({
-            percent: 1,
-            stage: 'Queued',
-            detail: 'Interpretation refresh was accepted.',
-            state: 'queued',
-            elapsed_seconds: 0,
-        });
-        showTyping(true);
-        startPolling();
-    } catch (error) {
-        console.error('Interpretation refresh failed:', error);
-        alert('Interpretation refresh failed: ' + error.message);
-        if (button) {
-            button.disabled = false;
-            button.innerHTML = originalHtml;
-        }
-    }
-}
-
 function getPdfExportLimit() {
     const value = document.getElementById('pdf-export-limit')?.value || 'all';
     return value === 'all' ? Infinity : Number(value) || Infinity;
@@ -7454,6 +7455,9 @@ function downloadExportBlob(blob, filename) {
 let historyData = [];
 
 function showHistoryPanel() {
+    closeHomepageExamplePopovers();
+    const analysisOptions = document.querySelector('.analysis-options');
+    if (analysisOptions) analysisOptions.open = false;
     document.body.classList.remove('analysis-running-view');
     document.body.classList.remove('results-view');
     hideProductTour({ followContinuation: false });
@@ -7481,10 +7485,20 @@ function showHistoryPanel() {
     const historyLink = document.querySelector('.nav-link[data-view="history"]');
     if (historyLink) historyLink.classList.add('active');
 
+    const url = new URL(window.location.href);
+    if (url.hash !== '#history' || url.search) {
+        url.search = '';
+        url.hash = 'history';
+        window.history.pushState(null, '', `${url.pathname}${url.hash}`);
+    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
     loadHistory();
 }
 
+window.showHistoryPanel = showHistoryPanel;
+
 function showAnalysisView({ preserveActiveJob = false } = {}) {
+    closeHomepageExamplePopovers();
     if (state.isAnalyzing && state.sessionId) {
         state.backgrounded = true;
         preserveActiveJob = true;
@@ -7504,6 +7518,10 @@ function showAnalysisView({ preserveActiveJob = false } = {}) {
             item.classList.remove('is-current');
             item.removeAttribute('aria-current');
         });
+    }
+    if (!returningFromCompletedExample && (url.hash === '#history' || url.hash.startsWith('#docs/'))) {
+        url.hash = '';
+        window.history.replaceState(null, '', `${url.pathname}${url.search}`);
     }
     document.body.classList.remove('analysis-running-view');
     document.body.classList.remove('results-view');
@@ -7530,14 +7548,27 @@ function showAnalysisView({ preserveActiveJob = false } = {}) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+window.showAnalysisView = showAnalysisView;
+
 async function loadHistory() {
     try {
         const response = await fetch('/api/history');
+        if (!response.ok) throw new Error(`History returned HTTP ${response.status}`);
         const data = await response.json();
         historyData = data.history || [];
         renderHistoryTable(historyData);
     } catch (error) {
         console.error('Failed to load history:', error);
+        const tableContainer = document.getElementById('history-table-container');
+        const emptyState = document.getElementById('history-empty');
+        const countEl = document.querySelector('.history-results-count');
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (countEl) countEl.textContent = '';
+        if (emptyState) {
+            emptyState.style.display = 'block';
+            const message = emptyState.querySelector('p');
+            if (message) message.textContent = 'History could not be loaded. Refresh the page or sign in again.';
+        }
     }
 }
 
@@ -7550,6 +7581,8 @@ function renderHistoryTable(entries) {
     if (!entries || entries.length === 0) {
         tableContainer.style.display = 'none';
         emptyState.style.display = 'block';
+        const message = emptyState.querySelector('p');
+        if (message) message.textContent = 'No analysis history found. Run your first analysis to see it here.';
         if (countEl) countEl.textContent = '';
         return;
     }
@@ -7717,7 +7750,7 @@ const DOCUMENTATION_ORDER = [
     { id: 'gene-mapping', title: 'Gene Mapping & QC' },
     { id: 'analysis-pipeline', title: 'Analysis Pipeline' },
     { id: 'pathway-categories', title: 'Pathway Categories' },
-    { id: 'checkpoints', title: 'Interactive Checkpoints' },
+    { id: 'checkpoints', title: 'Optional Questions' },
     { id: 'results', title: 'Reading the Results' },
     { id: 'export-history', title: 'Export & History' },
     { id: 'usage', title: 'Usage Limits' },
@@ -7848,7 +7881,24 @@ document.addEventListener('DOMContentLoaded', () => {
 function syncViewToLocation() {
     const params = new URLSearchParams(window.location.search);
     const isCompletedExampleRoute = params.get('demo') === '1';
-    const isDocumentationRoute = Boolean(getDocumentationHashId());
+    const documentationId = getDocumentationHashId();
+    const isDocumentationRoute = Boolean(documentationId);
+    const isHistoryRoute = window.location.hash === '#history';
+    if (isHistoryRoute) {
+        showHistoryPanel();
+        return;
+    }
+    if (isDocumentationRoute) {
+        showDocsPanel(documentationId);
+        return;
+    }
+    if (isCompletedExampleRoute && frontendDataState.ready) {
+        const requested = String(params.get('example') || '').toUpperCase();
+        if (requested) showCompletedExample(requested).catch(error => {
+            console.warn('Completed example could not be restored:', error);
+        });
+        return;
+    }
     if (!isCompletedExampleRoute && !isDocumentationRoute) showAnalysisView();
 }
 
@@ -7857,6 +7907,8 @@ function syncViewToLocation() {
 // back-forward cache restores.
 document.addEventListener('DOMContentLoaded', syncViewToLocation);
 window.addEventListener('pageshow', syncViewToLocation);
+window.addEventListener('popstate', syncViewToLocation);
+window.addEventListener('hashchange', syncViewToLocation);
 
 async function clearAllHistory() {
     if (!confirm('Are you sure you want to clear all history? This cannot be undone.')) return;
@@ -7870,3 +7922,10 @@ async function clearAllHistory() {
         console.error('Failed to clear history:', error);
     }
 }
+
+window.clearAllHistory = clearAllHistory;
+window.filterHistory = filterHistory;
+window.viewHistoryEntry = viewHistoryEntry;
+window.rerunHistoryEntry = rerunHistoryEntry;
+window.deleteHistoryEntry = deleteHistoryEntry;
+window.copySessionId = copySessionId;
