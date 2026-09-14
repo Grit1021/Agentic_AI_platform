@@ -18,6 +18,7 @@ const state = {
     backgrounded: false,
     backgroundResults: null,
     activeJobLabel: '',
+    activeJobGeneCount: 0,
     interactiveQuestions: false,
     userEmail: '',
     emailNotificationsAvailable: false,
@@ -78,6 +79,7 @@ const geneQueryAutocompleteState = {
 const elements = {
     heroSection: document.getElementById('hero-section'),
     inputSection: document.getElementById('input-section'),
+    submissionSection: document.getElementById('submission-section'),
     chatSection: document.getElementById('chat-section'),
     resultsSection: document.getElementById('results-section'),
 
@@ -119,6 +121,12 @@ const elements = {
     activeJobIndicator: document.getElementById('active-job-indicator'),
     viewActiveJob: document.getElementById('view-active-job'),
     dismissActiveJob: document.getElementById('dismiss-active-job'),
+    submissionJobStatus: document.getElementById('submission-job-status'),
+    submissionJobStatusLabel: document.getElementById('submission-job-status-label'),
+    submissionJobLabel: document.getElementById('submission-job-label'),
+    submissionGeneCount: document.getElementById('submission-gene-count'),
+    submissionRunId: document.getElementById('submission-run-id'),
+    submissionHomeButton: document.getElementById('submission-home-button'),
 
     // Results View Elements
     backToProcess: document.getElementById('back-to-process'),
@@ -208,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.analysisBackgroundBtn?.addEventListener('click', backgroundAnalysis);
     elements.viewActiveJob?.addEventListener('click', showActiveJob);
     elements.dismissActiveJob?.addEventListener('click', dismissActiveJob);
+    elements.submissionHomeButton?.addEventListener('click', () => {
+        showAnalysisView({ preserveActiveJob: true });
+    });
     document.querySelectorAll('[data-report-view]').forEach(button => {
         button.addEventListener('click', () => setReportView(button.dataset.reportView));
     });
@@ -685,6 +696,7 @@ async function initializeFrontendData() {
         console.warn('Backend reference data is unavailable:', error);
         const exampleSelect = document.getElementById('gene-list-disease-select');
         if (exampleSelect) exampleSelect.innerHTML = '<option value="">Examples unavailable</option>';
+        renderHomepageGeneListExamples();
         updateFeaturedExampleButtons();
     } finally {
         // Reference data arrives asynchronously. Re-apply the location-owned
@@ -1181,6 +1193,8 @@ async function initGeneListLoader(backendGeneLists = {}) {
             renderDiseasePresetOptions();
         }
 
+        renderHomepageGeneListExamples();
+
         const diseaseSelect = document.getElementById('gene-list-disease-select');
         if (!diseaseSelect) return;
         diseaseSelect.innerHTML = '<option value="">Select an example</option>';
@@ -1206,6 +1220,90 @@ function getExampleGeneList(diseaseCode) {
     return lists.find(item => /top[_ -]?module/i.test(String(item.id || item.label || '')))
         || lists.find(item => Array.isArray(item.genes) && item.genes.length)
         || null;
+}
+
+function getGeneListExampleLabel(diseaseCode) {
+    const option = DISEASE_OPTIONS.find(item => item.value === diseaseCode);
+    return (option?.label || diseaseCode).replace(/\s+\([^)]+\)$/, '');
+}
+
+function getGeneListExampleCount(example) {
+    const count = Number(example?.gene_count ?? example?.genes?.length);
+    return Number.isFinite(count) && count > 0 ? count : null;
+}
+
+function renderHomepageGeneListExamples() {
+    const primaryButton = document.getElementById('gene-list-primary-example');
+    const menu = document.getElementById('gene-list-example-menu');
+    if (!primaryButton || !menu) return;
+
+    const available = DISEASE_OPTIONS.filter(option => getExampleGeneList(option.value)?.genes?.length);
+    const primaryOption = available.find(option => option.value === 'AD') || available[0];
+    menu.replaceChildren();
+
+    if (!primaryOption) {
+        primaryButton.disabled = true;
+        menu.textContent = 'Input examples are currently unavailable.';
+        return;
+    }
+
+    const primaryExample = getExampleGeneList(primaryOption.value);
+    const primaryCount = getGeneListExampleCount(primaryExample);
+    const primaryName = getGeneListExampleLabel(primaryOption.value);
+    primaryButton.dataset.disease = primaryOption.value;
+    primaryButton.querySelector('[data-example-name]').textContent = primaryName;
+    primaryButton.querySelector('[data-example-count]').textContent = primaryCount ? `${primaryCount} genes` : '';
+    primaryButton.setAttribute('aria-label', primaryCount
+        ? `Load the ${primaryName} example with ${primaryCount} genes`
+        : `Load the ${primaryName} example`);
+    primaryButton.disabled = false;
+
+    available
+        .filter(option => option.value !== primaryOption.value)
+        .forEach(option => {
+            const example = getExampleGeneList(option.value);
+            const count = getGeneListExampleCount(example);
+            const label = getGeneListExampleLabel(option.value);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'gene-list-example-option';
+            button.dataset.disease = option.value;
+            button.innerHTML = '<strong></strong><span></span>';
+            button.querySelector('strong').textContent = label;
+            button.querySelector('span').textContent = count ? `${count} genes` : 'Curated gene list';
+            button.setAttribute('aria-label', count
+                ? `Load the ${label} example with ${count} genes`
+                : `Load the ${label} example`);
+            button.addEventListener('click', () => loadHomepageGeneListExample(option.value, button));
+            menu.appendChild(button);
+        });
+}
+
+function showGeneListExampleLoaded(button, count) {
+    if (!button) return;
+    const status = button.querySelector('[data-example-count], span:last-child');
+    if (!status) return;
+    const original = status.textContent;
+    window.clearTimeout(button.exampleFeedbackTimer);
+    button.classList.add('is-loaded');
+    status.textContent = `Loaded ${count} genes`;
+    button.exampleFeedbackTimer = window.setTimeout(() => {
+        button.classList.remove('is-loaded');
+        status.textContent = original;
+    }, 1800);
+}
+
+function loadHomepageGeneListExample(diseaseCode, trigger = null) {
+    const example = getExampleGeneList(diseaseCode);
+    if (!example?.genes?.length) {
+        if (trigger) trigger.title = 'This input example is not available.';
+        return;
+    }
+
+    setSelectedGenes(example.genes);
+    setDiseaseCombobox(diseaseCode);
+    setGeneListPanelOpen(false);
+    showGeneListExampleLoaded(trigger, example.genes.length);
 }
 
 function updateFeaturedExampleButtons() {
@@ -1271,9 +1369,7 @@ function setGeneListPanelOpen(open, { returnFocus = false } = {}) {
     if (!panel) return;
     panel.classList.toggle('hidden', !open);
     if (btn) {
-        btn.innerHTML = open
-            ? 'Close examples <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-up"></use></svg></span>'
-            : 'Load disease and genes <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg></span>';
+        btn.innerHTML = `More examples <span aria-hidden="true"><svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="${open ? '#ph-caret-up' : '#ph-caret-down'}"></use></svg></span>`;
         btn.setAttribute('aria-expanded', String(open));
         if (!open && returnFocus) btn.focus({ preventScroll: true });
     }
@@ -1461,6 +1557,13 @@ function getDiseaseHidden()       { return document.getElementById('disease-sele
 function getDiseasePresetSelect() { return document.getElementById('disease-preset-select'); }
 function getDiseaseStatus()       { return document.getElementById('disease-context-status'); }
 function getDiseaseSuggestions()  { return document.getElementById('disease-suggestions'); }
+function getDiseaseClearButton()  { return document.getElementById('disease-clear-button'); }
+
+function updateDiseaseClearButton() {
+    const button = getDiseaseClearButton();
+    const hasValue = Boolean(getDiseaseInput()?.value.trim());
+    button?.classList.toggle('hidden', !hasValue);
+}
 
 function getSelectedOpenTargetsDisease() {
     const selected = diseaseContextState.selectedMatch;
@@ -1866,6 +1969,7 @@ function syncCuratedDiseaseSelect(code, { forceRefresh = false } = {}) {
 function updateDiseaseContextStatus() {
     const status = getDiseaseStatus();
     const customDisease = getDiseaseInput()?.value.trim();
+    updateDiseaseClearButton();
     updateOpenTargetsGeneImportAvailability();
     if (!status) return;
 
@@ -2290,6 +2394,18 @@ function hideDiseaseSuggestions() {
     diseaseContextState.activeSuggestionIndex = -1;
 }
 
+function clearDiseaseContext() {
+    if (diseaseContextState.searchTimer) {
+        clearTimeout(diseaseContextState.searchTimer);
+        diseaseContextState.searchTimer = null;
+    }
+    diseaseContextState.searchController?.abort();
+    diseaseContextState.searchController = null;
+    setDiseaseCombobox('');
+    showInputValidationError('disease-input-error', '');
+    getDiseaseInput()?.focus({ preventScroll: true });
+}
+
 function selectDiseaseSuggestion(option) {
     if (!option) return;
     const curatedCode = option.dataset.curatedCode;
@@ -2329,6 +2445,8 @@ function initDiseaseSearch() {
     const input = getDiseaseInput();
     const suggestions = getDiseaseSuggestions();
     if (!input || !suggestions) return;
+
+    getDiseaseClearButton()?.addEventListener('click', clearDiseaseContext);
 
     input.addEventListener('input', () => {
         onCustomDiseaseInput();
@@ -2411,6 +2529,7 @@ window.toggleGeneListPanel = toggleGeneListPanel;
 window.onGeneListDiseaseChange = onGeneListDiseaseChange;
 window.onGeneListChoiceChange = onGeneListChoiceChange;
 window.loadSelectedGeneList = loadSelectedGeneList;
+window.loadHomepageGeneListExample = loadHomepageGeneListExample;
 window.showFeaturedExamples = showFeaturedExamples;
 window.loadFeaturedInput = loadFeaturedInput;
 window.openFeaturedCompletedExample = openFeaturedCompletedExample;
@@ -2817,6 +2936,8 @@ function initGeneQueryAutocomplete() {
 }
 
 function initGeneSearch() {
+    elements.clearGenesBtn?.addEventListener('click', clearSelectedGenes);
+
     const input = elements.geneSearchInput;
     const suggestions = elements.geneSuggestions;
     if (!input || !suggestions) return;
@@ -2876,8 +2997,6 @@ function initGeneSearch() {
         event.preventDefault();
         addGeneSymbol(option.dataset.gene);
     });
-
-    elements.clearGenesBtn?.addEventListener('click', clearSelectedGenes);
 
     document.addEventListener('click', (event) => {
         if (!event.target.closest('.gene-search-composer')) hideGeneSuggestions();
@@ -3025,12 +3144,21 @@ function addGeneSymbol(symbol) {
 }
 
 function clearSelectedGenes() {
+    geneQueryAutocompleteState.searchController?.abort();
+    geneQueryAutocompleteState.searchController = null;
+    if (geneQueryAutocompleteState.searchTimer) {
+        clearTimeout(geneQueryAutocompleteState.searchTimer);
+        geneQueryAutocompleteState.searchTimer = null;
+    }
+
     setSelectedGenes([]);
+    if (elements.geneFileInput) elements.geneFileInput.value = '';
     if (elements.geneSearchInput) {
         elements.geneSearchInput.value = '';
-        elements.geneSearchInput.focus();
     }
+    hideGeneQuerySuggestions();
     hideGeneSuggestions();
+    elements.geneInput?.focus();
 }
 
 function renderSelectedGeneChips(genes) {
@@ -3200,6 +3328,7 @@ async function startAnalysis() {
     state.backgrounded = false;
     state.backgroundResults = null;
     state.activeJobLabel = selectedDisease?.canonicalName || selectedDisease?.label || disease || 'Pathway analysis';
+    state.activeJobGeneCount = genes.length;
     state.interactiveQuestions = interactiveQuestions;
     document.body.classList.remove('results-view');
     updateActiveJobBanner();
@@ -3240,11 +3369,8 @@ async function startAnalysis() {
         state.sessionId = data.session_id;
         saveActiveJobState('running');
 
-        // Switch to chat view
-        document.body.classList.add('analysis-running-view');
-        elements.heroSection.classList.add('hidden');
-        elements.inputSection.classList.add('hidden');
-        elements.chatSection.classList.remove('hidden');
+        // Prepare live progress, then move to the lightweight submission receipt.
+        // The user can reopen this view from the homepage banner or Job Center.
         updateProgressNotificationCopy();
         updateProgressModeCopy();
         setActiveWorkflowStep('hypothesize');
@@ -3258,6 +3384,8 @@ async function startAnalysis() {
 
         // Show typing indicator
         showTyping(true);
+        state.backgrounded = true;
+        showSubmissionView();
 
         // Start polling for updates
         startPolling();
@@ -3314,6 +3442,7 @@ async function pollProgress() {
                 state.isAnalyzing = false;
                 clearActiveJobState();
                 updateActiveJobBanner({ failed: true });
+                updateSubmissionStatus('failed');
             }
             return;
         }
@@ -3336,6 +3465,7 @@ async function pollProgress() {
         if (data.status === 'completed') {
             stopPolling();
             showTyping(false);
+            updateSubmissionStatus('completed', 100);
             if (state.backgrounded || state.restoredFromSession) {
                 state.backgroundResults = data.results;
                 saveActiveJobState('completed');
@@ -3347,6 +3477,7 @@ async function pollProgress() {
         } else if (data.status === 'cancelled' || data.status === 'error') {
             stopPolling();
             showTyping(false);
+            updateSubmissionStatus('failed', elements.analysisProgressBar?.value);
             resetStartButton();
             clearActiveJobState();
             updateActiveJobBanner({ failed: true });
@@ -3374,12 +3505,12 @@ function getEstimatedRemainingLabel(percent, waitingForUser, checkpointSeconds =
             : 'Awaiting your input';
     }
     if (percent >= 100) return 'Ready';
-    if (percent < 10) return 'About 15–30 minutes remaining';
-    if (percent < 30) return 'About 12–25 minutes remaining';
-    if (percent < 50) return 'About 8–18 minutes remaining';
-    if (percent < 65) return 'About 6–12 minutes remaining';
-    if (percent < 80) return 'About 4–9 minutes remaining';
-    if (percent < 92) return 'About 2–5 minutes remaining';
+    if (percent < 10) return 'About 15-30 minutes remaining';
+    if (percent < 30) return 'About 12-25 minutes remaining';
+    if (percent < 50) return 'About 8-18 minutes remaining';
+    if (percent < 65) return 'About 6-12 minutes remaining';
+    if (percent < 80) return 'About 4-9 minutes remaining';
+    if (percent < 92) return 'About 2-5 minutes remaining';
     return 'Usually less than 2 minutes remaining';
 }
 
@@ -3406,6 +3537,7 @@ function saveActiveJobState(status = 'running') {
             sessionId: state.sessionId,
             analysisStartedAt: state.analysisStartedAt,
             label: state.activeJobLabel,
+            geneCount: state.activeJobGeneCount,
             interactiveQuestions: state.interactiveQuestions,
             status,
         }));
@@ -3435,6 +3567,7 @@ function restoreActiveJobState() {
     state.sessionId = saved.sessionId;
     state.analysisStartedAt = Number(saved.analysisStartedAt) || Date.now();
     state.activeJobLabel = String(saved.label || 'Pathway analysis');
+    state.activeJobGeneCount = Math.max(0, Number(saved.geneCount) || 0);
     state.interactiveQuestions = saved.interactiveQuestions === true;
     state.restoredFromSession = true;
     state.isAnalyzing = saved.status !== 'completed';
@@ -3472,6 +3605,51 @@ function updateActiveJobBanner({ completed = false, failed = false } = {}) {
     if (elements.viewActiveJob) elements.viewActiveJob.textContent = isComplete ? 'View result' : 'Open';
 }
 
+function updateSubmissionStatus(status = 'queued', percent = 0) {
+    if (!elements.submissionJobStatus || !elements.submissionJobStatusLabel) return;
+    const normalized = status === 'error' || status === 'cancelled' ? 'failed' : status;
+    const roundedPercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+    const labels = {
+        queued: 'Queued',
+        running: roundedPercent > 1 ? `Running ${roundedPercent}%` : 'Starting',
+        waiting: 'Waiting for input',
+        completed: 'Completed',
+        failed: 'Stopped',
+    };
+    elements.submissionJobStatus.dataset.state = normalized;
+    elements.submissionJobStatusLabel.textContent = labels[normalized] || 'Running';
+}
+
+function hideSubmissionView() {
+    document.body.classList.remove('submission-view');
+    elements.submissionSection?.classList.add('hidden');
+}
+
+function showSubmissionView() {
+    if (!elements.submissionSection || !state.sessionId) return;
+    document.body.classList.remove('analysis-running-view', 'results-view');
+    document.body.classList.add('submission-view');
+    elements.heroSection?.classList.add('hidden');
+    elements.inputSection?.classList.add('hidden');
+    elements.chatSection?.classList.add('hidden');
+    elements.resultsSection?.classList.add('hidden');
+    const historySection = document.getElementById('history-section');
+    const docsSection = document.getElementById('docs-section');
+    if (historySection) historySection.style.display = 'none';
+    if (docsSection) docsSection.style.display = 'none';
+
+    elements.submissionJobLabel.textContent = state.activeJobLabel || 'Pathway analysis';
+    elements.submissionGeneCount.textContent = `${state.activeJobGeneCount} ${state.activeJobGeneCount === 1 ? 'gene' : 'genes'}`;
+    elements.submissionRunId.textContent = state.sessionId.slice(0, 8);
+    updateSubmissionStatus('queued', 0);
+    elements.submissionSection.classList.remove('hidden');
+
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    document.querySelector('.nav-link[data-view="analysis"]')?.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    elements.submissionSection.focus({ preventScroll: true });
+}
+
 function backgroundAnalysis() {
     if (!state.isAnalyzing || !state.sessionId) return;
     state.backgrounded = true;
@@ -3500,6 +3678,7 @@ function showActiveJob() {
     }
     if (!state.sessionId || !state.isAnalyzing) return;
     state.backgrounded = false;
+    hideSubmissionView();
     document.body.classList.add('analysis-running-view');
     document.body.classList.remove('results-view');
     elements.heroSection?.classList.add('hidden');
@@ -3535,6 +3714,7 @@ function updateAnalysisProgress(progress = {}, status = 'running', waitingForUse
         );
     }
     elements.analysisProgress.dataset.state = progressState;
+    updateSubmissionStatus(progressState, percent);
     if (state.backgrounded) updateActiveJobBanner();
     const workflowStep = percent >= 82 ? 'interpret'
         : percent >= 58 ? 'rank'
@@ -4460,6 +4640,7 @@ function hydrateReasoningTraces(entries) {
 function showResults(results) {
     if (!results) return;
 
+    hideSubmissionView();
     state.isAnalyzing = false;
     state.backgrounded = false;
     state.backgroundResults = null;
@@ -4517,13 +4698,10 @@ function showResults(results) {
 }
 
 function hideResultsView() {
-    document.body.classList.remove('analysis-running-view');
-    document.body.classList.remove('results-view');
-    elements.resultsSection.classList.add('hidden');
-    elements.heroSection?.classList.remove('hidden');
-    elements.inputSection?.classList.remove('hidden');
-    elements.chatSection?.classList.add('hidden');
-    setActiveWorkflowStep('input');
+    // History hides the homepage with both the `hidden` class and inline
+    // `display: none` styles. Use the canonical view transition so returning
+    // from a saved result restores every section and the URL consistently.
+    showAnalysisView();
 }
 
 function renderMetricCards(pathways, results) {
@@ -6263,7 +6441,7 @@ function renderExternalEvidenceGenes(pathway) {
                 <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
             </summary>
             <div class="external-evidence-body">
-                <p class="external-evidence-scope">Gene mentions extracted from the linked pathway–disease literature but absent from the submitted gene list and its pathway intersection. They provide supplementary context only and are not used for enrichment, ranking, driver selection or functional clusters.</p>
+                <p class="external-evidence-scope">Gene mentions extracted from the linked pathway-disease literature but absent from the submitted gene list and its pathway intersection. They provide supplementary context only and are not used for enrichment, ranking, driver selection or functional clusters.</p>
                 <p class="external-evidence-official-links">
                     <a href="https://www.ncbi.nlm.nih.gov/research/pubtator3/" target="_blank" rel="noopener">NCBI PubTator3</a>
                     identifies literature mentions; gene symbols link to
@@ -7455,6 +7633,7 @@ function downloadExportBlob(blob, filename) {
 let historyData = [];
 
 function showHistoryPanel() {
+    hideSubmissionView();
     closeHomepageExamplePopovers();
     const analysisOptions = document.querySelector('.analysis-options');
     if (analysisOptions) analysisOptions.open = false;
@@ -7498,6 +7677,7 @@ function showHistoryPanel() {
 window.showHistoryPanel = showHistoryPanel;
 
 function showAnalysisView({ preserveActiveJob = false } = {}) {
+    hideSubmissionView();
     closeHomepageExamplePopovers();
     if (state.isAnalyzing && state.sessionId) {
         state.backgrounded = true;
@@ -7505,6 +7685,12 @@ function showAnalysisView({ preserveActiveJob = false } = {}) {
         saveActiveJobState('running');
     }
     const url = new URL(window.location.href);
+    const returningFromHistoryRun = url.searchParams.has('run');
+    if (returningFromHistoryRun) {
+        url.searchParams.delete('run');
+        url.hash = '';
+        window.history.replaceState(null, '', `${url.pathname}${url.search}`);
+    }
     const returningFromCompletedExample = url.searchParams.get('demo') === '1';
     if (returningFromCompletedExample) {
         url.searchParams.delete('demo');
@@ -7620,9 +7806,9 @@ function renderHistoryTable(entries) {
                 <td>${createdDate}</td>
                 <td><span class="history-status ${statusClass}">${statusLabel}</span></td>
                 <td class="history-actions">
-                    ${entry.status === 'completed' ? `<button class="history-action-btn view-btn" onclick="viewHistoryEntry('${entry.session_id}')">View</button>` : ''}
-                    <button class="history-action-btn rerun-btn" onclick="rerunHistoryEntry('${entry.session_id}')">Re-run</button>
-                    <button class="history-action-btn delete-btn" onclick="deleteHistoryEntry('${entry.session_id}')">Delete</button>
+                    ${['queued', 'running', 'completed'].includes(entry.status) ? `<button class="history-action-btn view-btn" onclick="viewHistoryEntry('${entry.session_id}')">${entry.status === 'completed' ? 'View' : 'Open'}</button>` : ''}
+                    ${['queued', 'running'].includes(entry.status) ? '' : `<button class="history-action-btn rerun-btn" onclick="rerunHistoryEntry('${entry.session_id}')">Re-run</button>`}
+                    ${['queued', 'running'].includes(entry.status) ? '' : `<button class="history-action-btn delete-btn" onclick="deleteHistoryEntry('${entry.session_id}')">Delete</button>`}
                 </td>
             </tr>
         `;
@@ -7670,6 +7856,27 @@ async function viewHistoryEntry(sessionId) {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         const analysisLink = document.querySelector('.nav-link[data-view="analysis"]');
         if (analysisLink) analysisLink.classList.add('active');
+
+        if (data.status === 'queued' || data.status === 'running') {
+            state.sessionId = sessionId;
+            state.isAnalyzing = true;
+            state.backgrounded = false;
+            state.backgroundResults = null;
+            state.restoredFromSession = true;
+            state.analysisStartedAt = data.created_at ? new Date(data.created_at).getTime() : Date.now();
+            state.activeJobLabel = data.disease_name || data.disease || 'Pathway analysis';
+            state.activeJobGeneCount = data.gene_count || data.genes?.length || 0;
+            state.interactiveQuestions = data.interactive_questions === true;
+            state.lastMessageCount = 0;
+            if (elements.chatMessages) elements.chatMessages.replaceChildren();
+            saveActiveJobState('running');
+            updateProgressModeCopy();
+            showActiveJob();
+            updateMessages(data.messages || []);
+            updateAnalysisProgress(data.progress || {}, data.status, data.waiting_for_user === true);
+            startPolling();
+            return;
+        }
 
         if (data.results) {
             window.currentSessionId = sessionId;
@@ -7764,6 +7971,7 @@ function getDocumentationHashId() {
 }
 
 function showDocsPanel(requestedDocId = '') {
+    hideSubmissionView();
     document.body.classList.remove('analysis-running-view');
     document.body.classList.remove('results-view');
     hideProductTour({ followContinuation: false });

@@ -71,6 +71,37 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn("result", payload)
         self.assertGreater(len(payload["result"]["pathways"]), 0)
 
+    def test_running_analysis_is_available_from_history_and_can_be_reopened(self):
+        active = server.AnalysisSession(
+            "active-session-1234",
+            ["APOE", "TREM2", "PSEN1"],
+            "AD",
+        )
+        active.status = "running"
+        active.interactive_questions = True
+        active.set_progress(37, "Validating pathways", "Checking enrichment support.")
+        server.sessions[active.session_id] = active
+
+        listing = self.client.get("/api/history")
+        self.assertEqual(listing.status_code, 200)
+        entry = next(
+            item for item in listing.get_json()["history"]
+            if item["session_id"] == active.session_id
+        )
+        self.assertEqual(entry["status"], "running")
+        self.assertEqual(entry["gene_count"], 3)
+
+        detail = self.client.get(f"/api/history/{active.session_id}")
+        self.assertEqual(detail.status_code, 200)
+        payload = detail.get_json()
+        self.assertTrue(payload["interactive_questions"])
+        self.assertEqual(payload["progress"]["percent"], 37)
+        self.assertEqual(payload["gene_count"], 3)
+
+        with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:
+            javascript = source.read()
+        self.assertIn("entry.status === 'completed' ? 'View' : 'Open'", javascript)
+
     def test_index_does_not_ship_reference_data_as_javascript(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
@@ -145,8 +176,11 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn('<option value="" selected>Select a disease or phenotype</option>', html)
         self.assertIn('class="analysis-shared-resources"', html)
         self.assertIn('aria-label="Example inputs and finished results"', html)
-        self.assertIn('class="analysis-example-label">Examples<', html)
-        self.assertIn('Load disease and genes', html)
+        self.assertIn('id="gene-list-primary-example"', html)
+        self.assertIn('More examples', html)
+        self.assertIn('Enter or upload genes', html)
+        self.assertIn('Import from Open Targets', html)
+        self.assertIn('id="disease-clear-button"', html)
         self.assertIn('aria-label="Finished example results"', html)
         self.assertIn('>View finished results ', html)
         self.assertNotIn('>Load example data<', html)
@@ -158,6 +192,8 @@ class ServerLimitTests(unittest.TestCase):
         self.assertIn('id="featured-examples"', html)
         self.assertIn('id="open-targets-limit-input" min="25"', html)
         self.assertNotIn('id="open-targets-limit-input" min="25" max=', html)
+        self.assertIn('id="submission-section"', html)
+        self.assertIn('id="submission-job-center-link"', html)
         response.close()
 
         with open(os.path.join(os.path.dirname(__file__), "app.js"), encoding="utf-8") as source:

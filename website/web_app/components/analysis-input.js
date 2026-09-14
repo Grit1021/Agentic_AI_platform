@@ -87,19 +87,75 @@
                     <section class="input-workspace-group input-workspace-group--genes" aria-labelledby="gene-input-heading">
                         <div class="input-workspace-heading">
                             <h3 id="gene-input-heading">Input genes</h3>
+                            <p class="gene-import-guidance">Choose either method to build the same gene list.</p>
                         </div>
 
-                        <div class="gene-query-panel">
-                            <div class="gene-query-heading">
-                                <label for="gene-input" class="input-label">Gene list</label>
-                                <div class="gene-query-actions">
+                        <div class="gene-import-source-grid" aria-label="Gene import methods">
+                            <section class="gene-import-method gene-import-method--list" aria-labelledby="gene-list-import-title">
+                                <div class="gene-import-method-header">
+                                    <span class="gene-import-method-icon" aria-hidden="true">
+                                        <svg class="ph" focusable="false"><use href="#ph-file-text"></use></svg>
+                                    </span>
+                                    <div class="gene-import-method-copy">
+                                        <strong id="gene-list-import-title" class="gene-import-method-title">Enter or upload genes</strong>
+                                        <p>Paste identifiers into the shared list below, or upload a TXT, CSV or TSV file.</p>
+                                    </div>
+                                </div>
+                                <div class="gene-query-actions" aria-label="Gene list import actions">
                                     <button type="button" id="upload-gene-list-btn" class="gene-query-action">Upload list</button>
                                     <a class="gene-query-action gene-query-action--download" href="examples/gene_list_examples.zip" download>
                                         <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-download-simple"></use></svg> Example files
                                     </a>
-                                    <button type="button" id="clear-genes-btn" class="gene-query-action gene-query-action--clear hidden">Clear</button>
                                     <input type="file" id="gene-file-input" accept=".txt,.csv,.tsv,text/plain,text/csv" hidden />
                                 </div>
+                            </section>
+
+                            <section class="open-targets-gene-import gene-import-method" aria-labelledby="open-targets-gene-import-title">
+                                <div class="gene-import-method-header">
+                                    <span class="gene-import-method-icon" aria-hidden="true">
+                                        <svg class="ph" focusable="false"><use href="#ph-database"></use></svg>
+                                    </span>
+                                    <div class="gene-import-method-copy">
+                                        <div class="gene-import-method-title-row">
+                                            <strong id="open-targets-gene-import-title" class="gene-import-method-title">Import from Open Targets</strong>
+                                            <a class="open-targets-method-link" href="https://platform-docs.opentargets.org/associations" target="_blank" rel="noopener">
+                                                <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-info"></use></svg>
+                                                <span>Scoring</span>
+                                                <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg>
+                                            </a>
+                                        </div>
+                                        <p>Select a disease above, then add its highest-ranked associated genes to the shared list.</p>
+                                    </div>
+                                </div>
+                                <div class="open-targets-gene-import-controls">
+                                    <label for="open-targets-limit-input">Number of genes (minimum 25)</label>
+                                    <div class="open-targets-import-control-row">
+                                        <div class="open-targets-limit-row">
+                                            <input type="number" id="open-targets-limit-input" min="25" step="1" value="100" inputmode="numeric" />
+                                            <div class="open-targets-limit-presets" aria-label="Common gene counts">
+                                                <button type="button" data-open-targets-preset="100">100</button>
+                                                <button type="button" data-open-targets-preset="150">150</button>
+                                                <button type="button" data-open-targets-preset="200">200</button>
+                                            </div>
+                                        </div>
+                                        <div class="open-targets-gene-import-actions">
+                                            <button type="button" id="open-targets-import-button" class="open-targets-gene-import-button" disabled>Import genes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="open-targets-gene-import-status" class="open-targets-gene-import-status hidden" aria-live="polite"></div>
+                            </section>
+                        </div>
+
+                        <div class="gene-query-panel gene-shared-list">
+                            <div class="gene-shared-list-heading">
+                                <div class="gene-shared-list-copy">
+                                    <label for="gene-input" class="input-label">Selected gene list</label>
+                                    <small>Both import methods update this list. You can edit it at any time.</small>
+                                </div>
+                                <button type="button" id="clear-genes-btn" class="gene-query-action gene-query-action--clear hidden">
+                                    <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-x"></use></svg> Clear
+                                </button>
                             </div>
                             <div class="gene-query-editor">
                                 <textarea
@@ -122,30 +178,6 @@
                                 <span id="gene-input-quality" class="visually-hidden">Whitespace, comma or newline separated</span>
                             </div>
                         </div>
-
-                        <div class="open-targets-gene-import" aria-labelledby="open-targets-gene-import-title">
-                            <div class="open-targets-gene-import-copy">
-                                <strong id="open-targets-gene-import-title">Import disease-associated genes</strong>
-                                <p>Open Targets ranks gene-disease associations with an overall score from 0 to 1, combining weighted evidence across data sources. It is a ranking score, not a probability.</p>
-                                <a href="https://platform-docs.opentargets.org/associations" target="_blank" rel="noopener">How the score is calculated <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-arrow-up-right"></use></svg></a>
-                            </div>
-                            <div class="open-targets-gene-import-controls">
-                                <label for="open-targets-limit-input">Number of genes (minimum 25)</label>
-                                <div class="open-targets-limit-row">
-                                    <input type="number" id="open-targets-limit-input" min="25" step="1" value="100" inputmode="numeric" />
-                                    <div class="open-targets-limit-presets" aria-label="Common gene counts">
-                                        <button type="button" data-open-targets-preset="100">100</button>
-                                        <button type="button" data-open-targets-preset="150">150</button>
-                                        <button type="button" data-open-targets-preset="200">200</button>
-                                    </div>
-                                </div>
-                                <div class="open-targets-gene-import-actions">
-                                    <button type="button" id="open-targets-import-button" class="open-targets-gene-import-button" disabled>Import genes</button>
-                                    <button type="button" id="clear-open-targets-import-button" class="gene-query-action gene-query-action--clear hidden">Clear import</button>
-                                </div>
-                            </div>
-                            <div id="open-targets-gene-import-status" class="open-targets-gene-import-status hidden" aria-live="polite"></div>
-                        </div>
                     </section>
 
                     <section class="input-workspace-group input-workspace-group--disease" aria-labelledby="disease-context-heading">
@@ -167,6 +199,15 @@
                                     aria-expanded="false"
                                     aria-controls="disease-suggestions"
                                 />
+                                <button
+                                    type="button"
+                                    id="disease-clear-button"
+                                    class="disease-clear-button hidden"
+                                    aria-label="Clear disease or phenotype"
+                                    title="Clear disease or phenotype"
+                                >
+                                    <svg class="ph" aria-hidden="true" focusable="false"><use href="#ph-x"></use></svg>
+                                </button>
                                 <div id="disease-suggestions" class="disease-suggestions hidden" role="listbox"></div>
                             </div>
                             <p id="disease-input-error" class="input-validation-error hidden" role="alert"></p>
@@ -185,14 +226,22 @@
                     </section>
 
                     <section class="analysis-shared-resources" aria-label="Example inputs and finished results">
-                            <strong class="analysis-example-label">Examples</strong>
                             <div class="gene-list-loader">
                                 <div class="gene-list-loader-header">
+                                    <button type="button" class="gene-list-primary-example" id="gene-list-primary-example" data-disease="AD" onclick="loadHomepageGeneListExample(this.dataset.disease, this)" disabled>
+                                        <span class="gene-list-primary-prefix">Example:</span>
+                                        <strong data-example-name>Alzheimer's disease</strong>
+                                        <span class="gene-list-primary-count" data-example-count></span>
+                                    </button>
                                     <button type="button" class="gene-list-toggle-btn" id="gene-list-toggle" aria-expanded="false" aria-controls="gene-list-panel" onclick="toggleGeneListPanel()">
-                                        Load disease and genes <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
+                                        More examples <svg class="ph ph-xs" aria-hidden="true" focusable="false"><use href="#ph-caret-down"></use></svg>
                                     </button>
                                 </div>
-                                <div class="gene-list-panel hidden" id="gene-list-panel">
+                                <div class="gene-list-panel hidden" id="gene-list-panel" aria-label="More input examples">
+                                    <div class="gene-list-example-menu" id="gene-list-example-menu">
+                                        <p class="gene-list-example-empty">Loading input examples...</p>
+                                    </div>
+                                    <div class="gene-list-legacy-controls" hidden>
                                     <div class="gene-list-selectors">
                                         <div class="gene-list-select-group">
                                             <label class="input-label" for="gene-list-disease-select">Disease and gene example</label>
@@ -215,6 +264,7 @@
                                             <span class="gene-list-meta-value" id="gene-list-count"></span>
                                         </div>
                                         <button type="button" class="gene-list-load-btn" id="gene-list-load-btn" onclick="loadSelectedGeneList()">Load disease and genes</button>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

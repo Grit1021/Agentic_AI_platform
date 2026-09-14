@@ -160,6 +160,7 @@ CACHE_BUSTED_ASSETS = (
     'components/site-header.js',
     'components/workflow-navigation.js',
     'components/analysis-input.js',
+    'components/submission-confirmation.js',
     'components/analysis-runtime.js',
     'components/analysis-results.js',
     'components/run-history.js',
@@ -1724,6 +1725,7 @@ class AnalysisSession:
         return {
             "session_id": self.session_id,
             "genes": self.genes,
+            "gene_count": len(self.genes),
             "disease": self.disease,
             "disease_name": self.disease_name,
             "disease_context": self.disease_context,
@@ -1734,6 +1736,12 @@ class AnalysisSession:
             "waiting_for_user": self.waiting_for_user,
             "interactive_questions": self.interactive_questions,
             "progress": progress,
+            "created_at": self.created_at.isoformat(),
+            "completed_at": (
+                datetime.now().isoformat()
+                if self.status in {"completed", "error", "cancelled"}
+                else None
+            ),
             "messages": self.messages,
             "results": self.results,
             "real_analysis_available": REAL_ANALYSIS_AVAILABLE
@@ -1791,6 +1799,7 @@ PAGE_FRAGMENT_COMPONENTS = {
     'site-header': 'components/site-header.js',
     'workflow-navigation': 'components/workflow-navigation.js',
     'analysis-input': 'components/analysis-input.js',
+    'submission-confirmation': 'components/submission-confirmation.js',
     'analysis-runtime': 'components/analysis-runtime.js',
     'analysis-results': 'components/analysis-results.js',
     'run-history': 'components/run-history.js',
@@ -6286,6 +6295,14 @@ def get_history():
         h for h in load_history()
         if not AUTH_ENABLED or h.get('owner_id') == owner_id
     ]
+    persisted_ids = {h.get('session_id') for h in history}
+    active_history = [
+        session.to_dict()
+        for session in sessions.values()
+        if session.session_id not in persisted_ids
+        and (not AUTH_ENABLED or session.owner_id == owner_id)
+    ]
+    history = active_history + history
     entries = []
     for h in history:
         entries.append({
@@ -6304,6 +6321,9 @@ def get_history():
 @app.route('/api/history/<session_id>', methods=['GET'])
 def get_history_entry(session_id):
     """Get full details of a history entry."""
+    active_session = get_owned_session(session_id)
+    if active_session:
+        return jsonify(active_session.to_dict())
     owner_id = get_request_owner_id()
     history = load_history()
     for h in history:

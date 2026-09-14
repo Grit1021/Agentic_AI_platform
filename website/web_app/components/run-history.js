@@ -18,6 +18,8 @@
                     <input type="text" id="history-search" class="history-search" placeholder="Search by disease or genes..." oninput="filterHistory()">
                     <select id="history-status-filter" class="filter-select" onchange="filterHistory()">
                         <option value="">All Statuses</option>
+                        <option value="queued">Queued</option>
+                        <option value="running">Running</option>
                         <option value="completed">Completed</option>
                         <option value="error">Error</option>
                     </select>
@@ -47,4 +49,3 @@
         </section>
 `);
 })();
-

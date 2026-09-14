@@ -7542,8 +7542,47 @@ body.results-view .workflow-rail {
 
 .disease-autocomplete-wrapper--primary .disease-custom-input {
     min-height: 48px;
+    padding-right: 46px;
     padding-left: 36px;
     background: #fff;
+}
+
+.disease-clear-button {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    right: 10px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    color: #64748b;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.disease-clear-button .ph {
+    width: 15px;
+    height: 15px;
+}
+
+.disease-clear-button:hover {
+    color: #047857;
+    background: #ecfdf5;
+}
+
+.disease-clear-button:focus-visible {
+    color: #047857;
+    outline: 2px solid rgba(16, 185, 129, 0.42);
+    outline-offset: 1px;
+}
+
+.disease-clear-button:active {
+    transform: translateY(-50%) scale(0.94);
 }
 
 .disease-suggestions {
@@ -14544,5 +14583,773 @@ body:not(.results-view):not(.analysis-running-view) > site-footer {
         min-height: 42px;
         margin-top: 0;
         padding: 9px 20px;
+    }
+}
+
+/* Homepage examples mirror TIGERai: one direct example, then a compact menu. */
+.analysis-shared-resources .gene-list-loader-header {
+    gap: 8px;
+}
+
+.analysis-shared-resources .gene-list-primary-example {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 8px 4px;
+    color: var(--text-primary);
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.analysis-shared-resources .gene-list-primary-prefix {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.analysis-shared-resources .gene-list-primary-example strong {
+    color: var(--accent-dark);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgba(5, 150, 105, 0.32);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.analysis-shared-resources .gene-list-primary-count {
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+.analysis-shared-resources .gene-list-primary-example:hover strong,
+.analysis-shared-resources .gene-list-primary-example:focus-visible strong {
+    color: var(--accent-primary);
+    text-decoration-color: currentColor;
+}
+
+.analysis-shared-resources .gene-list-primary-example:focus-visible,
+.analysis-shared-resources .gene-list-toggle-btn:focus-visible,
+.analysis-shared-resources .gene-list-example-option:focus-visible {
+    outline: 2px solid rgba(16, 185, 129, 0.42);
+    outline-offset: 2px;
+}
+
+.analysis-shared-resources .gene-list-primary-example:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+
+.analysis-shared-resources .gene-list-primary-example.is-loaded,
+.analysis-shared-resources .gene-list-example-option.is-loaded {
+    background: #ecfdf5;
+}
+
+.analysis-shared-resources .gene-list-toggle-btn {
+    width: auto;
+}
+
+.analysis-shared-resources .gene-list-toggle-btn[aria-expanded="true"] {
+    color: #047857;
+    background: #ecfdf5;
+    border-color: #6ee7b7;
+}
+
+.analysis-shared-resources .gene-list-panel {
+    width: min(420px, calc(100vw - 48px));
+    padding: 8px;
+}
+
+.analysis-shared-resources .gene-list-example-menu {
+    display: grid;
+    gap: 3px;
+}
+
+.analysis-shared-resources .gene-list-example-empty {
+    margin: 0;
+    padding: 10px 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    line-height: 1.45;
+}
+
+.analysis-shared-resources .gene-list-example-option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 11px;
+    color: var(--text-primary);
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-radius: 7px;
+    font-family: var(--font-sans);
+    cursor: pointer;
+}
+
+.analysis-shared-resources .gene-list-example-option:hover,
+.analysis-shared-resources .gene-list-example-option:focus-visible {
+    color: var(--accent-dark);
+    background: #f0fdf4;
+}
+
+.analysis-shared-resources .gene-list-example-option strong {
+    overflow: hidden;
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.analysis-shared-resources .gene-list-example-option span {
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+@media (max-width: 620px) {
+    .analysis-shared-resources .gene-list-loader-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .analysis-shared-resources .gene-list-primary-example,
+    .analysis-shared-resources .gene-list-toggle-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .analysis-shared-resources .gene-list-panel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 420px) {
+    .analysis-shared-resources .gene-list-primary-count {
+        display: none;
+    }
+}
+
+/* Analysis submission receipt: a calm handoff from the form to Job Center. */
+body.submission-view .main-content.pathway-app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: clamp(32px, 6vh, 72px);
+    padding-bottom: clamp(40px, 8vh, 96px);
+}
+
+body.submission-view .main-content.pathway-app > .main {
+    display: block;
+    width: min(100%, 1000px);
+    max-width: 1000px;
+    min-height: 0;
+    padding: 0 24px;
+}
+
+body.submission-view .workflow-rail {
+    display: none;
+}
+
+body.submission-view .main-workspace {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+
+.submission-section {
+    width: 100%;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.pathway-app .submission-section:focus,
+.pathway-app .submission-section:focus-visible {
+    outline: none;
+}
+
+.submission-receipt {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.submission-success-mark {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 18px;
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(5, 150, 105, 0.1);
+}
+
+.submission-success-mark .ph {
+    width: 28px;
+    height: 28px;
+}
+
+.submission-kicker {
+    margin: 0 0 8px;
+    color: #047857;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.submission-section h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: -0.025em;
+}
+
+.submission-intro {
+    max-width: 650px;
+    margin: 12px auto 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.65;
+}
+
+.submission-job-summary {
+    display: grid;
+    grid-template-columns: 0.8fr minmax(180px, 1.6fr) 0.7fr 0.9fr;
+    width: min(100%, 800px);
+    margin: 30px auto 0;
+    padding: 15px 0;
+    text-align: left;
+    border-top: 1px solid #dbe4ea;
+    border-bottom: 1px solid #dbe4ea;
+}
+
+.submission-job-summary > div {
+    min-width: 0;
+    padding: 0 18px;
+    border-right: 1px solid #e7edf1;
+}
+
+.submission-job-summary > div:last-child {
+    border-right: 0;
+}
+
+.submission-job-summary dt {
+    margin-bottom: 5px;
+    color: #64748b;
+    font-family: var(--font-sans);
+    font-size: 0.64rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.submission-job-summary dd {
+    overflow: hidden;
+    margin: 0;
+    color: #1e293b;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.submission-job-summary code {
+    color: #475569;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+}
+
+.submission-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #047857;
+}
+
+.submission-status > span[aria-hidden="true"] {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.submission-status[data-state="waiting"] {
+    color: #a16207;
+}
+
+.submission-status[data-state="waiting"] > span[aria-hidden="true"] {
+    background: #eab308;
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.14);
+}
+
+.submission-status[data-state="completed"] {
+    color: #047857;
+}
+
+.submission-status[data-state="failed"] {
+    color: #b91c1c;
+}
+
+.submission-status[data-state="failed"] > span[aria-hidden="true"] {
+    background: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.submission-next-label {
+    margin: 30px 0 12px;
+    color: #475569;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 650;
+}
+
+.submission-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.submission-action {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 14px;
+    min-height: 112px;
+    padding: 20px;
+    color: #1e293b;
+    text-align: left;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #dbe4ea;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+button.submission-action {
+    width: 100%;
+    font-family: inherit;
+}
+
+.submission-action--jobs {
+    background: #f0fdf7;
+    border-color: #a7e8ce;
+}
+
+.submission-action:hover,
+.submission-action:focus-visible {
+    color: #065f46;
+    border-color: #6ee7b7;
+    box-shadow: 0 12px 30px rgba(5, 150, 105, 0.11);
+    transform: translateY(-2px);
+}
+
+.submission-action:active {
+    transform: translateY(0) scale(0.99);
+}
+
+.submission-action-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+}
+
+.submission-action-icon .ph {
+    width: 20px;
+    height: 20px;
+}
+
+.submission-action-copy {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.submission-action-copy strong {
+    color: #172033;
+    font-size: 0.92rem;
+    line-height: 1.3;
+}
+
+.submission-action-copy small {
+    color: #64748b;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 500;
+    line-height: 1.45;
+}
+
+.submission-action-arrow {
+    width: 17px;
+    height: 17px;
+    color: #94a3b8;
+    transition: transform 160ms ease;
+}
+
+.submission-action:hover .submission-action-arrow,
+.submission-action:focus-visible .submission-action-arrow {
+    color: #059669;
+    transform: translateX(2px);
+}
+
+.submission-note {
+    margin: 18px auto 0;
+    color: #64748b;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+    body.submission-view .main-content.pathway-app {
+        align-items: flex-start;
+        padding-top: 36px;
+        padding-bottom: 56px;
+    }
+
+    body.submission-view .main-content.pathway-app > .main {
+        padding: 0;
+    }
+
+    .submission-job-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 16px;
+    }
+
+    .submission-job-summary > div:nth-child(2) {
+        border-right: 0;
+    }
+
+    .submission-job-summary > div:nth-child(n + 3) {
+        padding-top: 15px;
+        border-top: 1px solid #e7edf1;
+    }
+
+    .submission-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 420px) {
+    .submission-action {
+        grid-template-columns: 38px minmax(0, 1fr) 16px;
+        gap: 11px;
+        min-height: 104px;
+        padding: 17px;
+    }
+
+    .submission-action-icon {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .submission-action,
+    .submission-action-arrow {
+        transition: none;
+    }
+}
+/* ---------------------------------------------------------------------------
+   Parallel gene import methods. Both cards write to the same selected-gene
+   state, so they share one hierarchy and equal visual weight.
+   --------------------------------------------------------------------------- */
+.analysis-context-grid > .input-workspace-group--genes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+}
+
+.input-workspace-group--genes > .input-workspace-heading {
+    display: grid;
+    gap: 3px;
+}
+
+.gene-import-guidance {
+    display: block !important;
+    margin: 0;
+    color: #64748b;
+    font-size: 0.7rem;
+    line-height: 1.4;
+}
+
+.gene-import-source-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.gene-import-source-grid > .gene-import-method {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #dbe4ee;
+    border-radius: 11px;
+    box-shadow: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.gene-import-source-grid > .gene-import-method:focus-within {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.08);
+}
+
+.gene-import-method-header {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 9px;
+}
+
+.gene-import-method-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #d1fae5;
+    border-radius: 8px;
+}
+
+.gene-import-method-icon .ph {
+    width: 17px;
+    height: 17px;
+}
+
+.gene-import-method-copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.gene-import-method-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gene-import-method-title {
+    margin: 0;
+    color: #0f172a;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 750;
+    line-height: 1.35;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.gene-import-method-copy p {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.69rem;
+    line-height: 1.4;
+}
+
+.gene-import-method--list .gene-query-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: auto;
+}
+
+.gene-query-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-height: 32px;
+    padding: 6px 10px;
+}
+
+.gene-query-action--clear {
+    margin-left: auto;
+}
+
+.gene-shared-list {
+    min-width: 0;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+    border-radius: 11px;
+}
+
+.gene-shared-list:focus-within {
+    background: #ffffff;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.08);
+}
+
+.gene-shared-list-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.gene-shared-list-copy {
+    display: grid;
+    gap: 2px;
+}
+
+.gene-shared-list-copy small {
+    color: #64748b;
+    font-size: 0.67rem;
+    line-height: 1.4;
+}
+
+.gene-shared-list .gene-query-textarea {
+    min-height: 104px;
+    margin-top: 0;
+    background: #ffffff;
+}
+
+.gene-import-source-grid > .open-targets-gene-import {
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid #dbe4ee;
+}
+
+.open-targets-method-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    min-height: 26px;
+    margin: 0;
+    padding: 4px 7px;
+    color: #047857;
+    background: #f0fdf9;
+    border: 1px solid #cceee2;
+    border-radius: 7px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.open-targets-method-link:hover,
+.open-targets-method-link:focus-visible {
+    color: #065f46;
+    background: #ecfdf5;
+    border-color: #10b981;
+    text-decoration: none;
+}
+
+.open-targets-method-link:focus-visible {
+    outline: 2px solid rgba(5, 150, 105, 0.22);
+    outline-offset: 2px;
+}
+
+.open-targets-gene-import-controls {
+    margin-top: auto;
+}
+
+.open-targets-import-control-row {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(120px, 1fr);
+    align-items: stretch;
+    gap: 8px;
+}
+
+.open-targets-import-control-row .open-targets-limit-row {
+    flex-wrap: nowrap;
+}
+
+.open-targets-import-control-row #open-targets-limit-input {
+    width: 72px;
+}
+
+.open-targets-import-control-row .open-targets-limit-presets button {
+    min-width: 36px;
+}
+
+.open-targets-gene-import-actions {
+    align-items: stretch;
+}
+
+.open-targets-import-control-row .open-targets-gene-import-button {
+    width: 100%;
+    height: 100%;
+}
+
+.open-targets-gene-import-actions .gene-query-action--clear {
+    margin-left: 0;
+}
+
+@media (max-width: 900px) {
+    .gene-import-source-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .gene-import-source-grid > .gene-import-method,
+    .gene-import-source-grid > .open-targets-gene-import {
+        height: auto;
+        padding: 12px;
+        border: 1px solid #dbe4ee;
+    }
+}
+
+@media (max-width: 520px) {
+    .gene-import-method-header {
+        grid-template-columns: 30px minmax(0, 1fr);
+    }
+
+    .gene-import-method-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    .gene-import-method-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .gene-query-action--clear {
+        margin-left: 0;
+    }
+
+    .open-targets-import-control-row {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
