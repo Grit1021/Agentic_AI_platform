@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agentic AI framework for interpretable biological pathway discovery</title>
-<meta name="description" content="An LLM multi-agent system that turns a gene list and disease into statistically validated, biologically meaningful, and interpretable pathways.">
+<title>Agentic AI framework for interpretable biological pathway discovery of disease-associated genes</title>
+<meta name="description" content="An LLM multi-agent system that turns a gene list and disease into statistically validated pathways with pathway-level cell/tissue context and interpretable biological evidence.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:ital,opt@0,7..72;1,7..72&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -321,7 +321,7 @@
       <span class="tag">Cell-type anchoring</span>
       <span class="tag">Cross-disease memory</span>
     </div>
-    <h1 class="reveal">A reliable agentic AI framework for interpretable biological pathway discovery</h1>
+    <h1 class="reveal">A reliable agentic AI framework for interpretable biological pathway discovery of disease-associated genes</h1>
     <p class="sub reveal">A closed-loop, agentic framework for statistically grounded, LLM-driven pathway analysis. The LLM becomes reliable only when its reasoning is constrained by <b>statistical validation</b>, <b>explicit feedback</b>, and <b>biological context</b> — yielding pathways that are statistically validated and biologically meaningful.</p>
     <div class="cta reveal">
       <a class="btn primary" href="#example">Explore the walkthrough
@@ -331,7 +331,7 @@
     </div>
     <div class="meta reveal">
       <span><b>Input</b> — gene module + disease</span>
-      <span><b>Output</b> — validated, ranked, interpreted pathways</span>
+      <span><b>Output</b> — validated pathways with pathway-level cell/tissue context</span>
       <span><b>Self-correcting</b> — feedback-guided refinement</span>
     </div>
   </div>
@@ -353,7 +353,7 @@
     <figure class="figure-card reveal" style="margin-bottom:0">
       <img src="assets/figure1.png" alt="Figure 1 — the agentic framework overview and its three functional stages (panels A–D)" id="fig1">
       <figcaption class="figure-cap">
-        <span><b>Figure 1.</b> Framework overview (A) and its three stages — input &amp; hypothesis generation (B), statistical validation &amp; biological ranking (C), structured interpretation &amp; output (D).</span>
+        <span><b>Figure 1.</b> Framework overview (A) and its three stages — input &amp; initial hypothesis generation (B), statistical validation &amp; biological ranking (C), and structured interpretation &amp; output, including pathway-level cell/tissue context (D).</span>
         <a class="dl" href="assets/figure1.pdf" target="_blank" rel="noopener">Download PDF ↓</a>
       </figcaption>
     </figure>
@@ -371,7 +371,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg>
         </div>
         <h3>Anchored in biology</h3>
-        <p>Validated pathways are ranked by biological evidence, tied to cell and tissue context, and informed by a cross-disease memory bank that transfers recurrent patterns.</p>
+        <p>After FDR validation, every retained pathway is mapped to a disease-relevant cell/tissue context using its pathway biology and intersection genes, with targeted PubMed support where available.</p>
       </div>
       <div class="card reveal">
         <div class="ic" style="background:#fdeceb;color:var(--red)">
@@ -385,7 +385,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
         </div>
         <h3>Transparent reasoning</h3>
-        <p>Reasoning-path decomposition turns the model's reasoning path into structured insights: driver genes, cell/tissue context, mechanistic themes.</p>
+        <p>Each validated pathway keeps its context and provenance; highlighted pathways also receive detailed driver-gene and mechanistic interpretation.</p>
       </div>
     </div>
   </div>
@@ -578,9 +578,10 @@
         <div class="panel-head">
           <div class="badge" style="background:var(--purple)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a2 2 0 100-4 2 2 0 000 4zM4 11a2 2 0 100-4 2 2 0 000 4zM12 20a2 2 0 100-4 2 2 0 000 4z"/><path d="M12 16v-3a4 4 0 014-4M12 13a4 4 0 00-4-4"/></svg></div>
           <div>
-            <h3>Interpretation Agent — reasoning-path decomposition</h3>
-            <div class="role">Beyond the pathway level, the agent decomposes the unstructured reasoning path into structured insights, extracting the biology that connects the ranked pathways.</div>
+            <h3>Interpretation Agent — pathway-level context and reasoning-path decomposition</h3>
+            <div class="role">After FDR validation, every retained pathway receives a pathway-specific cell/tissue context derived from the pathway and its intersection genes. Targeted PubMed retrieval links matching disease–cell–gene evidence; highlighted pathways also receive detailed driver-gene and mechanistic interpretation.</div>
             <div class="mods">
+              <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/website/web_app/cell_context.py" target="_blank" rel="noopener">website/web_app/cell_context.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/predictor.py" target="_blank" rel="noopener">predictor.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/backend/reasoning_parser.py" target="_blank" rel="noopener">backend/reasoning_parser.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/prompts/reasoning_audit.py" target="_blank" rel="noopener">prompts/reasoning_audit.py</a>
@@ -610,7 +611,7 @@
           <div class="badge" style="background:var(--ink)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/><path d="M9 13h6M9 17h4"/></svg></div>
           <div>
             <h3>Output — pathways &amp; biological interpretations</h3>
-            <div class="role">Statistically validated and biologically meaningful pathways, aggregated across modules, each with a reasoning trace and a structured interpretation.</div>
+            <div class="role">All statistically validated pathways remain available in the result, each with post-validation cell/tissue context and provenance; a balanced highlighted subset also carries detailed narrative interpretation.</div>
             <div class="mods">
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/report.py" target="_blank" rel="noopener">report.py</a>
               <a class="chip" href="https://github.com/Grit1021/Agentic_AI_platform/blob/main/visualization.py" target="_blank" rel="noopener">visualization.py</a>
@@ -695,7 +696,7 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
         <tr><td class="agent">✅ Statistical Validation</td><td>Formal g:Profiler enrichment test; writes matched / FDR / nominal contract</td><td><code>agents/statistical_validation_agent.py</code></td></tr>
         <tr><td class="agent">🔁 Feedback</td><td>Analyzes failure cases to refine the generation prompt between iterations</td><td><code>agents/feedback_agent.py</code>, <code>prompts/feedback.py</code></td></tr>
         <tr><td class="agent">📊 Biological Ranking</td><td>Ranks validated pathways within each functional source by synthesizing five evidence sources</td><td><code>agents/biological_ranking_agent.py</code></td></tr>
-        <tr><td class="agent">🧩 Interpretation</td><td>Decomposes the reasoning path into structured cross-pathway insights</td><td><code>predictor.py</code>, <code>backend/reasoning_parser.py</code></td></tr>
+        <tr><td class="agent">🧩 Interpretation</td><td>Adds post-validation, pathway-level cell/tissue context to every supported pathway and detailed narratives to highlighted pathways</td><td><code>website/web_app/cell_context.py</code>, <code>predictor.py</code>, <code>backend/reasoning_parser.py</code></td></tr>
       </tbody>
     </table>
 
@@ -708,6 +709,7 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
       <div class="trow"><code>framework.py</code><span>Iterative framework wired to the feedback agent</span></div>
       <div class="trow"><code>predictor.py</code><span>Hypothesis generation + reasoning-audit traces</span></div>
       <div class="trow"><code>llm_client.py</code><span>LLM client + disk cache</span></div>
+      <div class="trow"><code>website/web_app/cell_context.py</code><span>Post-validation pathway-level cell/tissue context and mapped PubMed evidence</span></div>
       <div class="trow"><code>report.py</code><span>Summary report generation</span></div>
       <div class="trow"><code>visualization.py</code><span>Validation &amp; category plots</span></div>
       <div class="tgroup">Directories</div>
@@ -749,7 +751,7 @@ python -m refined.orchestrator <span class="f">--disease</span> <span class="s">
       <button class="copy" data-copy="bib" style="top:16px">Copy</button>
       <pre id="bib"><span class="c">@article</span>{AUTHOR_YEAR_agentic_pathways,
   title   = {A reliable agentic AI framework for interpretable
-             biological pathway discovery},
+             biological pathway discovery of disease-associated genes},
   author  = {[Authors]},
   journal = {[Journal / Preprint]},
   year    = {[Year]},

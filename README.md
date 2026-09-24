@@ -1,4 +1,4 @@
-<h1 align="center">A reliable agentic AI framework for interpretable biological pathway discovery</h1>
+<h1 align="center">A reliable agentic AI framework for interpretable biological pathway discovery of disease-associated genes</h1>
 
 <p align="center">
   <em>An LLM multi-agent system that turns a gene list + disease into statistically validated,
@@ -23,7 +23,7 @@
   <img src="assets/figure1.png" alt="Figure 1 — framework overview (panels A–D)" width="100%">
 </p>
 
-<p align="center"><sub><b>Figure 1.</b> Overview of the agentic framework (A) and its three functional stages: input &amp; hypothesis generation (B), statistical validation &amp; biological ranking (C), and structured interpretation &amp; output (D).</sub></p>
+<p align="center"><sub><b>Figure 1.</b> Overview of the agentic framework (A) and its three functional stages: input &amp; initial hypothesis generation (B), statistical validation &amp; biological ranking (C), and structured interpretation &amp; output, including pathway-level cell/tissue context (D).</sub></p>
 
 > **Before publishing.** Fill in the [Authors] and paper-link ([arXiv / DOI]) placeholders. The GitHub and Pages URLs are already set.
 
@@ -39,7 +39,8 @@ Given a **disease** and a **module of genes**, the system:
 2. **Validates** every hypothesis with a formal g:Profiler enrichment test (FDR control).
 3. **Learns from failures** — a feedback agent analyzes unvalidated hypotheses and refines the generation prompt across iterations.
 4. **Ranks** validated pathways by strength of biological evidence, synthesizing pathway description, disease pathology (NCBI MeSH), intersection genes, enrichment P values, and PubMed literature.
-5. **Interprets** the results, decomposing the reasoning path into structured insights: driver genes, cell/tissue context, and mechanistic themes.
+5. **Interprets** the results after validation: every FDR-supported pathway receives a pathway-level cell/tissue context based on its pathway biology and intersection genes, while highlighted pathways also receive detailed driver-gene and mechanistic interpretation.
+6. **Links context evidence** with targeted PubMed searches that require the disease, displayed cell/tissue labels, and intersection genes to align; provenance is retained with each pathway record.
 
 The output is a set of pathways that are **statistically validated *and* biologically meaningful**, each accompanied by a transparent reasoning trace.
 
@@ -55,7 +56,7 @@ Across a 24-disease benchmark, zero-shot generation validates only 29.0% of non-
 | ✅ **Statistical Validation** | Runs the formal enrichment test and writes the matched / FDR&nbsp;p&lt;0.05 / nominal validation contract | [`agents/statistical_validation_agent.py`](agents/statistical_validation_agent.py) |
 | 🔁 **Feedback** | Analyzes failure cases to refine the hypothesis-generation prompt between iterations | [`agents/feedback_agent.py`](agents/feedback_agent.py) · [`prompts/feedback.py`](prompts/feedback.py) |
 | 📊 **Biological Ranking** | Ranks validated pathways within each category by synthesizing five evidence sources | [`agents/biological_ranking_agent.py`](agents/biological_ranking_agent.py) |
-| 🧩 **Interpretation** | Decomposes the reasoning path into structured, cross-pathway biological insights | [`predictor.py`](predictor.py) · [`backend/reasoning_parser.py`](backend/reasoning_parser.py) |
+| 🧩 **Interpretation** | Adds post-validation, pathway-level cell/tissue context to every supported pathway and detailed driver-gene / mechanistic interpretation to highlighted pathways | [`website/web_app/cell_context.py`](website/web_app/cell_context.py) · [`predictor.py`](predictor.py) · [`backend/reasoning_parser.py`](backend/reasoning_parser.py) |
 
 All agents are coordinated by the [`PipelineOrchestrator`](orchestrator.py) (Phase 1 → Phase 2 iterations → aggregation → finalization).
 
@@ -73,7 +74,7 @@ flowchart TD
     C -->|unvalidated| F["Feedback Agent<br/>analyze failures · refine prompt"]
     F -->|refined prompt| B
     C -->|validated hypotheses| D["Biological Ranking<br/>description · pathology · intersection genes · enrichment P · PubMed"]
-    D -->|validated + ranked| E["Structured Interpretation<br/>driver genes · cell/tissue context · mechanistic themes"]
+    D -->|validated + ranked| E["Structured Interpretation<br/>pathway-level cell/tissue context · driver genes · mechanistic themes"]
     E --> G["Pathways + biological interpretations"]
     classDef io fill:#eef2f8,stroke:#c3ccdb,color:#1c2230
     classDef gen fill:#e9eff7,stroke:#3e5c8a,color:#2c456b
@@ -168,6 +169,7 @@ Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP
 - `final_aggregated_pathways.csv` — ranked, validated pathways across all modules
 - `final_module_metadata.json`
 - `summary_iterative/summary_pathway_ranking.txt`
+- post-validation pathway-level `cell_context`, provenance, and label/gene-mapped PubMed evidence in website/API result records
 - validation / category plots ([`visualization.py`](visualization.py))
 - memory-bank summary + network exports (when enabled)
 
@@ -188,6 +190,7 @@ Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP
 ├── prompts/               # prompt templates (generation, feedback, reasoning audit)
 ├── tools/                 # PubMed, ranking, g:Profiler cache utilities
 ├── backend/               # bundled runtime modules (multi-agent analysis, memory bank)
+├── website/web_app/       # Interactive app, including pathway-level cell-context mapping
 ├── docs/                  # GitHub Pages demo homepage (index.html)
 └── assets/                # Figure 1 (PNG/PDF)
 ```
@@ -204,7 +207,7 @@ Full runs call external services — OpenAI, NCBI/MeSH, PubMed/Entrez, and g:Pro
 
 ```bibtex
 @article{AUTHOR_YEAR_agentic_pathways,
-  title   = {A reliable agentic AI framework for interpretable biological pathway discovery},
+  title   = {A reliable agentic AI framework for interpretable biological pathway discovery of disease-associated genes},
   author  = {[Authors]},
   journal = {[Journal / Preprint]},
   year    = {[Year]},

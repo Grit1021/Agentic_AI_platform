@@ -40,6 +40,62 @@ class MessageSession:
 
 
 class ValidationMetricTests(unittest.TestCase):
+    def test_result_conversion_retains_all_validated_pathways_and_contexts(self):
+        rows = []
+        category_counts = {
+            "GO:BP": 8,
+            "GO:MF": 4,
+            "GO:CC": 4,
+            "KEGG": 4,
+            "REAC": 4,
+        }
+        for category, count in category_counts.items():
+            for index in range(count):
+                rows.append({
+                    "name": f"{category} pathway {index + 1}",
+                    "native": f"{category}:{index + 1}",
+                    "source": category,
+                    "p_value": 0.001 * (index + 1),
+                    "description": f"Description {index + 1}",
+                    "intersections": ["GENE1", "GENE2"],
+                    "intersection_size": 2,
+                    "term_size": 20,
+                    "query_size": 100,
+                    "gpt_rank": index + 1,
+                    "gpt_validated": True,
+                })
+
+        with (
+            patch.object(server.cell_context_module, "attach_cell_context") as attach_context,
+            patch.object(server.cell_context_module, "attach_cell_context_evidence") as attach_context_evidence,
+            patch.object(server, "attach_pathway_narratives") as attach_narratives,
+            patch.object(server.external_evidence, "attach_external_evidence_genes") as attach_external,
+        ):
+            records = server.convert_pathways_to_output_format(
+                pd.DataFrame(rows),
+                "Test disease",
+                input_genes=["GENE1", "GENE2"],
+            )
+
+        self.assertEqual(len(records), 24)
+        self.assertEqual(
+            sum(record["category"] == "GO:BP" for record in records),
+            8,
+        )
+        highlighted = [
+            record for record in records
+            if record["has_detailed_interpretation"]
+        ]
+        self.assertEqual(len(highlighted), 20)
+        self.assertEqual(
+            sum(record["category"] == "GO:BP" for record in highlighted),
+            4,
+        )
+        self.assertEqual(len(attach_context.call_args.args[0]), 24)
+        self.assertEqual(len(attach_context_evidence.call_args.args[0]), 24)
+        self.assertEqual(len(attach_narratives.call_args.args[0]), 20)
+        self.assertEqual(len(attach_external.call_args.args[0]), 20)
+
     def test_iterative_output_attaches_post_fdr_cell_context_and_external_evidence(self):
         pathways = pd.DataFrame([{
             "name": "test pathway",

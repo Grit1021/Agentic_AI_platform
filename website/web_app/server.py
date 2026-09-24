@@ -563,6 +563,11 @@ def extract_pathway_cell_context(value):
     return ''
 
 
+def _pathway_detail_key(source, name):
+    """Keep same-named hypotheses from different databases distinct."""
+    return f'{str(source).strip()}|{str(name).strip().casefold()}'
+
+
 def normalize_pathway_records(pathways):
     """Apply the pathway result contract before display, history, and export."""
     normalized = []
@@ -3130,7 +3135,9 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
             cat_df = ranked_pathways[ranked_pathways['source'] == cat] if 'source' in ranked_pathways.columns else pd.DataFrame()
             per_category[cat] = cat_df
         
-        # Select top pathways from each category (balanced)
+        # Select a balanced subset for the expensive interpretation stages, but
+        # keep every ranked, statistically validated pathway in the result. The
+        # frontend owns the Top 5 / Top 10 / All presentation choice.
         pathways_per_cat = 4  # 4 per category = 20 total
         selected_rows = []
         
@@ -3142,16 +3149,32 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
         # If we don't have enough, add more from any category
         remaining = 20 - len(selected_rows)
         if remaining > 0 and not ranked_pathways.empty:
-            already_selected = set(r.get('name', '') for r in selected_rows)
+            already_selected = {
+                _pathway_detail_key(r.get('source'), r.get('name'))
+                for r in selected_rows
+            }
             for _, row in ranked_pathways.iterrows():
-                if row.get('name', '') not in already_selected:
+                row_key = _pathway_detail_key(row.get('source'), row.get('name'))
+                if row_key not in already_selected:
                     selected_rows.append(row.to_dict())
+                    already_selected.add(row_key)
                     if len(selected_rows) >= 20:
                         break
+
+        detailed_pathway_count = len(selected_rows)
+        selected_keys = {
+            _pathway_detail_key(r.get('source'), r.get('name'))
+            for r in selected_rows
+        }
+        for _, row in ranked_pathways.iterrows():
+            row_key = _pathway_detail_key(row.get('source'), row.get('name'))
+            if row_key not in selected_keys:
+                selected_rows.append(row.to_dict())
+                selected_keys.add(row_key)
         
         # Convert to output format grouped by category
         rank = 1
-        for row in selected_rows[:20]:
+        for row_index, row in enumerate(selected_rows):
             if isinstance(row, dict):
                 p_val = row.get('p_value', 0.05)
             else:
@@ -3234,6 +3257,7 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
                 "description": final_description,  # Use disease connection or original
                 "gpt_rank": rank,
                 "gpt_predicted": is_gpt_predicted,
+                "has_detailed_interpretation": row_index < detailed_pathway_count,
                 "literature": literature[:5] if isinstance(literature, list) else [],  # Pass full objects
                 "pmids": pmid_list  # Also pass extracted PMIDs for easy access
             })
@@ -3245,6 +3269,10 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
             'Connecting pathway-level cell context to supporting PubMed records.',
         )
         progress_callback = lambda text: add_analysis_progress_message(session, text)
+        detailed_pathways = [
+            pathway for pathway in pathways_list
+            if pathway.get('has_detailed_interpretation')
+        ]
         cell_context_module.attach_cell_context_evidence(
             pathways_list,
             session.disease_name,
@@ -3254,10 +3282,10 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
         session.set_progress(
             88,
             'Writing pathway interpretations',
-            f'Preparing concise and detailed interpretations for {len(pathways_list)} pathways.',
+            f'Preparing concise and detailed interpretations for {len(detailed_pathways)} highlighted pathways.',
         )
         attach_pathway_narratives(
-            pathways_list,
+            detailed_pathways,
             session.disease_name,
             progress=progress_callback,
             model=session.model,
@@ -3266,7 +3294,7 @@ def run_real_pathway_analysis(session: AnalysisSession) -> list:
         # already linked to each pathway.  It is attached after ranking and
         # narrative generation so it cannot affect either.
         external_evidence.attach_external_evidence_genes(
-            pathways_list,
+            detailed_pathways,
             input_genes=session.genes,
         )
         session.set_progress(
@@ -6176,7 +6204,9 @@ def convert_pathways_to_output_format(
         cat_df = pathways_df[pathways_df['source'] == cat] if 'source' in pathways_df.columns else pd.DataFrame()
         per_category[cat] = cat_df
     
-    # Select top pathways from each category (balanced)
+    # Select a balanced subset for the expensive interpretation stages, while
+    # retaining every ranked, statistically validated pathway for the result
+    # page's Top 5 / Top 10 / All control.
     pathways_per_cat = 4  # 4 per category = 20 total
     selected_rows = []
     
@@ -6188,16 +6218,32 @@ def convert_pathways_to_output_format(
     # If not enough, add more from any category
     remaining = 20 - len(selected_rows)
     if remaining > 0 and not pathways_df.empty:
-        already_selected = set(r.get('name', '') for r in selected_rows)
+        already_selected = {
+            _pathway_detail_key(r.get('source'), r.get('name'))
+            for r in selected_rows
+        }
         for _, row in pathways_df.iterrows():
-            if row.get('name', '') not in already_selected:
+            row_key = _pathway_detail_key(row.get('source'), row.get('name'))
+            if row_key not in already_selected:
                 selected_rows.append(row.to_dict())
+                already_selected.add(row_key)
                 if len(selected_rows) >= 20:
                     break
+
+    detailed_pathway_count = len(selected_rows)
+    selected_keys = {
+        _pathway_detail_key(r.get('source'), r.get('name'))
+        for r in selected_rows
+    }
+    for _, row in pathways_df.iterrows():
+        row_key = _pathway_detail_key(row.get('source'), row.get('name'))
+        if row_key not in selected_keys:
+            selected_rows.append(row.to_dict())
+            selected_keys.add(row_key)
     
     # Convert to output format
     rank = 1
-    for row in selected_rows[:20]:
+    for row_index, row in enumerate(selected_rows):
         p_val = row.get('p_value', 0.05)
         # Inverted formula: lower p-values give higher scores (0-100 scale)
         # -log10(p_val) gives the significance, scaled to 0-100
@@ -6249,15 +6295,20 @@ def convert_pathways_to_output_format(
             "description": final_description,  # Use disease connection or original
             "gpt_rank": rank,
             "gpt_predicted": row.get('gpt_validated', False),
+            "has_detailed_interpretation": row_index < detailed_pathway_count,
             "literature": literature[:5],
             "pmids": pmid_list
         })
         rank += 1
 
-    # Iterative mode now uses the same post-FDR pathway-level context contract
-    # as the default single-shot path.  The helper is deliberately called only
-    # after the final two-round merge and balanced selection, so context is not
-    # generated for hypotheses that do not appear in the result.
+    # Iterative mode uses the same post-FDR pathway-level context contract as
+    # the default single-shot path. Every validated pathway gets a best-effort
+    # cell/tissue context and evidence link. Only the balanced highlighted
+    # subset gets the more expensive long-form narrative stage.
+    detailed_pathways = [
+        pathway for pathway in pathways_list
+        if pathway.get('has_detailed_interpretation')
+    ]
     context_kwargs = {'genes': input_genes, 'progress': progress}
     narrative_kwargs = {'progress': progress}
     if model:
@@ -6274,9 +6325,9 @@ def convert_pathways_to_output_format(
         genes=input_genes,
         progress=progress,
     )
-    attach_pathway_narratives(pathways_list, disease_name, **narrative_kwargs)
+    attach_pathway_narratives(detailed_pathways, disease_name, **narrative_kwargs)
     external_evidence.attach_external_evidence_genes(
-        pathways_list,
+        detailed_pathways,
         input_genes=input_genes,
     )
 
