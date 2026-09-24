@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img alt="Python" src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white">
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white">
   <img alt="LLM" src="https://img.shields.io/badge/LLM-GPT--5.1-4A6FA5">
   <img alt="Enrichment" src="https://img.shields.io/badge/Enrichment-g%3AProfiler-5B9B7A">
   <img alt="Evidence" src="https://img.shields.io/badge/Evidence-PubMed%2FEntrez-C88A3C">
@@ -46,13 +46,13 @@ The final-check benchmark contains **567 disease–gene-list pairs across 24 com
 
 | Agent | Role | Module |
 |---|---|---|
-| 🤖 **Hypothesis Generation** | Reasons over module genes + disease to propose candidate pathways across five functional sources | [`agents/hypothesis_generation_agent.py`](agents/hypothesis_generation_agent.py) · [`predictor.py`](predictor.py) |
-| ✅ **Statistical Validation** | Runs the formal enrichment test and writes the matched / FDR&nbsp;p&lt;0.05 / nominal validation contract | [`agents/statistical_validation_agent.py`](agents/statistical_validation_agent.py) |
+| 🤖 **Hypothesis Generation** | Reasons forward from the input gene list and disease to propose ten candidates from each of five annotation sources | [`agents/hypothesis_generation_agent.py`](agents/hypothesis_generation_agent.py) · [`predictor.py`](predictor.py) |
+| ✅ **Statistical Validation** | Matches candidates to g:Profiler terms and retains only those with FDR-adjusted&nbsp;*P*&lt;0.05, together with identifiers and intersection genes | [`agents/statistical_validation_agent.py`](agents/statistical_validation_agent.py) |
+| 📊 **Biological Ranking** | Ranks validated pathways independently within each database using pathway description, disease pathology, intersection genes, enrichment strength, and PubMed literature | [`agents/biological_ranking_agent.py`](agents/biological_ranking_agent.py) |
 | 🔁 **Feedback** | Converts validated and invalidated hypotheses into a keep–expand–avoid prompt for the second generation pass | [`agents/feedback_agent.py`](agents/feedback_agent.py) · [`prompts/feedback.py`](prompts/feedback.py) |
-| 📊 **Biological Ranking** | Ranks validated pathways within each category by synthesizing five evidence sources | [`agents/biological_ranking_agent.py`](agents/biological_ranking_agent.py) |
-| 🧩 **Interpretation** | Adds post-validation, pathway-level cell/tissue context to every supported pathway and detailed driver-gene / mechanistic interpretation to highlighted pathways | [`website/web_app/cell_context.py`](website/web_app/cell_context.py) · [`predictor.py`](predictor.py) · [`backend/reasoning_parser.py`](backend/reasoning_parser.py) |
+| 🧩 **Interpretation** | Structures validated results into selection rationale, driver genes and functions, tissue/cell context, mechanistic themes, and disease-relevance strength | [`website/web_app/cell_context.py`](website/web_app/cell_context.py) · [`predictor.py`](predictor.py) · [`backend/reasoning_parser.py`](backend/reasoning_parser.py) |
 
-The [`PipelineOrchestrator`](orchestrator.py) fixes the stage order, tool calls, feedback loop, and stopping rule: initial pass → validation and ranking → feedback-guided refined pass → aggregation and structured interpretation. These decisions are specified by human domain experts rather than planned autonomously by the LLM.
+The public platform runs exactly one initial prompt pass and one feedback-guided refined pass. Initial terms that pass FDR correction are retained after deduplication, and new generation fills the remaining database quota. The stage order, tool calls, feedback loop, and stopping rule are specified by human domain experts rather than planned autonomously by the LLM. The deployed two-pass workflow is implemented in [`website/web_app/server.py`](website/web_app/server.py).
 
 ---
 
@@ -62,7 +62,7 @@ The [`PipelineOrchestrator`](orchestrator.py) fixes the stage order, tool calls,
 git clone https://github.com/Grit1021/Agentic_AI_platform.git
 cd Agentic_AI_platform
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt      # pandas, numpy, biopython, gprofiler-official, openai, matplotlib, ...
+pip install -r website/requirements.txt
 ```
 
 Set the required environment variables:
@@ -72,68 +72,56 @@ export OPENAI_API_KEY="sk-..."          # required: generation, feedback, rankin
 export ENTREZ_EMAIL="name@example.com"  # recommended: PubMed / Entrez access
 ```
 
-`OPENAI_API_KEY` powers all LLM stages. `ENTREZ_EMAIL` is recommended so PubMed evidence retrieval runs without throttling. The default model (`gpt-5.1`) is configurable in [`llm_client.py`](llm_client.py); LLM responses are disk-cached under `~/.cache/pathway_analysis/`.
+`OPENAI_API_KEY` powers hypothesis generation, feedback, ranking, and interpretation. `ENTREZ_EMAIL` is recommended for PubMed / Entrez retrieval. GPT-5.1 is the manuscript model and the default in the public platform.
 
 ---
 
-## Quickstart
+## Run the platform locally
 
-Run commands from the directory that contains this package.
+Install the web application dependencies and start the service without authentication:
 
 ```bash
-# Full analysis for Alzheimer's disease
-python -m refined.orchestrator --disease AD --tag full_run
-
-# Fast smoke test (a couple of modules only)
-python -m refined.orchestrator --disease AD --test --tag test_run
-
-# Disable optional memory-bank storage
-python -m refined.orchestrator --disease AD --test --no-memory --tag no_memory
+cd website/web_app
+AUTH_ENABLED=false python server.py
 ```
 
-`--disease` accepts an abbreviation (e.g. `AD`, `PD`, `MS`, `T2D`) **or** a full disease name. Disease metadata (MeSH ID, description, keywords) is resolved automatically from NCBI/MeSH — no hardcoding required.
+Open `http://127.0.0.1:5000/`. The interface accepts HGNC symbols or Ensembl Gene IDs together with a disease name. It reports identifier mapping before pathway inference and keeps enrichment statistics separate from biological interpretation.
 
 <details>
 <summary><b>24-disease benchmark (as reported in the paper)</b></summary>
 
-Spanning neurodegenerative, cardiovascular, autoimmune, metabolic, infectious, oncological, respiratory, renal, and dermatological conditions:
+Spanning neurodegenerative, neuropsychiatric, cardiovascular, autoimmune, metabolic, infectious, oncological, respiratory, renal, and dermatological conditions:
 
 `AD, PD, ALS, PSP, MDD, MS, RA, AIT, SLE, PS, IBD, CD, COPD, AST, CAD, AF, HF, HTN, T2D, CKD, OSA, TB, CRC, HCC`
 
-Any other disease can be analyzed by passing its name or abbreviation — metadata is resolved from NCBI/MeSH.
+The public platform is not limited to these benchmark diseases; it accepts a submitted disease label and resolves disease context through NCBI MeSH.
 </details>
 
 ---
 
-## Input data
+## Input
 
-The workflow reads network-expansion module files:
+The scientific workflow is agnostic to how a gene list was assembled. Each analysis requires:
 
-```
-Network_expansion/outputs/disease_pair_expansion/{MESH_ID}_modules.csv
-```
+- a human gene list, submitted as HGNC symbols, Ensembl Gene IDs, or a supported mixture; and
+- a disease label that defines the context for generation, ranking, and interpretation.
 
-| Column | Required | Meaning |
-|---|---|---|
-| `node` | ✅ | Gene symbol |
-| `cluster_walktrap` | ✅ | Module ID (rows with `-1` are excluded) |
-| `passes_all_filters` | optional | If present, only passing genes are used |
+For the manuscript benchmark, the 567 inputs were significant network-derived gene communities from a previous study. Each retained community contained at least ten genes and was paired with its corresponding disease. These benchmark-specific communities are evaluation inputs, not a requirement of the public platform.
 
 ---
 
-## Outputs
+## Output
 
-Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP}_{TAG}/`:
+Each completed platform analysis reports:
 
-- `phase1_module_collection/Module_{id}_filtered_pathways.csv` — per-module validated pathways
-- iter1 statistical-validation contract: `*_gpt_matched_all.csv`, `*_gpt_matched_fdr_p005.csv`, `*_gpt_matched_nominal_p005.csv`
-- per-module Phase 2 iteration outputs and `*_reasoning.md` audit traces
-- `final_aggregated_pathways.csv` — ranked, validated pathways across all modules
-- `final_module_metadata.json`
-- `summary_iterative/summary_pathway_ranking.txt`
-- post-validation pathway-level `cell_context`, provenance, and label/gene-mapped PubMed evidence in website/API result records
-- validation / category plots ([`visualization.py`](visualization.py))
-- optional memory-bank storage artifacts (when enabled; retrieval was not used in the primary benchmark)
+- submitted, recognized, and unresolved gene identifiers;
+- initial and refined hypothesis counts and the number passing FDR-controlled validation;
+- a deduplicated set of validated pathways, ranked independently within GO:BP, GO:MF, GO:CC, KEGG, and Reactome;
+- matched database identifiers, FDR-adjusted *P*-values, pathway sizes, and input–pathway intersection genes;
+- structured biological interpretation covering driver genes and functions, tissue/cell context, mechanistic themes, and disease relevance; and
+- pathway definitions, PubMed support, and provenance links where available.
+
+Cell and tissue assignments are multi-label interpretation outputs. They do not measure cell abundance, expression, enrichment strength, or statistical significance, and they are not independent evidence of disease-specific cell-type involvement.
 
 ---
 
@@ -141,18 +129,18 @@ Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP
 
 ```text
 .
-├── orchestrator.py        # command-line entry point & pipeline coordinator
+├── orchestrator.py        # benchmark-oriented command-line pipeline
 ├── config.py              # disease configuration (MeSH/NCBI lookup, abbreviations)
 ├── framework.py           # iterative framework wired to the Feedback agent
 ├── predictor.py           # hypothesis generation + reasoning-audit traces
 ├── llm_client.py          # LLM client + disk cache
 ├── report.py              # summary report generation
 ├── visualization.py       # validation & category plots
-├── agents/                # four stage agents plus the feedback agent
+├── agents/                # generation, validation, ranking, and feedback modules
 ├── prompts/               # prompt templates (generation, feedback, reasoning audit)
 ├── tools/                 # PubMed, ranking, g:Profiler cache utilities
 ├── backend/               # bundled runtime modules (multi-agent analysis, optional memory storage)
-├── website/web_app/       # Interactive app, including pathway-level cell-context mapping
+├── website/web_app/       # Public two-pass app and pathway-level cell-context mapping
 ├── docs/                  # GitHub Pages demo homepage (index.html)
 └── assets/                # Framework overview (PNG/PDF)
 ```
@@ -161,7 +149,7 @@ Each run writes to `iterative_feedback_{DISEASE}/{DISEASE}_aggregated_{TIMESTAMP
 
 ## Reproducibility
 
-Full runs call external services—OpenAI, NCBI/MeSH, PubMed/Entrez, and g:Profiler. Reproducing the manuscript results requires the same input gene lists, disease labels, GPT-5.1 configuration, prompt templates, database versions, and archived outputs. The primary benchmark stored validated pathways in the memory bank but did not retrieve them during generation; retrieval was evaluated only in the dedicated 69-pair cold-start transfer experiment. Disk caching of LLM responses (`~/.cache/pathway_analysis/`) reduces repeated calls.
+Full runs call OpenAI, g:Profiler, NCBI MeSH, and NCBI Entrez / PubMed. Reproducing the manuscript results requires the same 567 input gene lists, disease labels, GPT-5.1 model, prompt templates, and service outputs. Each prompt pass requests ten hypotheses per database; the workflow uses one initial pass and one feedback-guided refined pass. The primary benchmark stored validated pathways in the memory bank but did not retrieve cross-disease history during generation. Retrieval was evaluated only in the dedicated transfer experiment on 69 gene-list pairs from five diseases, using `text-embedding-3-small` for semantic indexing.
 
 ---
 
