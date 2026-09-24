@@ -14,9 +14,7 @@
 </p>
 
 <p align="center">
-  <b>🌐 Demo homepage:</b> <a href="https://grit1021.github.io/Agentic_AI_platform/">grit1021.github.io/Agentic_AI_platform</a> &nbsp;·&nbsp;
-  <b>📄 Paper:</b> <a href="#">[arXiv / DOI]</a> &nbsp;·&nbsp;
-  <b>💻 Code:</b> <a href="https://github.com/Grit1021/Agentic_AI_platform">github.com/Grit1021/Agentic_AI_platform</a>
+  <b>🌐 Demo homepage:</b> <a href="https://tigerai.bio/pathway/">tigerai.bio/pathway/</a>
 </p>
 
 <p align="center">
