@@ -1,6 +1,8 @@
-# GenePathwayAI website
+# Reliable agentic AI platform — web application
 
-This directory contains the user-facing web application for the agentic pathway-analysis platform. It accepts a human gene list and disease context, runs the pathway hypothesis, validation, ranking and interpretation workflow, and presents an interactive evidence register.
+This directory contains the user-facing application for **Reliable agentic AI platform for biological pathway inference of disease-associated genes**. It accepts a human gene list and disease context, then runs four functional stages—pathway hypothesis generation, statistical validation, biological ranking, and structured interpretation—with one feedback-guided refined generation pass.
+
+Demo homepage: <https://tigerai.bio/pathway/>
 
 ## Directory layout
 
