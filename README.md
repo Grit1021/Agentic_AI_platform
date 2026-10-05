@@ -10,6 +10,7 @@
   <img alt="LLM" src="https://img.shields.io/badge/LLM-GPT--5.1-4A6FA5">
   <img alt="Enrichment" src="https://img.shields.io/badge/Enrichment-g%3AProfiler-5B9B7A">
   <img alt="Evidence" src="https://img.shields.io/badge/Evidence-PubMed%2FEntrez-C88A3C">
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-6B5B95">
 </p>
 
 <p align="center">
@@ -165,3 +166,9 @@ Full runs call OpenAI, g:Profiler, NCBI MeSH, and NCBI Entrez / PubMed. Reproduc
 ```
 
 Publication metadata will be added when the manuscript is publicly available. Questions and issues are welcome via the repository issue tracker.
+
+---
+
+## License
+
+This project is released under the [MIT License](LICENSE).
