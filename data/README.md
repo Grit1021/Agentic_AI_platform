@@ -17,3 +17,7 @@ The pathway analysis runner reads these files and selects rows where `passes_all
 For example, the Alzheimer disease input is `source_modules/D000544_modules.csv`; its retained modules appear in `gene_lists_567.csv` under `disease=AD`.
 
 The 567 input lists are distinct from the 543 lists that produced at least one final validated pathway in a later figure-specific analysis.
+
+## Run-output locations
+
+`run_output_manifest_567.csv` maps every input to six relative paths in the historical two-round run tree: prediction JSON, matched-term CSV and FDR-supported CSV for each round. The files themselves are not included here. The paths are relative to the `Pathway_analysis` run directory, not to this GitHub repository. Regenerate and verify the manifest with `scripts/locate_benchmark_outputs.py` when that run directory is available.

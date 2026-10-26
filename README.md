@@ -141,6 +141,8 @@ Cell and tissue assignments are multi-label interpretation outputs. They do not 
 ├── prompts/               # prompt templates (generation, feedback, reasoning audit)
 ├── tools/                 # PubMed, ranking, g:Profiler cache utilities
 ├── backend/               # bundled runtime modules (multi-agent analysis, optional memory storage)
+├── data/                  # 567 benchmark gene lists, 24 source CSVs, run-output path manifest
+├── scripts/               # run-output locator and audited manuscript Figure 2 source
 ├── website/web_app/       # Public two-pass app and pathway-level cell-context mapping
 ├── docs/                  # GitHub Pages demo homepage (index.html)
 └── assets/                # Framework overview (PNG/PDF)
