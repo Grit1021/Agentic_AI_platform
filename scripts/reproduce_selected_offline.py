@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reproduce the selected offline Figure 2, Figure 4, and Figure S7 analyses.
+"""Reproduce selected offline analyses and audit every submitted figure asset.
 
 Install the requirements in the three manuscript script directories first.
 This script makes no model or external-service calls.
@@ -17,11 +17,17 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[1]
 ARCHIVE = ROOT / "data" / "benchmark_run_outputs_567.tar.gz"
 COMMANDS = (
+    "scripts/verify_manuscript_figure_archive.py",
     "scripts/verify_benchmark_artifacts.py",
     "scripts/manuscript_figure2/build_figure2_consistent_current.py",
     "scripts/manuscript_figure2/summarize_key_numbers.py",
+    "scripts/manuscript_figure3/reproduce_figure3.py",
     "scripts/manuscript_figure4/verify_reasoning_sources.py",
     "scripts/manuscript_figure4/reproduce_figure4.py",
+    "scripts/manuscript_figure5/audit_asd.py",
+    "scripts/manuscript_suppfig_s2_s3/reproduce_s2_s3.py",
+    "scripts/manuscript_suppfig_s4_s6/reproduce_s4_s6.py",
+    "scripts/verify_rebuilt_figure_tables.py",
     "scripts/manuscript_s7/verify_cold_start_inputs.py",
     "scripts/manuscript_s7/verify_historical_sources.py",
     "scripts/manuscript_s7/verify_memory_inventory.py",

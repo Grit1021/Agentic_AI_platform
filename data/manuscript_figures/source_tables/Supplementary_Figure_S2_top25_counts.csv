@@ -1,0 +1,26 @@
+rank,cell_type_tag,n_records_with_tag
+1,Immune cells,4911
+2,epithelial cells,2039
+3,Endothelial cells,1821
+4,Macrophages,1698
+5,T cells,1607
+6,fibroblasts,1374
+7,Neurons,1368
+8,smooth muscle cells,1225
+9,B cells,857
+10,dendritic cells,857
+11,Glial cells,832
+12,intestinal epithelial cells,823
+13,cardiomyocytes,632
+14,monocytes,573
+15,lymphocytes,438
+16,Microglia,396
+17,neutrophils,373
+18,Hepatocytes,363
+19,Pancreatic beta cells,363
+20,podocytes,359
+21,Astrocytes,298
+22,Dopaminergic neurons,288
+23,Cortical neurons,265
+24,Oligodendrocytes,225
+25,Hippocampal neurons,188

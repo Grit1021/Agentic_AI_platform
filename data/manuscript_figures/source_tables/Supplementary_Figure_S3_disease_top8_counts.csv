@@ -1,0 +1,186 @@
+disease,disease_name,n_validated_pathway_records,rank_within_disease,cell_type_tag,n_records_with_tag,proportion_of_records
+AD,Alzheimer's disease,310,1,Neurons,280,0.9032
+AD,Alzheimer's disease,310,2,Glial cells,133,0.429
+AD,Alzheimer's disease,310,3,Hippocampal neurons,111,0.3581
+AD,Alzheimer's disease,310,4,Cortical neurons,109,0.3516
+AD,Alzheimer's disease,310,5,Microglia,73,0.2355
+AD,Alzheimer's disease,310,6,Astrocytes,70,0.2258
+AD,Alzheimer's disease,310,7,Pyramidal neurons,61,0.1968
+AD,Alzheimer's disease,310,8,Excitatory neurons,27,0.0871
+AF,Atrial fibrillation,460,1,cardiomyocytes,369,0.8022
+AF,Atrial fibrillation,460,2,fibroblasts,254,0.5522
+AF,Atrial fibrillation,460,3,Endothelial cells,66,0.1435
+AF,Atrial fibrillation,460,4,Immune cells,23,0.05
+AF,Atrial fibrillation,460,5,Neurons,7,0.0152
+AF,Atrial fibrillation,460,6,Macrophages,3,0.0065
+AF,Atrial fibrillation,460,7,smooth muscle cells,3,0.0065
+AF,Atrial fibrillation,460,8,Hepatocytes,1,0.0022
+AIT,Autoimmune thyroiditis,417,1,Immune cells,332,0.7962
+AIT,Autoimmune thyroiditis,417,2,epithelial cells,173,0.4149
+AIT,Autoimmune thyroiditis,417,3,T cells,129,0.3094
+AIT,Autoimmune thyroiditis,417,4,B cells,121,0.2902
+AIT,Autoimmune thyroiditis,417,5,lymphocytes,75,0.1799
+AIT,Autoimmune thyroiditis,417,6,dendritic cells,50,0.1199
+AIT,Autoimmune thyroiditis,417,7,Macrophages,45,0.1079
+AIT,Autoimmune thyroiditis,417,8,monocytes,19,0.0456
+ALS,Amyotrophic lateral sclerosis,76,1,Neurons,71,0.9342
+ALS,Amyotrophic lateral sclerosis,76,2,motor neurons,68,0.8947
+ALS,Amyotrophic lateral sclerosis,76,3,Glial cells,23,0.3026
+ALS,Amyotrophic lateral sclerosis,76,4,Astrocytes,13,0.1711
+ALS,Amyotrophic lateral sclerosis,76,5,Microglia,10,0.1316
+ALS,Amyotrophic lateral sclerosis,76,6,Cortical neurons,8,0.1053
+ALS,Amyotrophic lateral sclerosis,76,7,Oligodendrocytes,3,0.0395
+ALS,Amyotrophic lateral sclerosis,76,8,Glutamatergic neurons,1,0.0132
+AST,Asthma,867,1,Immune cells,615,0.7093
+AST,Asthma,867,2,epithelial cells,499,0.5755
+AST,Asthma,867,3,smooth muscle cells,209,0.2411
+AST,Asthma,867,4,T cells,195,0.2249
+AST,Asthma,867,5,Macrophages,130,0.1499
+AST,Asthma,867,6,fibroblasts,124,0.143
+AST,Asthma,867,7,dendritic cells,98,0.113
+AST,Asthma,867,8,B cells,78,0.09
+CAD,Coronary artery disease,796,1,Endothelial cells,511,0.642
+CAD,Coronary artery disease,796,2,Immune cells,428,0.5377
+CAD,Coronary artery disease,796,3,smooth muscle cells,422,0.5302
+CAD,Coronary artery disease,796,4,Macrophages,278,0.3492
+CAD,Coronary artery disease,796,5,cardiomyocytes,81,0.1018
+CAD,Coronary artery disease,796,6,T cells,69,0.0867
+CAD,Coronary artery disease,796,7,Hepatocytes,63,0.0791
+CAD,Coronary artery disease,796,8,monocytes,55,0.0691
+CD,Crohn's disease,534,1,Immune cells,406,0.7603
+CD,Crohn's disease,534,2,intestinal epithelial cells,265,0.4963
+CD,Crohn's disease,534,3,Macrophages,188,0.3521
+CD,Crohn's disease,534,4,T cells,180,0.3371
+CD,Crohn's disease,534,5,dendritic cells,102,0.191
+CD,Crohn's disease,534,6,epithelial cells,79,0.1479
+CD,Crohn's disease,534,7,monocytes,54,0.1011
+CD,Crohn's disease,534,8,B cells,34,0.0637
+CKD,Chronic kidney disease,824,1,epithelial cells,561,0.6808
+CKD,Chronic kidney disease,824,2,podocytes,352,0.4272
+CKD,Chronic kidney disease,824,3,fibroblasts,225,0.2731
+CKD,Chronic kidney disease,824,4,Immune cells,172,0.2087
+CKD,Chronic kidney disease,824,5,Endothelial cells,149,0.1808
+CKD,Chronic kidney disease,824,6,Macrophages,41,0.0498
+CKD,Chronic kidney disease,824,7,T cells,33,0.04
+CKD,Chronic kidney disease,824,8,monocytes,15,0.0182
+COPD,Chronic obstructive pulmonary disease,635,1,epithelial cells,403,0.6346
+COPD,Chronic obstructive pulmonary disease,635,2,Immune cells,366,0.5764
+COPD,Chronic obstructive pulmonary disease,635,3,Macrophages,209,0.3291
+COPD,Chronic obstructive pulmonary disease,635,4,Endothelial cells,172,0.2709
+COPD,Chronic obstructive pulmonary disease,635,5,fibroblasts,141,0.222
+COPD,Chronic obstructive pulmonary disease,635,6,smooth muscle cells,83,0.1307
+COPD,Chronic obstructive pulmonary disease,635,7,neutrophils,78,0.1228
+COPD,Chronic obstructive pulmonary disease,635,8,T cells,35,0.0551
+CRC,Colorectal cancer,385,1,intestinal epithelial cells,154,0.4
+CRC,Colorectal cancer,385,2,epithelial cells,93,0.2416
+CRC,Colorectal cancer,385,3,Immune cells,37,0.0961
+CRC,Colorectal cancer,385,4,fibroblasts,21,0.0545
+CRC,Colorectal cancer,385,5,Endothelial cells,16,0.0416
+CRC,Colorectal cancer,385,6,Macrophages,3,0.0078
+CRC,Colorectal cancer,385,7,T cells,3,0.0078
+CRC,Colorectal cancer,385,8,Neurons,2,0.0052
+HCC,Hepatocellular carcinoma,32,1,Hepatocytes,27,0.8438
+HCC,Hepatocellular carcinoma,32,2,Immune cells,6,0.1875
+HCC,Hepatocellular carcinoma,32,3,Endothelial cells,6,0.1875
+HCC,Hepatocellular carcinoma,32,4,fibroblasts,2,0.0625
+HCC,Hepatocellular carcinoma,32,5,lymphocytes,1,0.0312
+HF,Heart failure,25,1,cardiomyocytes,19,0.76
+HF,Heart failure,25,2,fibroblasts,17,0.68
+HF,Heart failure,25,3,Immune cells,8,0.32
+HF,Heart failure,25,4,Endothelial cells,8,0.32
+HF,Heart failure,25,5,Macrophages,1,0.04
+HF,Heart failure,25,6,T cells,1,0.04
+HTN,Hypertension,816,1,smooth muscle cells,478,0.5858
+HTN,Hypertension,816,2,Endothelial cells,409,0.5012
+HTN,Hypertension,816,3,cardiomyocytes,152,0.1863
+HTN,Hypertension,816,4,fibroblasts,101,0.1238
+HTN,Hypertension,816,5,Immune cells,74,0.0907
+HTN,Hypertension,816,6,epithelial cells,74,0.0907
+HTN,Hypertension,816,7,Neurons,37,0.0453
+HTN,Hypertension,816,8,T cells,14,0.0172
+IBD,Inflammatory bowel disease,688,1,Immune cells,519,0.7544
+IBD,Inflammatory bowel disease,688,2,intestinal epithelial cells,351,0.5102
+IBD,Inflammatory bowel disease,688,3,T cells,214,0.311
+IBD,Inflammatory bowel disease,688,4,Macrophages,194,0.282
+IBD,Inflammatory bowel disease,688,5,epithelial cells,122,0.1773
+IBD,Inflammatory bowel disease,688,6,dendritic cells,114,0.1657
+IBD,Inflammatory bowel disease,688,7,Endothelial cells,68,0.0988
+IBD,Inflammatory bowel disease,688,8,monocytes,64,0.093
+MDD,Major depressive disorder,325,1,Neurons,259,0.7969
+MDD,Major depressive disorder,325,2,Glial cells,111,0.3415
+MDD,Major depressive disorder,325,3,Cortical neurons,79,0.2431
+MDD,Major depressive disorder,325,4,Hippocampal neurons,63,0.1938
+MDD,Major depressive disorder,325,5,Pyramidal neurons,53,0.1631
+MDD,Major depressive disorder,325,6,Immune cells,29,0.0892
+MDD,Major depressive disorder,325,7,Astrocytes,25,0.0769
+MDD,Major depressive disorder,325,8,Excitatory neurons,24,0.0738
+MS,Multiple sclerosis,603,1,Immune cells,436,0.7231
+MS,Multiple sclerosis,603,2,Glial cells,385,0.6385
+MS,Multiple sclerosis,603,3,Microglia,227,0.3765
+MS,Multiple sclerosis,603,4,Oligodendrocytes,202,0.335
+MS,Multiple sclerosis,603,5,Neurons,185,0.3068
+MS,Multiple sclerosis,603,6,T cells,182,0.3018
+MS,Multiple sclerosis,603,7,B cells,153,0.2537
+MS,Multiple sclerosis,603,8,Astrocytes,131,0.2172
+OSA,Obstructive sleep apnoea,11,1,Endothelial cells,11,1
+OSA,Obstructive sleep apnoea,11,2,epithelial cells,5,0.4545
+OSA,Obstructive sleep apnoea,11,3,smooth muscle cells,4,0.3636
+OSA,Obstructive sleep apnoea,11,4,cardiomyocytes,3,0.2727
+OSA,Obstructive sleep apnoea,11,5,Neurons,2,0.1818
+OSA,Obstructive sleep apnoea,11,6,fibroblasts,1,0.0909
+PD,Parkinson's disease,412,1,Neurons,364,0.8835
+PD,Parkinson's disease,412,2,Dopaminergic neurons,278,0.6748
+PD,Parkinson's disease,412,3,Glial cells,123,0.2985
+PD,Parkinson's disease,412,4,Microglia,51,0.1238
+PD,Parkinson's disease,412,5,Astrocytes,44,0.1068
+PD,Parkinson's disease,412,6,Cortical neurons,30,0.0728
+PD,Parkinson's disease,412,7,Glutamatergic neurons,6,0.0146
+PD,Parkinson's disease,412,8,Immune cells,6,0.0146
+PS,Psoriasis,574,1,Immune cells,397,0.6916
+PS,Psoriasis,574,2,T cells,182,0.3171
+PS,Psoriasis,574,3,dendritic cells,151,0.2631
+PS,Psoriasis,574,4,Endothelial cells,62,0.108
+PS,Psoriasis,574,5,Macrophages,55,0.0958
+PS,Psoriasis,574,6,fibroblasts,45,0.0784
+PS,Psoriasis,574,7,neutrophils,43,0.0749
+PS,Psoriasis,574,8,monocytes,15,0.0261
+PSP,Progressive supranuclear palsy,83,1,Neurons,74,0.8916
+PSP,Progressive supranuclear palsy,83,2,Glial cells,31,0.3735
+PSP,Progressive supranuclear palsy,83,3,Astrocytes,13,0.1566
+PSP,Progressive supranuclear palsy,83,4,Cortical neurons,11,0.1325
+PSP,Progressive supranuclear palsy,83,5,Microglia,11,0.1325
+PSP,Progressive supranuclear palsy,83,6,Oligodendrocytes,6,0.0723
+PSP,Progressive supranuclear palsy,83,7,Glutamatergic neurons,2,0.0241
+PSP,Progressive supranuclear palsy,83,8,gabaergic neurons,2,0.0241
+RA,Rheumatoid arthritis,557,1,Immune cells,497,0.8923
+RA,Rheumatoid arthritis,557,2,fibroblasts,347,0.623
+RA,Rheumatoid arthritis,557,3,Macrophages,301,0.5404
+RA,Rheumatoid arthritis,557,4,T cells,200,0.3591
+RA,Rheumatoid arthritis,557,5,B cells,171,0.307
+RA,Rheumatoid arthritis,557,6,dendritic cells,77,0.1382
+RA,Rheumatoid arthritis,557,7,Endothelial cells,75,0.1346
+RA,Rheumatoid arthritis,557,8,monocytes,65,0.1167
+SLE,Systemic lupus erythematosus,449,1,Immune cells,416,0.9265
+SLE,Systemic lupus erythematosus,449,2,B cells,223,0.4967
+SLE,Systemic lupus erythematosus,449,3,dendritic cells,170,0.3786
+SLE,Systemic lupus erythematosus,449,4,T cells,149,0.3318
+SLE,Systemic lupus erythematosus,449,5,monocytes,119,0.265
+SLE,Systemic lupus erythematosus,449,6,lymphocytes,95,0.2116
+SLE,Systemic lupus erythematosus,449,7,Macrophages,75,0.167
+SLE,Systemic lupus erythematosus,449,8,neutrophils,51,0.1136
+T2D,Type 2 diabetes,763,1,Pancreatic beta cells,361,0.4731
+T2D,Type 2 diabetes,763,2,Hepatocytes,258,0.3381
+T2D,Type 2 diabetes,763,3,Immune cells,85,0.1114
+T2D,Type 2 diabetes,763,4,Endothelial cells,61,0.0799
+T2D,Type 2 diabetes,763,5,Macrophages,38,0.0498
+T2D,Type 2 diabetes,763,6,Neurons,27,0.0354
+T2D,Type 2 diabetes,763,7,smooth muscle cells,6,0.0079
+T2D,Type 2 diabetes,763,8,cardiomyocytes,4,0.0052
+TB,Tuberculosis,59,1,Immune cells,56,0.9492
+TB,Tuberculosis,59,2,Macrophages,55,0.9322
+TB,Tuberculosis,59,3,dendritic cells,29,0.4915
+TB,Tuberculosis,59,4,monocytes,17,0.2881
+TB,Tuberculosis,59,5,epithelial cells,16,0.2712
+TB,Tuberculosis,59,6,T cells,15,0.2542
+TB,Tuberculosis,59,7,neutrophils,6,0.1017
+TB,Tuberculosis,59,8,Endothelial cells,2,0.0339

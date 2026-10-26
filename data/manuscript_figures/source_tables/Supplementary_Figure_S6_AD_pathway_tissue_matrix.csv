@@ -1,0 +1,24 @@
+pathway_id,pathway_name,n_validated_pathway_records,Hippocampus,Cortex,Brain / CNS,Synaptic terminals,Vasculature,Grey matter,Plaque-associated regions
+GO:0006897,endocytosis,7,5,5,0,1,0,0,0
+GO:0005886,plasma membrane,7,6,6,0,0,0,1,0
+GO:0045202,synapse,7,7,5,0,0,0,0,0
+GO:0016192,vesicle-mediated transport,6,4,3,0,3,0,0,0
+KEGG:04140,Autophagy - animal,4,4,4,0,0,0,0,0
+GO:0005794,Golgi apparatus,4,2,3,0,0,0,0,0
+KEGG:04141,Protein processing in endoplasmic reticulum,4,3,3,0,0,1,0,0
+GO:0050839,cell adhesion molecule binding,4,4,4,1,0,1,0,0
+GO:0098978,glutamatergic synapse,4,4,4,0,0,0,0,0
+GO:0005764,lysosome,4,2,2,0,0,0,0,0
+GO:0014069,postsynaptic density,4,4,4,0,0,0,0,0
+REAC:R-HSA-422475,Axon guidance,3,3,3,0,0,0,0,0
+REAC:R-HSA-112316,Neuronal System,3,2,2,2,0,0,0,0
+GO:0006914,autophagy,3,1,2,1,0,0,0,0
+GO:0005509,calcium ion binding,3,3,3,0,0,1,0,0
+GO:0030054,cell junction,3,1,1,1,0,0,1,0
+GO:0005783,endoplasmic reticulum,3,2,2,1,0,0,0,0
+GO:0005768,endosome,3,3,3,0,0,0,0,0
+GO:0043005,neuron projection,3,3,2,0,0,0,0,0
+GO:0005515,protein binding,3,2,2,0,0,0,0,0
+GO:0048167,regulation of synaptic plasticity,3,3,2,0,0,0,0,0
+GO:0099504,synaptic vesicle cycle,3,3,3,0,2,0,0,1
+GO:0031625,ubiquitin protein ligase binding,3,2,2,0,0,0,0,0

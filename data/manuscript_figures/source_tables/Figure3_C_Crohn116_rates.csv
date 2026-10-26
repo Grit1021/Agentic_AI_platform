@@ -1,0 +1,11 @@
+disease,module,database,pass,new_matched,pass_rate_percent
+CD,75,GO:BP,1,12,17
+CD,75,GO:CC,1,5,0
+CD,75,GO:MF,1,6,17
+CD,75,KEGG,1,2,0
+CD,75,REAC,1,3,0
+CD,75,GO:BP,2,13,62
+CD,75,GO:CC,2,7,29
+CD,75,GO:MF,2,8,12
+CD,75,KEGG,2,2,50
+CD,75,REAC,2,4,75

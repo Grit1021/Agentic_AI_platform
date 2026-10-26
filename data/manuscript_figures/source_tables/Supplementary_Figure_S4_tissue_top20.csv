@@ -1,0 +1,21 @@
+rank,tissue_context,n_records_with_tag
+1,vasculature,1334
+2,airway,1290
+3,colon/intestine,1278
+4,kidney,824
+5,cortex,609
+6,brain/central nervous system,517
+7,mucosa,514
+8,synovium,498
+9,atrium,460
+10,hippocampus,425
+11,liver,395
+12,adipose tissue,392
+13,stroma,385
+14,lamina propria,368
+15,thyroid,347
+16,lung,341
+17,pancreas,309
+18,lymph node,286
+19,alveoli,273
+20,skeletal muscle,265

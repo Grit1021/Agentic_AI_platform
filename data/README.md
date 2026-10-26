@@ -4,6 +4,10 @@ The Figure 4 record-level context data and numerical source tables are in
 [`figure4/`](figure4/README.md); they document a later analysis of the 543
 benchmark inputs with at least one validated pathway.
 
+The submitted main and supplementary figure files, editable main-figure
+slides, checksums, ASD case-study source, and a figure-by-figure provenance
+matrix are in [`manuscript_figures/`](manuscript_figures/README.md).
+
 The five-disease memory experiment inputs, historical run-log sources,
 7,182-pathway inventory, and Supplementary Figure S7 metrics are in
 [`suppfig_s7/`](suppfig_s7/README.md).
