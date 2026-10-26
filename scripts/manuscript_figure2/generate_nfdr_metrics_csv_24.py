@@ -1,19 +1,25 @@
 #!/usr/bin/env python
 """
-生成跨疾病 NFDR Metrics CSV 文件 - 24 diseases (external memory bank)
+生成跨疾病 NFDR Metrics CSV 文件 - 24 diseases (external memory bank) - v6
 
 从 memory_bank_external 中每个disease的run_log文件提取NFDR数据，
 生成汇总CSV文件供绘图使用。
+
+v6 修复:
+  - 修复了 v5 中 7 列格式表格仅在 iteration==1 时被解析的 bug。
+    当 iter2 中 Retained 全为 0 时，run_log 会输出 7 列格式而非 11 列格式，
+    v5 的 `current_iteration == 1` 限制导致这些 iter2 数据被跳过。
+  - 修复后，所有 567 个 gene lists 在 iter1 和 iter2 中完全对齐。
+  - 增加了 iter1/iter2 对齐验证。
 """
 
 import os
 import re
 import glob
 import pandas as pd
-
-# Configuration
 from pathlib import Path
 
+# Configuration
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 RUN_ROOT = Path(os.environ.get("BENCHMARK_RUN_ROOT", PROJECT_ROOT))
 BASE_DIR = str(RUN_ROOT / "result" / "memory_bank_external")
@@ -49,6 +55,9 @@ def extract_category_data_from_log(log_path, disease_code):
     Iteration 2/3 格式 (11列):
       Category   | Retained | NewGen | Total | Match | NewMat | Mat%  | NMat%  | FDR  | NewFDR | FDR%  | NFDR%
       GO:BP      | 2        | 8      | 10    | 8     | 6      |   80% |   60% | 6    | 4      |   75% |   67%
+
+    注意: 当 iter2 中所有 category 的 Retained=0 时，run_log 也会输出 7 列格式。
+    此时 matched == new_matched, fdr_pct == nfdr_pct (因为没有保留的旧 pathway)。
     """
     if not os.path.exists(log_path):
         print(f"  ⚠️  文件不存在: {log_path}")
@@ -115,9 +124,13 @@ def extract_category_data_from_log(log_path, disease_code):
             })
             continue
 
-        # 尝试匹配 7 列格式 (Iteration 1)
+        # 尝试匹配 7 列格式
+        # v6 修复: 去掉了 current_iteration == 1 的限制，
+        # 因为 iter2 中 Retained=0 的模块也会输出 7 列格式。
+        # 当 7 列格式出现在 iter2 中时，说明没有保留旧 pathway，
+        # 所以 matched == new_matched, fdr_pct == nfdr_pct。
         match_7 = pattern_7col.match(line.strip())
-        if match_7 and current_module is not None and current_iteration == 1:
+        if match_7 and current_module is not None:
             category = match_7.group(1)
             retained = int(match_7.group(2))
             newgen = int(match_7.group(3))
@@ -132,9 +145,9 @@ def extract_category_data_from_log(log_path, disease_code):
                 'retained': retained,
                 'newgen': newgen,
                 'matched': matched,
-                'new_matched': matched,  # Iter 1: all matched are new
+                'new_matched': matched,  # 7列格式: all matched are new
                 'fdr_pct': fdr_pct,
-                'nfdr_pct': fdr_pct  # Iter 1: FDR% = NFDR%
+                'nfdr_pct': fdr_pct  # 7列格式: FDR% = NFDR%
             })
 
     return records
@@ -142,7 +155,7 @@ def extract_category_data_from_log(log_path, disease_code):
 
 def main():
     print("=" * 70)
-    print("生成跨疾病 NFDR Metrics CSV 文件 (24 diseases, external)")
+    print("生成跨疾病 NFDR Metrics CSV 文件 (24 diseases, external) - v6")
     print("=" * 70)
 
     all_records = []
@@ -172,8 +185,39 @@ def main():
     print(f"疾病 ({num_diseases}): {sorted(combined_df['disease'].unique())}")
     print(f"Categories: {sorted(combined_df['category'].unique())}")
 
+    # ── v6: iter1/iter2 对齐验证 ──
+    print("\n" + "=" * 70)
+    print("iter1/iter2 对齐验证")
+    print("=" * 70)
+    iter1_gl = set()
+    iter2_gl = set()
+    for _, row in combined_df.iterrows():
+        key = (row['disease'], row['module'])
+        if row['iteration'] == 1:
+            iter1_gl.add(key)
+        elif row['iteration'] == 2:
+            iter2_gl.add(key)
+
+    iter1_count = len(combined_df[combined_df['iteration'] == 1])
+    iter2_count = len(combined_df[combined_df['iteration'] == 2])
+    print(f"  Iter1: {len(iter1_gl)} gene lists × 5 databases = {iter1_count} 行")
+    print(f"  Iter2: {len(iter2_gl)} gene lists × 5 databases = {iter2_count} 行")
+
+    missing_in_iter2 = iter1_gl - iter2_gl
+    missing_in_iter1 = iter2_gl - iter1_gl
+    if missing_in_iter2:
+        print(f"  ⚠️  Iter2 缺少 {len(missing_in_iter2)} 个 gene lists:")
+        for d, m in sorted(missing_in_iter2):
+            print(f"      {d} module {m}")
+    if missing_in_iter1:
+        print(f"  ⚠️  Iter1 缺少 {len(missing_in_iter1)} 个 gene lists:")
+        for d, m in sorted(missing_in_iter1):
+            print(f"      {d} module {m}")
+    if not missing_in_iter2 and not missing_in_iter1:
+        print(f"  ✅ 完全对齐! {len(iter1_gl)} gene lists 在两轮中均有数据")
+
     # Save CSV
-    output_filename = f"cross_disease_{num_diseases}_nfdr_metrics_v5.csv"
+    output_filename = f"cross_disease_{num_diseases}_nfdr_metrics_v6.csv"
     output_path = os.path.join(OUTPUT_DIR, output_filename)
     combined_df.to_csv(output_path, index=False)
     print(f"\n✅ 数据已保存: {output_path}")
@@ -185,7 +229,10 @@ def main():
     for disease in sorted(combined_df['disease'].unique()):
         disease_df = combined_df[combined_df['disease'] == disease]
         modules = disease_df['module'].nunique()
-        print(f"  {disease:6s}: {len(disease_df):4d} 条记录, {modules:2d} 个模块")
+        iter1_n = len(disease_df[disease_df['iteration'] == 1])
+        iter2_n = len(disease_df[disease_df['iteration'] == 2])
+        status = "✅" if iter1_n == iter2_n else "⚠️"
+        print(f"  {status} {disease:6s}: {len(disease_df):4d} 条记录, {modules:2d} 个模块 (iter1={iter1_n}, iter2={iter2_n})")
     print("=" * 70)
 
 

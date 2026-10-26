@@ -39,7 +39,7 @@ Given a **disease** and a **gene list**, a human-expert-designed orchestrator ru
 
 The interpretation stage itself calls no external tool. The user-facing implementation can separately attach provenance-preserving PubMed evidence to pathway-level context when matching disease, cell/tissue labels, and intersection genes are available.
 
-The final-check benchmark contains **567 disease–gene-list pairs across 24 complex diseases**. Among database-matched terms, the disease-macro mean statistical-validation pass rate increased from **28.9% under the initial prompt to 39.8% under the refined prompt**. Statistical testing remains necessary after refinement because many new hypotheses still fail enrichment.
+The archived benchmark contains **567 disease–gene-list pairs across 24 complex diseases**. The audited Figure 2 snapshot yields disease-macro mean FDR-support rates of **29.3% in round 1 and 39.6% in round 2** when category rows with at least one newly matched term are averaged within each disease. Earlier draft values of 28.9% and 39.8% do not follow from this archived snapshot under that definition and require reconciliation before citation. Statistical testing remains necessary after refinement because many new hypotheses still fail enrichment.
 
 ---
 
@@ -141,7 +141,7 @@ Cell and tissue assignments are multi-label interpretation outputs. They do not 
 ├── prompts/               # prompt templates (generation, feedback, reasoning audit)
 ├── tools/                 # PubMed, ranking, g:Profiler cache utilities
 ├── backend/               # bundled runtime modules (multi-agent analysis, optional memory storage)
-├── data/                  # 567 benchmark gene lists, 24 source CSVs, run-output path manifest
+├── data/                  # 567 benchmark gene lists, 24 source CSVs, archived run outputs
 ├── scripts/               # run-output locator and audited manuscript Figure 2 source
 ├── website/web_app/       # Public two-pass app and pathway-level cell-context mapping
 ├── docs/                  # GitHub Pages demo homepage (index.html)
@@ -152,7 +152,7 @@ Cell and tissue assignments are multi-label interpretation outputs. They do not 
 
 ## Reproducibility
 
-Full runs call OpenAI, g:Profiler, NCBI MeSH, and NCBI Entrez / PubMed. Reproducing the manuscript results requires the same 567 input gene lists, disease labels, GPT-5.1 model, prompt templates, and service outputs. Each prompt pass requests ten hypotheses per database; the workflow uses one initial pass and one feedback-guided refined pass. The primary benchmark stored validated pathways in the memory bank but did not retrieve cross-disease history during generation. Retrieval was evaluated only in the dedicated transfer experiment on 69 gene-list pairs from five diseases, using `text-embedding-3-small` for semantic indexing.
+Full runs call OpenAI, g:Profiler, NCBI MeSH, and NCBI Entrez / PubMed. The archived Figure 2 results can be regenerated from the bundled 567 input gene lists and historical two-round outputs by following [the Figure 2 reproduction guide](scripts/manuscript_figure2/README.md). Re-running the external services may produce different outputs. Each prompt pass requests ten hypotheses per database; the workflow uses one initial pass and one feedback-guided refined pass. The primary benchmark stored validated pathways in the memory bank but did not retrieve cross-disease history during generation. Retrieval was evaluated only in the dedicated transfer experiment on 69 gene-list pairs from five diseases, using `text-embedding-3-small` for semantic indexing.
 
 ---
 

@@ -20,4 +20,6 @@ The 567 input lists are distinct from the 543 lists that produced at least one f
 
 ## Run-output locations
 
-`run_output_manifest_567.csv` maps every input to six relative paths in the historical two-round run tree: prediction JSON, matched-term CSV and FDR-supported CSV for each round. The files themselves are not included here. The paths are relative to the `Pathway_analysis` run directory, not to this GitHub repository. Regenerate and verify the manifest with `scripts/locate_benchmark_outputs.py` when that run directory is available.
+`run_output_manifest_567.csv` maps every input to six relative paths in the historical two-round run tree: prediction JSON, matched-term CSV and FDR-supported CSV for each round. `benchmark_run_outputs_567.tar.gz` contains all 3,402 mapped artifacts plus the 24 run logs used for the Figure 2 metrics. The paths are relative to the repository root after extracting the archive. `benchmark_run_outputs_567_sha256.csv` provides a SHA-256 checksum and byte count for each archived file. The archive itself has SHA-256 `4e158f65738ff315160044fd8c932e5a426b8117e36ef14569fd9f79c6c5bb04`.
+
+The archive contains the historical computational outputs needed to rebuild the audited Figure 2 snapshot. It does not contain every intermediate product from the larger 781 MB local run directory. Rebuild the curated archive from that directory with `scripts/package_benchmark_outputs.py`, and validate extracted files with `scripts/verify_benchmark_artifacts.py`.

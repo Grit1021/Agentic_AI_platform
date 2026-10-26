@@ -271,11 +271,9 @@ class PipelineOrchestrator:
         passes_all_filters quality gate when available, excludes cluster -1, and
         groups by cluster_walktrap.
         """
-        input_dir = os.path.join(
-            os.path.dirname(pathway_analysis_dir),
-            "Network_expansion",
-            "outputs",
-            "disease_pair_expansion",
+        input_dir = os.environ.get(
+            "BENCHMARK_MODULES_DIR",
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "source_modules"),
         )
         disease_file = os.path.join(input_dir, f"{mesh_id}_modules.csv")
 

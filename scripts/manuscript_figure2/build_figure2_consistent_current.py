@@ -259,6 +259,19 @@ def build_current_metrics() -> tuple[
     round1_pairs = metrics.loc[
         metrics["iteration"].eq(1), ["disease", "module"]
     ].drop_duplicates()
+    round2_pairs = metrics.loc[
+        metrics["iteration"].eq(2), ["disease", "module"]
+    ].drop_duplicates()
+    if len(round1_pairs) != 567 or len(round2_pairs) != 567:
+        raise ValueError(
+            f"Expected 567 pairs in both rounds; found "
+            f"round 1={len(round1_pairs)}, round 2={len(round2_pairs)}"
+        )
+    if set(map(tuple, round1_pairs.to_numpy())) != set(map(tuple, round2_pairs.to_numpy())):
+        raise ValueError("Round 1 and round 2 disease/module keys differ")
+    category_counts = metrics.groupby(["disease", "module", "iteration"]).size()
+    if not category_counts.eq(5).all():
+        raise ValueError("Expected five annotation categories per pair and round")
     pair_audit = round1_pairs.merge(
         sizes, on=["disease", "module"], how="left", validate="one_to_one"
     )
@@ -1020,6 +1033,9 @@ def main() -> None:
         "snapshot": "current_memory_bank_external_audited_2026-07-20",
         "diseases": int(metrics["disease"].nunique()),
         "round1_gene_lists": int(len(pairs)),
+        "round2_gene_lists": int(metrics.loc[
+            metrics["iteration"].eq(2), ["disease", "module"]
+        ].drop_duplicates().shape[0]),
         "round1_pathways": int(len(records)),
         "round1_status_counts": {
             key: int(value)
