@@ -1,0 +1,341 @@
+disease,disease_name,n_validated_pathway_records,cell_type_tag,tag_class,cell_context_group,n_records_with_tag,proportion_of_records,rank_within_disease,shown_in_Figure_4C
+AD,Alzheimer's disease,310,Neurons,broad,neural,280,0.9032,1,yes
+AD,Alzheimer's disease,310,Glial cells,broad,neural,133,0.429,2,yes
+AD,Alzheimer's disease,310,Hippocampal neurons,subtype,neural,111,0.3581,3,yes
+AD,Alzheimer's disease,310,Cortical neurons,subtype,neural,109,0.3516,4,yes
+AD,Alzheimer's disease,310,Microglia,subtype,neural,73,0.2355,5,yes
+AD,Alzheimer's disease,310,Astrocytes,subtype,neural,70,0.2258,6,yes
+AD,Alzheimer's disease,310,Pyramidal neurons,subtype,neural,61,0.1968,7,yes
+AD,Alzheimer's disease,310,Excitatory neurons,subtype,neural,27,0.0871,8,yes
+AD,Alzheimer's disease,310,Glutamatergic neurons,subtype,neural,10,0.0323,9,yes
+AD,Alzheimer's disease,310,Endothelial cells,broad,stromal,8,0.0258,10,yes
+AD,Alzheimer's disease,310,Oligodendrocytes,subtype,neural,5,0.0161,11,no
+AD,Alzheimer's disease,310,cholinergic neurons,subtype,neural,4,0.0129,12,no
+AD,Alzheimer's disease,310,Immune cells,broad,immune,3,0.0097,13,no
+AD,Alzheimer's disease,310,inhibitory neurons,subtype,neural,2,0.0065,14,no
+AD,Alzheimer's disease,310,smooth muscle cells,broad,stromal,1,0.0032,15,no
+AD,Alzheimer's disease,310,gabaergic neurons,subtype,neural,1,0.0032,16,no
+AD,Alzheimer's disease,310,Dopaminergic neurons,subtype,neural,1,0.0032,17,no
+AF,Atrial fibrillation,460,cardiomyocytes,broad,metabolic,369,0.8022,1,no
+AF,Atrial fibrillation,460,fibroblasts,broad,stromal,254,0.5522,2,no
+AF,Atrial fibrillation,460,Endothelial cells,broad,stromal,66,0.1435,3,no
+AF,Atrial fibrillation,460,Immune cells,broad,immune,23,0.05,4,no
+AF,Atrial fibrillation,460,Neurons,broad,neural,7,0.0152,5,no
+AF,Atrial fibrillation,460,Macrophages,subtype,immune,3,0.0065,6,no
+AF,Atrial fibrillation,460,smooth muscle cells,broad,stromal,3,0.0065,7,no
+AF,Atrial fibrillation,460,Hepatocytes,broad,metabolic,1,0.0022,8,no
+AIT,Autoimmune thyroiditis,417,Immune cells,broad,immune,332,0.7962,1,no
+AIT,Autoimmune thyroiditis,417,epithelial cells,broad,epithelial,173,0.4149,2,no
+AIT,Autoimmune thyroiditis,417,T cells,subtype,immune,129,0.3094,3,no
+AIT,Autoimmune thyroiditis,417,B cells,subtype,immune,121,0.2902,4,no
+AIT,Autoimmune thyroiditis,417,lymphocytes,subtype,immune,75,0.1799,5,no
+AIT,Autoimmune thyroiditis,417,dendritic cells,subtype,immune,50,0.1199,6,no
+AIT,Autoimmune thyroiditis,417,Macrophages,subtype,immune,45,0.1079,7,no
+AIT,Autoimmune thyroiditis,417,monocytes,subtype,immune,19,0.0456,8,no
+AIT,Autoimmune thyroiditis,417,Endothelial cells,broad,stromal,8,0.0192,9,no
+AIT,Autoimmune thyroiditis,417,neutrophils,subtype,immune,4,0.0096,10,no
+AIT,Autoimmune thyroiditis,417,Neurons,broad,neural,2,0.0048,11,no
+AIT,Autoimmune thyroiditis,417,fibroblasts,broad,stromal,2,0.0048,12,no
+AIT,Autoimmune thyroiditis,417,Dopaminergic neurons,subtype,neural,1,0.0024,13,no
+AIT,Autoimmune thyroiditis,417,Hepatocytes,broad,metabolic,1,0.0024,14,no
+ALS,Amyotrophic lateral sclerosis,76,Neurons,broad,neural,71,0.9342,1,no
+ALS,Amyotrophic lateral sclerosis,76,motor neurons,subtype,neural,68,0.8947,2,no
+ALS,Amyotrophic lateral sclerosis,76,Glial cells,broad,neural,23,0.3026,3,no
+ALS,Amyotrophic lateral sclerosis,76,Astrocytes,subtype,neural,13,0.1711,4,no
+ALS,Amyotrophic lateral sclerosis,76,Microglia,subtype,neural,10,0.1316,5,no
+ALS,Amyotrophic lateral sclerosis,76,Cortical neurons,subtype,neural,8,0.1053,6,no
+ALS,Amyotrophic lateral sclerosis,76,Oligodendrocytes,subtype,neural,3,0.0395,7,no
+ALS,Amyotrophic lateral sclerosis,76,Glutamatergic neurons,subtype,neural,1,0.0132,8,no
+ALS,Amyotrophic lateral sclerosis,76,cholinergic neurons,subtype,neural,1,0.0132,9,no
+AST,Asthma,867,Immune cells,broad,immune,615,0.7093,1,no
+AST,Asthma,867,epithelial cells,broad,epithelial,499,0.5755,2,no
+AST,Asthma,867,smooth muscle cells,broad,stromal,209,0.2411,3,no
+AST,Asthma,867,T cells,subtype,immune,195,0.2249,4,no
+AST,Asthma,867,Macrophages,subtype,immune,130,0.1499,5,no
+AST,Asthma,867,fibroblasts,broad,stromal,124,0.143,6,no
+AST,Asthma,867,dendritic cells,subtype,immune,98,0.113,7,no
+AST,Asthma,867,B cells,subtype,immune,78,0.09,8,no
+AST,Asthma,867,neutrophils,subtype,immune,73,0.0842,9,no
+AST,Asthma,867,Endothelial cells,broad,stromal,73,0.0842,10,no
+AST,Asthma,867,lymphocytes,subtype,immune,51,0.0588,11,no
+AST,Asthma,867,monocytes,subtype,immune,36,0.0415,12,no
+AST,Asthma,867,intestinal epithelial cells,broad,epithelial,22,0.0254,13,no
+AST,Asthma,867,Neurons,broad,neural,11,0.0127,14,no
+AST,Asthma,867,sensory neurons,subtype,neural,7,0.0081,15,no
+AST,Asthma,867,Glial cells,broad,neural,2,0.0023,16,no
+CAD,Coronary artery disease,796,Endothelial cells,broad,stromal,511,0.642,1,no
+CAD,Coronary artery disease,796,Immune cells,broad,immune,428,0.5377,2,no
+CAD,Coronary artery disease,796,smooth muscle cells,broad,stromal,422,0.5302,3,no
+CAD,Coronary artery disease,796,Macrophages,subtype,immune,278,0.3492,4,no
+CAD,Coronary artery disease,796,cardiomyocytes,broad,metabolic,81,0.1018,5,no
+CAD,Coronary artery disease,796,T cells,subtype,immune,69,0.0867,6,no
+CAD,Coronary artery disease,796,Hepatocytes,broad,metabolic,63,0.0791,7,no
+CAD,Coronary artery disease,796,monocytes,subtype,immune,55,0.0691,8,no
+CAD,Coronary artery disease,796,fibroblasts,broad,stromal,54,0.0678,9,no
+CAD,Coronary artery disease,796,neutrophils,subtype,immune,16,0.0201,10,no
+CAD,Coronary artery disease,796,intestinal epithelial cells,broad,epithelial,14,0.0176,11,no
+CAD,Coronary artery disease,796,dendritic cells,subtype,immune,12,0.0151,12,no
+CAD,Coronary artery disease,796,B cells,subtype,immune,9,0.0113,13,no
+CAD,Coronary artery disease,796,Neurons,broad,neural,8,0.0101,14,no
+CAD,Coronary artery disease,796,lymphocytes,subtype,immune,3,0.0038,15,no
+CAD,Coronary artery disease,796,sensory neurons,subtype,neural,1,0.0013,16,no
+CAD,Coronary artery disease,796,Glial cells,broad,neural,1,0.0013,17,no
+CAD,Coronary artery disease,796,Pancreatic beta cells,broad,metabolic,1,0.0013,18,no
+CD,Crohn's disease,534,Immune cells,broad,immune,406,0.7603,1,no
+CD,Crohn's disease,534,intestinal epithelial cells,broad,epithelial,265,0.4963,2,no
+CD,Crohn's disease,534,Macrophages,subtype,immune,188,0.3521,3,no
+CD,Crohn's disease,534,T cells,subtype,immune,180,0.3371,4,no
+CD,Crohn's disease,534,dendritic cells,subtype,immune,102,0.191,5,no
+CD,Crohn's disease,534,epithelial cells,broad,epithelial,79,0.1479,6,no
+CD,Crohn's disease,534,monocytes,subtype,immune,54,0.1011,7,no
+CD,Crohn's disease,534,B cells,subtype,immune,34,0.0637,8,no
+CD,Crohn's disease,534,Endothelial cells,broad,stromal,31,0.0581,9,no
+CD,Crohn's disease,534,neutrophils,subtype,immune,20,0.0375,10,no
+CD,Crohn's disease,534,fibroblasts,broad,stromal,14,0.0262,11,no
+CD,Crohn's disease,534,Neurons,broad,neural,12,0.0225,12,no
+CD,Crohn's disease,534,Glial cells,broad,neural,11,0.0206,13,no
+CD,Crohn's disease,534,lymphocytes,subtype,immune,10,0.0187,14,no
+CD,Crohn's disease,534,smooth muscle cells,broad,stromal,4,0.0075,15,no
+CKD,Chronic kidney disease,824,epithelial cells,broad,epithelial,561,0.6808,1,no
+CKD,Chronic kidney disease,824,podocytes,subtype,epithelial,352,0.4272,2,no
+CKD,Chronic kidney disease,824,fibroblasts,broad,stromal,225,0.2731,3,no
+CKD,Chronic kidney disease,824,Immune cells,broad,immune,172,0.2087,4,no
+CKD,Chronic kidney disease,824,Endothelial cells,broad,stromal,149,0.1808,5,no
+CKD,Chronic kidney disease,824,Macrophages,subtype,immune,41,0.0498,6,no
+CKD,Chronic kidney disease,824,T cells,subtype,immune,33,0.04,7,no
+CKD,Chronic kidney disease,824,monocytes,subtype,immune,15,0.0182,8,no
+CKD,Chronic kidney disease,824,smooth muscle cells,broad,stromal,11,0.0133,9,no
+CKD,Chronic kidney disease,824,dendritic cells,subtype,immune,9,0.0109,10,no
+CKD,Chronic kidney disease,824,neutrophils,subtype,immune,7,0.0085,11,no
+CKD,Chronic kidney disease,824,lymphocytes,subtype,immune,4,0.0049,12,no
+CKD,Chronic kidney disease,824,cardiomyocytes,broad,metabolic,3,0.0036,13,no
+CKD,Chronic kidney disease,824,B cells,subtype,immune,2,0.0024,14,no
+CKD,Chronic kidney disease,824,Hepatocytes,broad,metabolic,1,0.0012,15,no
+COPD,Chronic obstructive pulmonary disease,635,epithelial cells,broad,epithelial,403,0.6346,1,no
+COPD,Chronic obstructive pulmonary disease,635,Immune cells,broad,immune,366,0.5764,2,no
+COPD,Chronic obstructive pulmonary disease,635,Macrophages,subtype,immune,209,0.3291,3,no
+COPD,Chronic obstructive pulmonary disease,635,Endothelial cells,broad,stromal,172,0.2709,4,no
+COPD,Chronic obstructive pulmonary disease,635,fibroblasts,broad,stromal,141,0.222,5,no
+COPD,Chronic obstructive pulmonary disease,635,smooth muscle cells,broad,stromal,83,0.1307,6,no
+COPD,Chronic obstructive pulmonary disease,635,neutrophils,subtype,immune,78,0.1228,7,no
+COPD,Chronic obstructive pulmonary disease,635,T cells,subtype,immune,35,0.0551,8,no
+COPD,Chronic obstructive pulmonary disease,635,lymphocytes,subtype,immune,27,0.0425,9,no
+COPD,Chronic obstructive pulmonary disease,635,B cells,subtype,immune,17,0.0268,10,no
+COPD,Chronic obstructive pulmonary disease,635,intestinal epithelial cells,broad,epithelial,15,0.0236,11,no
+COPD,Chronic obstructive pulmonary disease,635,monocytes,subtype,immune,12,0.0189,12,no
+COPD,Chronic obstructive pulmonary disease,635,Neurons,broad,neural,10,0.0157,13,no
+COPD,Chronic obstructive pulmonary disease,635,dendritic cells,subtype,immune,9,0.0142,14,no
+COPD,Chronic obstructive pulmonary disease,635,Hepatocytes,broad,metabolic,7,0.011,15,no
+COPD,Chronic obstructive pulmonary disease,635,sensory neurons,subtype,neural,4,0.0063,16,no
+COPD,Chronic obstructive pulmonary disease,635,Glial cells,broad,neural,2,0.0031,17,no
+COPD,Chronic obstructive pulmonary disease,635,cardiomyocytes,broad,metabolic,1,0.0016,18,no
+COPD,Chronic obstructive pulmonary disease,635,Dopaminergic neurons,subtype,neural,1,0.0016,19,no
+CRC,Colorectal cancer,385,intestinal epithelial cells,broad,epithelial,154,0.4,1,no
+CRC,Colorectal cancer,385,epithelial cells,broad,epithelial,93,0.2416,2,no
+CRC,Colorectal cancer,385,Immune cells,broad,immune,37,0.0961,3,no
+CRC,Colorectal cancer,385,fibroblasts,broad,stromal,21,0.0545,4,no
+CRC,Colorectal cancer,385,Endothelial cells,broad,stromal,16,0.0416,5,no
+CRC,Colorectal cancer,385,Macrophages,subtype,immune,3,0.0078,6,no
+CRC,Colorectal cancer,385,T cells,subtype,immune,3,0.0078,7,no
+CRC,Colorectal cancer,385,Neurons,broad,neural,2,0.0052,8,no
+CRC,Colorectal cancer,385,Glial cells,broad,neural,1,0.0026,9,no
+CRC,Colorectal cancer,385,smooth muscle cells,broad,stromal,1,0.0026,10,no
+CRC,Colorectal cancer,385,neutrophils,subtype,immune,1,0.0026,11,no
+CRC,Colorectal cancer,385,monocytes,subtype,immune,1,0.0026,12,no
+HCC,Hepatocellular carcinoma,32,Hepatocytes,broad,metabolic,27,0.8438,1,no
+HCC,Hepatocellular carcinoma,32,Immune cells,broad,immune,6,0.1875,2,no
+HCC,Hepatocellular carcinoma,32,Endothelial cells,broad,stromal,6,0.1875,3,no
+HCC,Hepatocellular carcinoma,32,fibroblasts,broad,stromal,2,0.0625,4,no
+HCC,Hepatocellular carcinoma,32,lymphocytes,subtype,immune,1,0.0312,5,no
+HF,Heart failure,25,cardiomyocytes,broad,metabolic,19,0.76,1,no
+HF,Heart failure,25,fibroblasts,broad,stromal,17,0.68,2,no
+HF,Heart failure,25,Immune cells,broad,immune,8,0.32,3,no
+HF,Heart failure,25,Endothelial cells,broad,stromal,8,0.32,4,no
+HF,Heart failure,25,Macrophages,subtype,immune,1,0.04,5,no
+HF,Heart failure,25,T cells,subtype,immune,1,0.04,6,no
+HTN,Hypertension,816,smooth muscle cells,broad,stromal,478,0.5858,1,no
+HTN,Hypertension,816,Endothelial cells,broad,stromal,409,0.5012,2,no
+HTN,Hypertension,816,cardiomyocytes,broad,metabolic,152,0.1863,3,no
+HTN,Hypertension,816,fibroblasts,broad,stromal,101,0.1238,4,no
+HTN,Hypertension,816,Immune cells,broad,immune,74,0.0907,5,no
+HTN,Hypertension,816,epithelial cells,broad,epithelial,74,0.0907,6,no
+HTN,Hypertension,816,Neurons,broad,neural,37,0.0453,7,no
+HTN,Hypertension,816,T cells,subtype,immune,14,0.0172,8,no
+HTN,Hypertension,816,Macrophages,subtype,immune,12,0.0147,9,no
+HTN,Hypertension,816,monocytes,subtype,immune,9,0.011,10,no
+HTN,Hypertension,816,lymphocytes,subtype,immune,9,0.011,11,no
+HTN,Hypertension,816,Glial cells,broad,neural,2,0.0025,12,no
+HTN,Hypertension,816,neutrophils,subtype,immune,2,0.0025,13,no
+HTN,Hypertension,816,dendritic cells,subtype,immune,1,0.0012,14,no
+HTN,Hypertension,816,Hepatocytes,broad,metabolic,1,0.0012,15,no
+HTN,Hypertension,816,Microglia,subtype,neural,1,0.0012,16,no
+HTN,Hypertension,816,Astrocytes,subtype,neural,1,0.0012,17,no
+HTN,Hypertension,816,podocytes,subtype,epithelial,1,0.0012,18,no
+IBD,Inflammatory bowel disease,688,Immune cells,broad,immune,519,0.7544,1,no
+IBD,Inflammatory bowel disease,688,intestinal epithelial cells,broad,epithelial,351,0.5102,2,no
+IBD,Inflammatory bowel disease,688,T cells,subtype,immune,214,0.311,3,no
+IBD,Inflammatory bowel disease,688,Macrophages,subtype,immune,194,0.282,4,no
+IBD,Inflammatory bowel disease,688,epithelial cells,broad,epithelial,122,0.1773,5,no
+IBD,Inflammatory bowel disease,688,dendritic cells,subtype,immune,114,0.1657,6,no
+IBD,Inflammatory bowel disease,688,Endothelial cells,broad,stromal,68,0.0988,7,no
+IBD,Inflammatory bowel disease,688,monocytes,subtype,immune,64,0.093,8,no
+IBD,Inflammatory bowel disease,688,B cells,subtype,immune,43,0.0625,9,no
+IBD,Inflammatory bowel disease,688,neutrophils,subtype,immune,41,0.0596,10,no
+IBD,Inflammatory bowel disease,688,lymphocytes,subtype,immune,34,0.0494,11,no
+IBD,Inflammatory bowel disease,688,fibroblasts,broad,stromal,26,0.0378,12,no
+IBD,Inflammatory bowel disease,688,Neurons,broad,neural,11,0.016,13,no
+IBD,Inflammatory bowel disease,688,smooth muscle cells,broad,stromal,3,0.0044,14,no
+IBD,Inflammatory bowel disease,688,Glial cells,broad,neural,2,0.0029,15,no
+IBD,Inflammatory bowel disease,688,Hepatocytes,broad,metabolic,1,0.0015,16,no
+IBD,Inflammatory bowel disease,688,sensory neurons,subtype,neural,1,0.0015,17,no
+IBD,Inflammatory bowel disease,688,Hippocampal neurons,subtype,neural,1,0.0015,18,no
+IBD,Inflammatory bowel disease,688,Cortical neurons,subtype,neural,1,0.0015,19,no
+MDD,Major depressive disorder,325,Neurons,broad,neural,259,0.7969,1,no
+MDD,Major depressive disorder,325,Glial cells,broad,neural,111,0.3415,2,no
+MDD,Major depressive disorder,325,Cortical neurons,subtype,neural,79,0.2431,3,no
+MDD,Major depressive disorder,325,Hippocampal neurons,subtype,neural,63,0.1938,4,no
+MDD,Major depressive disorder,325,Pyramidal neurons,subtype,neural,53,0.1631,5,no
+MDD,Major depressive disorder,325,Immune cells,broad,immune,29,0.0892,6,no
+MDD,Major depressive disorder,325,Astrocytes,subtype,neural,25,0.0769,7,no
+MDD,Major depressive disorder,325,Excitatory neurons,subtype,neural,24,0.0738,8,no
+MDD,Major depressive disorder,325,Microglia,subtype,neural,22,0.0677,9,no
+MDD,Major depressive disorder,325,Glutamatergic neurons,subtype,neural,13,0.04,10,no
+MDD,Major depressive disorder,325,gabaergic neurons,subtype,neural,10,0.0308,11,no
+MDD,Major depressive disorder,325,inhibitory neurons,subtype,neural,9,0.0277,12,no
+MDD,Major depressive disorder,325,Dopaminergic neurons,subtype,neural,6,0.0185,13,no
+MDD,Major depressive disorder,325,Oligodendrocytes,subtype,neural,5,0.0154,14,no
+MDD,Major depressive disorder,325,Endothelial cells,broad,stromal,5,0.0154,15,no
+MDD,Major depressive disorder,325,serotonergic neurons,subtype,neural,5,0.0154,16,no
+MDD,Major depressive disorder,325,monocytes,subtype,immune,5,0.0154,17,no
+MDD,Major depressive disorder,325,Macrophages,subtype,immune,3,0.0092,18,no
+MDD,Major depressive disorder,325,T cells,subtype,immune,1,0.0031,19,no
+MDD,Major depressive disorder,325,B cells,subtype,immune,1,0.0031,20,no
+MS,Multiple sclerosis,603,Immune cells,broad,immune,436,0.7231,1,no
+MS,Multiple sclerosis,603,Glial cells,broad,neural,385,0.6385,2,no
+MS,Multiple sclerosis,603,Microglia,subtype,neural,227,0.3765,3,no
+MS,Multiple sclerosis,603,Oligodendrocytes,subtype,neural,202,0.335,4,no
+MS,Multiple sclerosis,603,Neurons,broad,neural,185,0.3068,5,no
+MS,Multiple sclerosis,603,T cells,subtype,immune,182,0.3018,6,no
+MS,Multiple sclerosis,603,B cells,subtype,immune,153,0.2537,7,no
+MS,Multiple sclerosis,603,Astrocytes,subtype,neural,131,0.2172,8,no
+MS,Multiple sclerosis,603,monocytes,subtype,immune,85,0.141,9,no
+MS,Multiple sclerosis,603,lymphocytes,subtype,immune,75,0.1244,10,no
+MS,Multiple sclerosis,603,Macrophages,subtype,immune,66,0.1095,11,no
+MS,Multiple sclerosis,603,Endothelial cells,broad,stromal,52,0.0862,12,no
+MS,Multiple sclerosis,603,dendritic cells,subtype,immune,34,0.0564,13,no
+MS,Multiple sclerosis,603,Cortical neurons,subtype,neural,27,0.0448,14,no
+MS,Multiple sclerosis,603,Hippocampal neurons,subtype,neural,13,0.0216,15,no
+MS,Multiple sclerosis,603,Excitatory neurons,subtype,neural,5,0.0083,16,no
+MS,Multiple sclerosis,603,Glutamatergic neurons,subtype,neural,4,0.0066,17,no
+MS,Multiple sclerosis,603,neutrophils,subtype,immune,3,0.005,18,no
+MS,Multiple sclerosis,603,Pyramidal neurons,subtype,neural,3,0.005,19,no
+MS,Multiple sclerosis,603,inhibitory neurons,subtype,neural,3,0.005,20,no
+MS,Multiple sclerosis,603,motor neurons,subtype,neural,1,0.0017,21,no
+MS,Multiple sclerosis,603,epithelial cells,broad,epithelial,1,0.0017,22,no
+MS,Multiple sclerosis,603,Dopaminergic neurons,subtype,neural,1,0.0017,23,no
+MS,Multiple sclerosis,603,serotonergic neurons,subtype,neural,1,0.0017,24,no
+OSA,Obstructive sleep apnoea,11,Endothelial cells,broad,stromal,11,1,1,no
+OSA,Obstructive sleep apnoea,11,epithelial cells,broad,epithelial,5,0.4545,2,no
+OSA,Obstructive sleep apnoea,11,smooth muscle cells,broad,stromal,4,0.3636,3,no
+OSA,Obstructive sleep apnoea,11,cardiomyocytes,broad,metabolic,3,0.2727,4,no
+OSA,Obstructive sleep apnoea,11,Neurons,broad,neural,2,0.1818,5,no
+OSA,Obstructive sleep apnoea,11,fibroblasts,broad,stromal,1,0.0909,6,no
+PD,Parkinson's disease,412,Neurons,broad,neural,364,0.8835,1,yes
+PD,Parkinson's disease,412,Dopaminergic neurons,subtype,neural,278,0.6748,2,yes
+PD,Parkinson's disease,412,Glial cells,broad,neural,123,0.2985,3,yes
+PD,Parkinson's disease,412,Microglia,subtype,neural,51,0.1238,4,yes
+PD,Parkinson's disease,412,Astrocytes,subtype,neural,44,0.1068,5,yes
+PD,Parkinson's disease,412,Cortical neurons,subtype,neural,30,0.0728,6,no
+PD,Parkinson's disease,412,Glutamatergic neurons,subtype,neural,6,0.0146,7,no
+PD,Parkinson's disease,412,Immune cells,broad,immune,6,0.0146,8,no
+PD,Parkinson's disease,412,Endothelial cells,broad,stromal,5,0.0121,9,no
+PD,Parkinson's disease,412,Pyramidal neurons,subtype,neural,5,0.0121,10,no
+PD,Parkinson's disease,412,Oligodendrocytes,subtype,neural,3,0.0073,11,no
+PD,Parkinson's disease,412,gabaergic neurons,subtype,neural,1,0.0024,12,no
+PD,Parkinson's disease,412,Macrophages,subtype,immune,1,0.0024,13,no
+PD,Parkinson's disease,412,T cells,subtype,immune,1,0.0024,14,no
+PD,Parkinson's disease,412,serotonergic neurons,subtype,neural,1,0.0024,15,no
+PD,Parkinson's disease,412,Pancreatic beta cells,broad,metabolic,1,0.0024,16,no
+PD,Parkinson's disease,412,monocytes,subtype,immune,1,0.0024,17,no
+PS,Psoriasis,574,Immune cells,broad,immune,397,0.6916,1,no
+PS,Psoriasis,574,T cells,subtype,immune,182,0.3171,2,no
+PS,Psoriasis,574,dendritic cells,subtype,immune,151,0.2631,3,no
+PS,Psoriasis,574,Endothelial cells,broad,stromal,62,0.108,4,no
+PS,Psoriasis,574,Macrophages,subtype,immune,55,0.0958,5,no
+PS,Psoriasis,574,fibroblasts,broad,stromal,45,0.0784,6,no
+PS,Psoriasis,574,neutrophils,subtype,immune,43,0.0749,7,no
+PS,Psoriasis,574,monocytes,subtype,immune,15,0.0261,8,no
+PS,Psoriasis,574,B cells,subtype,immune,4,0.007,9,no
+PS,Psoriasis,574,epithelial cells,broad,epithelial,3,0.0052,10,no
+PS,Psoriasis,574,Glial cells,broad,neural,2,0.0035,11,no
+PS,Psoriasis,574,lymphocytes,subtype,immune,1,0.0017,12,no
+PS,Psoriasis,574,Hepatocytes,broad,metabolic,1,0.0017,13,no
+PS,Psoriasis,574,Neurons,broad,neural,1,0.0017,14,no
+PS,Psoriasis,574,sensory neurons,subtype,neural,1,0.0017,15,no
+PSP,Progressive supranuclear palsy,83,Neurons,broad,neural,74,0.8916,1,no
+PSP,Progressive supranuclear palsy,83,Glial cells,broad,neural,31,0.3735,2,no
+PSP,Progressive supranuclear palsy,83,Astrocytes,subtype,neural,13,0.1566,3,no
+PSP,Progressive supranuclear palsy,83,Cortical neurons,subtype,neural,11,0.1325,4,no
+PSP,Progressive supranuclear palsy,83,Microglia,subtype,neural,11,0.1325,5,no
+PSP,Progressive supranuclear palsy,83,Oligodendrocytes,subtype,neural,6,0.0723,6,no
+PSP,Progressive supranuclear palsy,83,Glutamatergic neurons,subtype,neural,2,0.0241,7,no
+PSP,Progressive supranuclear palsy,83,gabaergic neurons,subtype,neural,2,0.0241,8,no
+PSP,Progressive supranuclear palsy,83,inhibitory neurons,subtype,neural,2,0.0241,9,no
+PSP,Progressive supranuclear palsy,83,Excitatory neurons,subtype,neural,2,0.0241,10,no
+RA,Rheumatoid arthritis,557,Immune cells,broad,immune,497,0.8923,1,no
+RA,Rheumatoid arthritis,557,fibroblasts,broad,stromal,347,0.623,2,no
+RA,Rheumatoid arthritis,557,Macrophages,subtype,immune,301,0.5404,3,no
+RA,Rheumatoid arthritis,557,T cells,subtype,immune,200,0.3591,4,no
+RA,Rheumatoid arthritis,557,B cells,subtype,immune,171,0.307,5,no
+RA,Rheumatoid arthritis,557,dendritic cells,subtype,immune,77,0.1382,6,no
+RA,Rheumatoid arthritis,557,Endothelial cells,broad,stromal,75,0.1346,7,no
+RA,Rheumatoid arthritis,557,monocytes,subtype,immune,65,0.1167,8,no
+RA,Rheumatoid arthritis,557,lymphocytes,subtype,immune,52,0.0934,9,no
+RA,Rheumatoid arthritis,557,neutrophils,subtype,immune,28,0.0503,10,no
+RA,Rheumatoid arthritis,557,Neurons,broad,neural,3,0.0054,11,no
+RA,Rheumatoid arthritis,557,Glial cells,broad,neural,2,0.0036,12,no
+RA,Rheumatoid arthritis,557,Hepatocytes,broad,metabolic,1,0.0018,13,no
+SLE,Systemic lupus erythematosus,449,Immune cells,broad,immune,416,0.9265,1,no
+SLE,Systemic lupus erythematosus,449,B cells,subtype,immune,223,0.4967,2,no
+SLE,Systemic lupus erythematosus,449,dendritic cells,subtype,immune,170,0.3786,3,no
+SLE,Systemic lupus erythematosus,449,T cells,subtype,immune,149,0.3318,4,no
+SLE,Systemic lupus erythematosus,449,monocytes,subtype,immune,119,0.265,5,no
+SLE,Systemic lupus erythematosus,449,lymphocytes,subtype,immune,95,0.2116,6,no
+SLE,Systemic lupus erythematosus,449,Macrophages,subtype,immune,75,0.167,7,no
+SLE,Systemic lupus erythematosus,449,neutrophils,subtype,immune,51,0.1136,8,no
+SLE,Systemic lupus erythematosus,449,Endothelial cells,broad,stromal,23,0.0512,9,no
+SLE,Systemic lupus erythematosus,449,epithelial cells,broad,epithelial,7,0.0156,10,no
+SLE,Systemic lupus erythematosus,449,podocytes,subtype,epithelial,3,0.0067,11,no
+SLE,Systemic lupus erythematosus,449,Neurons,broad,neural,2,0.0045,12,no
+SLE,Systemic lupus erythematosus,449,Microglia,subtype,neural,1,0.0022,13,no
+SLE,Systemic lupus erythematosus,449,Astrocytes,subtype,neural,1,0.0022,14,no
+SLE,Systemic lupus erythematosus,449,Glial cells,broad,neural,1,0.0022,15,no
+SLE,Systemic lupus erythematosus,449,Oligodendrocytes,subtype,neural,1,0.0022,16,no
+SLE,Systemic lupus erythematosus,449,Hepatocytes,broad,metabolic,1,0.0022,17,no
+T2D,Type 2 diabetes,763,Pancreatic beta cells,broad,metabolic,361,0.4731,1,yes
+T2D,Type 2 diabetes,763,Hepatocytes,broad,metabolic,258,0.3381,2,yes
+T2D,Type 2 diabetes,763,Immune cells,broad,immune,85,0.1114,3,yes
+T2D,Type 2 diabetes,763,Endothelial cells,broad,stromal,61,0.0799,4,yes
+T2D,Type 2 diabetes,763,Macrophages,subtype,immune,38,0.0498,5,yes
+T2D,Type 2 diabetes,763,Neurons,broad,neural,27,0.0354,6,no
+T2D,Type 2 diabetes,763,smooth muscle cells,broad,stromal,6,0.0079,7,no
+T2D,Type 2 diabetes,763,cardiomyocytes,broad,metabolic,4,0.0052,8,no
+T2D,Type 2 diabetes,763,T cells,subtype,immune,4,0.0052,9,no
+T2D,Type 2 diabetes,763,podocytes,subtype,epithelial,3,0.0039,10,no
+T2D,Type 2 diabetes,763,epithelial cells,broad,epithelial,3,0.0039,11,no
+T2D,Type 2 diabetes,763,intestinal epithelial cells,broad,epithelial,2,0.0026,12,no
+T2D,Type 2 diabetes,763,sensory neurons,subtype,neural,1,0.0013,13,no
+T2D,Type 2 diabetes,763,monocytes,subtype,immune,1,0.0013,14,no
+T2D,Type 2 diabetes,763,Glutamatergic neurons,subtype,neural,1,0.0013,15,no
+T2D,Type 2 diabetes,763,Excitatory neurons,subtype,neural,1,0.0013,16,no
+T2D,Type 2 diabetes,763,dendritic cells,subtype,immune,1,0.0013,17,no
+TB,Tuberculosis,59,Immune cells,broad,immune,56,0.9492,1,no
+TB,Tuberculosis,59,Macrophages,subtype,immune,55,0.9322,2,no
+TB,Tuberculosis,59,dendritic cells,subtype,immune,29,0.4915,3,no
+TB,Tuberculosis,59,monocytes,subtype,immune,17,0.2881,4,no
+TB,Tuberculosis,59,epithelial cells,broad,epithelial,16,0.2712,5,no
+TB,Tuberculosis,59,T cells,subtype,immune,15,0.2542,6,no
+TB,Tuberculosis,59,neutrophils,subtype,immune,6,0.1017,7,no
+TB,Tuberculosis,59,Endothelial cells,broad,stromal,2,0.0339,8,no
+TB,Tuberculosis,59,B cells,subtype,immune,1,0.0169,9,no
+TB,Tuberculosis,59,lymphocytes,subtype,immune,1,0.0169,10,no

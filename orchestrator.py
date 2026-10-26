@@ -9,7 +9,7 @@ if __package__ in (None, ""):
     package_parent = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if package_parent not in sys.path:
         sys.path.insert(0, package_parent)
-    __package__ = "refined"
+    __package__ = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 
 from . import config as cfg
 from .agents import BiologicalRankingAgent, StatisticalValidationAgent
@@ -828,7 +828,7 @@ def main():
     disease_code = config['disease_code']
 
     base_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        os.path.dirname(os.path.abspath(__file__)),
         f"iterative_feedback_{disease_code}",
     )
     log_dir = os.path.join(base_dir, f"{disease_code}_aggregated_{run_timestamp}{tag_suffix}")

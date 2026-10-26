@@ -1,0 +1,12 @@
+pathway_name,pathway_id,n_validated_pathway_records,Neurons,Cortical neurons,Hippocampal neurons,Glial cells,Pyramidal neurons,Microglia,Astrocytes,Excitatory neurons,Glutamatergic neurons,Endothelial cells
+endocytosis,GO:0006897,7,6,4,4,4,3,3,1,0,1,0
+plasma membrane,GO:0005886,7,7,4,4,2,2,2,1,0,0,0
+synapse,GO:0045202,7,2,2,2,0,2,0,0,0,0,0
+vesicle-mediated transport,GO:0016192,6,6,1,1,2,0,1,1,1,0,0
+Autophagy - animal,KEGG:04140,4,4,2,2,2,0,3,2,0,0,0
+Golgi apparatus,GO:0005794,4,4,3,2,0,0,0,0,0,0,0
+Protein processing in endoplasmic reticulum,KEGG:04141,4,4,2,2,4,2,3,4,1,0,0
+cell adhesion molecule binding,GO:0050839,4,4,3,3,2,1,0,1,3,0,1
+glutamatergic synapse,GO:0098978,4,2,2,2,0,2,0,0,0,0,0
+lysosome,GO:0005764,4,4,1,1,3,0,3,1,0,0,0
+postsynaptic density,GO:0014069,4,4,2,2,0,2,0,0,0,1,0

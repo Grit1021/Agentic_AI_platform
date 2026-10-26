@@ -24,6 +24,7 @@ gprofiler_cache*/
 *_cache/
 
 # ── Run outputs (analysis artifacts) ──
+output/
 iterative_feedback_*/
 *_aggregated_*/
 drug_target_analysis.json

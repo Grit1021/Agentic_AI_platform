@@ -1,5 +1,9 @@
 # Benchmark gene lists
 
+The Figure 4 record-level context data and numerical source tables are in
+[`figure4/`](figure4/README.md); they document a later analysis of the 543
+benchmark inputs with at least one validated pathway.
+
 `gene_lists_567.csv` contains the 567 disease–gene-list inputs used for the 24-disease pathway benchmark. Each row represents one disease and one network module. The `genes` field is a semicolon-separated list of Ensembl gene IDs from the source file's `node` column; `gene_count` counts distinct IDs in that list.
 
 The unmodified upstream files are in `source_modules/` (one `*_modules.csv` per disease). `source_manifest.csv` maps disease abbreviations to MeSH IDs, records the number of retained lists, and provides SHA-256 checksums for the source files. The derived table repeats the source path and checksum on each row so an input can be traced back to its original file.
