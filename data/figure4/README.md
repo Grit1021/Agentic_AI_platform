@@ -15,6 +15,8 @@ sheets are not part of the CSV exports.
 | `Figure4B_broad_context_matrix.csv` | S2 `Disease_context_matrix_24`. |
 | `Figure4C_disease_tag_counts.csv` | S3 `Fig4C_disease_tag_counts`. |
 | `Figure4D_AD_pathway_matrix.csv` | S3 `Fig4D_AD_pathway_matrix`. |
+| `reasoning_sources.tar.gz` | Unchanged local reasoning Markdown for 2,117 of the 2,127 historical paths referenced by S2. |
+| `reasoning_source_manifest.csv` | Every referenced source path, its S2 record count, archive status, bytes, and SHA-256. |
 
 `scripts/manuscript_figure4/reproduce_figure4.py` recomputes every Figure 4B
 broad-tag count and proportion from the record-level S2 table. It validates
@@ -24,6 +26,15 @@ versions of Figure 4B-D. S3 fine-grained cell-type tags were curated from the
 free-text records and supplied as deposited derived data. The script does not
 claim to regenerate every subtype assignment from raw reasoning files or the
 final manuscript artwork. Figure 4A is a four-record explanatory schematic.
+
+The reasoning-source archive preserves the relative paths recorded in S2.
+`scripts/manuscript_figure4/verify_reasoning_sources.py` validates the archive
+and reports the 10 referenced historical paths that were unavailable in the
+local source folder (19 S2 records refer to those paths). These source texts
+allow inspection of the model-derived pathway context but the original
+fine-grained tag curation code was not found in the local source tree. The S3
+subtype counts therefore remain an audited derived table rather than a fully
+reconstructed text-to-subtype pipeline.
 
 The 567 benchmark inputs live in `../gene_lists_567.csv`; the Figure 4
 record-level dataset covers the 543 gene lists with a validated pathway. These

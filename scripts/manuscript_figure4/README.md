@@ -5,6 +5,7 @@ run:
 
 ```bash
 python -m pip install -r scripts/manuscript_figure4/requirements.txt
+python scripts/manuscript_figure4/verify_reasoning_sources.py
 python scripts/manuscript_figure4/reproduce_figure4.py
 ```
 
@@ -20,3 +21,8 @@ Figure 4C top-tag selections (AD 10, PD 5, T2D 5), and the 11 recurrent AD
 pathways in Figure 4D. It checks S3 subtypes for internal consistency but
 cannot reconstruct their original curation from S2's broad tags alone. See
 [`data/figure4/README.md`](../../data/figure4/README.md) for file provenance.
+The separate reasoning-source verifier checks the archived text for 2,117 of
+the 2,127 files named by S2 and lists the 10 unavailable historical paths in
+`data/figure4/reasoning_source_manifest.csv`. These source texts support
+provenance inspection; they do not recover the original fine-grained subtype
+curation procedure used for Figure 4C/D.

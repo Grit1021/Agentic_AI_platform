@@ -4,8 +4,9 @@ The Figure 4 record-level context data and numerical source tables are in
 [`figure4/`](figure4/README.md); they document a later analysis of the 543
 benchmark inputs with at least one validated pathway.
 
-The compact five-disease memory experiment metrics for Supplementary Figure
-S7 are in [`suppfig_s7/`](suppfig_s7/README.md).
+The five-disease memory experiment inputs, historical run-log sources,
+7,182-pathway inventory, and Supplementary Figure S7 metrics are in
+[`suppfig_s7/`](suppfig_s7/README.md).
 
 `gene_lists_567.csv` contains the 567 disease–gene-list inputs used for the 24-disease pathway benchmark. Each row represents one disease and one network module. The `genes` field is a semicolon-separated list of Ensembl gene IDs from the source file's `node` column; `gene_count` counts distinct IDs in that list.
 
