@@ -17,7 +17,9 @@ import re
 from copy import deepcopy
 from pathlib import Path
 
-os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/figure2-mpl-cache")
+os.environ.setdefault(
+    "MPLCONFIGDIR", str(Path(__file__).resolve().parents[2] / "output" / ".mplconfig")
+)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt

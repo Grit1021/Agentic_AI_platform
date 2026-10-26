@@ -152,6 +152,18 @@ Cell and tissue assignments are multi-label interpretation outputs. They do not 
 
 ## Reproducibility
 
+For the selected offline analyses, install the pinned dependencies and run one
+command from the repository root. It extracts and verifies the historical
+outputs, then reconstructs Figure 2, audits Figure 4, and reproduces the
+Supplementary Figure S7 numerical plot. It makes no API calls.
+
+```bash
+python -m pip install -r scripts/manuscript_figure2/requirements.txt \
+  -r scripts/manuscript_figure4/requirements.txt \
+  -r scripts/manuscript_s7/requirements.txt
+python scripts/reproduce_selected_offline.py
+```
+
 Full runs call OpenAI, g:Profiler, NCBI MeSH, and NCBI Entrez / PubMed. The archived Figure 2 results can be regenerated from the bundled 567 input gene lists and historical two-round outputs by following [the Figure 2 reproduction guide](scripts/manuscript_figure2/README.md). Figure 4's numeric panels can be checked and rendered from the deposited [record-level context data and Figure 4 source tables](scripts/manuscript_figure4/README.md). The six-strategy [Supplementary Figure S7 audit](scripts/manuscript_s7/README.md) verifies the 69 exact inputs against five upstream module tables, rebuilds its four metric CSVs from 25 historical run logs, reproduces all 30 bars and bootstrap intervals, and checks the 7,182-pathway memory inventory against archived FDR outputs. A [live benchmark launcher](scripts/run_live_benchmark.py) plans all 567 inputs without API calls by default; `--execute` starts the external-service pipeline one disease at a time after credentials are configured. Re-running the external services may produce different outputs. Each prompt pass requests ten hypotheses per database; the workflow uses one initial pass and one feedback-guided refined pass. The primary benchmark stored validated pathways in the memory bank but did not retrieve cross-disease history during generation. Retrieval was evaluated only in the dedicated transfer experiment on 69 gene-list pairs from five diseases, using `text-embedding-3-small` for semantic indexing.
 
 ---
