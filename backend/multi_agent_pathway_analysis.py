@@ -90,7 +90,9 @@ class MultiAgentPathwayAnalyzer:
             print("\n⚠️  Using legacy agent loading (may have PyTorch compatibility issues)")
             
             try:
-                DEMO_SRC_PATH = "/Users/liyuxin/Documents/zotero/PhD/Research/AI_agent/codes/Biomedical-AI-Agent-revision-less-hallucination/src"
+                DEMO_SRC_PATH = os.environ.get("LEGACY_AGENTS_SRC")
+                if not DEMO_SRC_PATH:
+                    raise RuntimeError("Set LEGACY_AGENTS_SRC to use the optional legacy agents")
                 if DEMO_SRC_PATH not in sys.path:
                     sys.path.insert(0, DEMO_SRC_PATH)
                 

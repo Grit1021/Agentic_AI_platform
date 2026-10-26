@@ -3675,8 +3675,9 @@ def main():
     """Example: Run iterative GPT-Agent feedback framework"""
 
     # Setup paths
-    input_dir = "/Users/liyuxin/Documents/zotero/PhD/Research/AI_agent/codes/Genetic_AI_Agent/src/utils/Network_expansion/outputs/disease_pair_expansion"
-    output_dir = "/Users/liyuxin/Documents/zotero/PhD/Research/AI_agent/codes/Genetic_AI_Agent/src/utils/Pathway_analysis"
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    input_dir = os.environ.get("BENCHMARK_MODULES_DIR", os.path.join(repo_root, "data", "source_modules"))
+    output_dir = os.environ.get("PATHWAY_OUTPUT_DIR", os.path.join(repo_root, "output", "standalone_examples"))
 
     # Load data
     disease_file = os.path.join(input_dir, "D000544_modules.csv")
