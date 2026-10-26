@@ -4,10 +4,10 @@
 import argparse
 import csv
 import json
-import random
 from collections import Counter, defaultdict
 from pathlib import Path
-from statistics import mean
+
+import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -50,29 +50,32 @@ def read_source(path):
     return rows
 
 
-def quantile(sorted_values, p):
-    pos = (len(sorted_values) - 1) * p
-    low = int(pos)
-    high = min(low + 1, len(sorted_values) - 1)
-    return sorted_values[low] + (sorted_values[high] - sorted_values[low]) * (pos - low)
+def bootstrap(valid_rows, repeats, rng):
+    """Mirror the historical plot's disease -> valid-module bootstrap.
 
-
-def bootstrap(by_pair, all_pairs, category, repeats, rng):
-    """Resample diseases, then modules within each sampled disease."""
-    diseases = sorted(all_pairs)
-    values = []
-    for _ in range(repeats):
-        sample = []
-        for disease in rng.choices(diseases, k=len(diseases)):
-            modules = all_pairs[disease]
-            for module in rng.choices(modules, k=len(modules)):
-                value = by_pair.get((disease, module, category))
-                if value is not None:
-                    sample.append(value)
-        if sample:
-            values.append(mean(sample))
-    values.sort()
-    return quantile(values, 0.025), quantile(values, 0.975)
+    Reference: plot_memory_effect_by_category.py, SHA-256
+    1e8e2c2580028bf0f875f942d22905683ea7e4f30dbbc86f7831122caa903eaf.
+    """
+    disease_groups = {}
+    for row in valid_rows:
+        modules = disease_groups.setdefault(row["disease"], {})
+        modules.setdefault(row["module"], []).append(row["nfdr_pct"])
+    groups = [[np.asarray(values, dtype=float) for values in modules.values()]
+              for modules in disease_groups.values()]
+    if len(groups) <= 1:
+        value = float(np.mean([r["nfdr_pct"] for r in valid_rows]))
+        return value, value
+    boot_means = np.empty(repeats, dtype=float)
+    for index in range(repeats):
+        sampled_diseases = rng.integers(0, len(groups), len(groups))
+        sampled_values = []
+        for disease_index in sampled_diseases:
+            modules = groups[disease_index]
+            sampled_modules = rng.integers(0, len(modules), len(modules))
+            sampled_values.extend(modules[module_index] for module_index in sampled_modules)
+        boot_means[index] = np.mean(np.concatenate(sampled_values))
+    low, high = np.percentile(boot_means, [2.5, 97.5])
+    return max(0.0, float(low)), min(100.0, float(high))
 
 
 def write_csv(path, fieldnames, rows):
@@ -87,7 +90,6 @@ def make_plot(summary, output_dir):
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    import numpy as np
 
     fig, ax = plt.subplots(figsize=(11, 5.6))
     x = np.arange(len(CATEGORIES))
@@ -120,7 +122,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=ROOT / "output" / "suppfig_s7_reproduction")
     parser.add_argument("--bootstrap", type=int, default=3000)
-    parser.add_argument("--seed", type=int, default=20261025)
+    parser.add_argument("--seed", type=int, default=2406)
     parser.add_argument("--no-plot", action="store_true")
     args = parser.parse_args()
     if args.bootstrap < 1:
@@ -141,29 +143,34 @@ def main():
         all_pairs[disease].append(module)
 
     summary = []
-    rng = random.Random(args.seed)
+    rng = np.random.default_rng(args.seed)
+    selections = {}
     for strategy, filename, condition, iteration in STRATEGIES:
         rows = [r for r in source_rows[filename]
                 if r["iteration"] == iteration and (condition is None or r.get("condition") == condition)]
         round_pairs = {(r["disease"], r["module"]) for r in rows}
         if len(rows) != 5 * len(round_pairs):
             raise AssertionError("Incomplete category rows for " + strategy)
-        by_pair = {(r["disease"], r["module"], r["category"]): r["nfdr_pct"]
-                   for r in rows if r["new_matched"] > 0}
-        for index, category in enumerate(CATEGORIES):
-            values = [r["nfdr_pct"] for r in rows
-                      if r["category"] == category and r["new_matched"] > 0]
-            result = mean(values)
+        selections[strategy] = (rows, len(round_pairs), filename)
+    # The historical plotting function iterated categories first, then strategies,
+    # using one seeded NumPy generator throughout all 30 interval calculations.
+    for index, category in enumerate(CATEGORIES):
+        for strategy, _, _, _ in STRATEGIES:
+            rows, round_pair_count, filename = selections[strategy]
+            valid_rows = [r for r in rows
+                          if r["category"] == category and r["new_matched"] > 0]
+            values = [r["nfdr_pct"] for r in valid_rows]
+            result = float(np.mean(values))
             if abs(result - REPORTED_BARS[strategy][index]) >= 0.05000001:
                 raise AssertionError("Reported S7 bar mismatch: %s %s %.4f" %
                                      (strategy, category, result))
-            lo, hi = bootstrap(by_pair, all_pairs, category, args.bootstrap, rng)
+            lo, hi = bootstrap(valid_rows, args.bootstrap, rng)
             summary.append({
                 "strategy": strategy,
                 "category": category,
                 "input_pairs": sum(map(len, all_pairs.values())),
-                "round_pairs_present": len(round_pairs),
-                "valid_n_new_matched_gt_0": len(values),
+                "round_pairs_present": round_pair_count,
+                "valid_n_new_matched_gt_0": len(valid_rows),
                 "pass_rate_pct": round(result, 6),
                 "reported_bar_pct": REPORTED_BARS[strategy][index],
                 "bootstrap_95_lower_pct": round(lo, 6),
@@ -176,13 +183,14 @@ def main():
     audit = {
         "cohort_pair_counts": EXPECTED_PAIR_COUNTS,
         "bar_calculation": "Unweighted mean of nfdr_pct after excluding new_matched=0; one row per available disease/module/category.",
-        "bootstrap": "Independent deterministic two-level bootstrap: diseases with replacement, then modules within each selected disease; unavailable and new_matched=0 rows omitted.",
+        "bootstrap": "Historical Figure S7 two-level bootstrap: after filtering new_matched=0, diseases with replacement, then valid modules within each selected disease; NumPy default_rng shared across category-major/strategy-minor bar order.",
         "bootstrap_seed": args.seed,
         "bootstrap_repeats": args.bootstrap,
+        "historical_bootstrap_script_sha256": "1e8e2c2580028bf0f875f942d22905683ea7e4f30dbbc86f7831122caa903eaf",
         "reported_bars_matched": 30,
         "round_pairs_present": {name: next(r["round_pairs_present"] for r in summary if r["strategy"] == name)
                                 for name, _, _, _ in STRATEGIES},
-        "limits": "Deposited CSVs are derived metrics. Original model/API responses, memory bank construction, retrieval traces, and original bootstrap random state are not reconstructed.",
+        "limits": "Deposited CSVs are derived metrics. Original model/API responses, memory bank construction, and retrieval traces are not reconstructed.",
     }
     (args.output_dir / "Supplementary_Figure_S7_audit.json").write_text(
         json.dumps(audit, indent=2) + "\n", encoding="utf-8")

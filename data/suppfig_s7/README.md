@@ -28,10 +28,13 @@ reproduction script.
 The pass-rate definition is the simple mean of `nfdr_pct` over available rows
 with `new_matched > 0` for each strategy/category. This calculation matches
 all 30 one-decimal bars in the submitted Supplementary Figure S7. The script
-also implements a deterministic 3,000-draw two-level bootstrap of diseases,
-then modules within disease. Its intervals are an independent reconstruction:
-the original random seed and detailed bootstrap implementation are not
-archived, so exact original whisker endpoints cannot be certified.
+also implements the historical 3,000-draw two-level bootstrap of diseases,
+then valid modules within disease, with the original NumPy seed of 2406 and
+one random generator shared across all 30 bars. The algorithm was traced to
+the historical `plot_memory_effect_by_category.py` (SHA-256
+`1e8e2c2580028bf0f875f942d22905683ea7e4f30dbbc86f7831122caa903eaf`).
+All 30 means and 60 confidence-interval endpoints matched that original
+function to within the six-decimal precision of the exported audit CSV.
 
 Run `python scripts/manuscript_s7/reproduce_s7.py` from any location. See the
 [script guide](../../scripts/manuscript_s7/README.md) for outputs and options.
