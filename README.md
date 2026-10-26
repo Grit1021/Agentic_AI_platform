@@ -39,7 +39,7 @@ Given a **disease** and a **gene list**, a human-expert-designed orchestrator ru
 
 The interpretation stage itself calls no external tool. The user-facing implementation can separately attach provenance-preserving PubMed evidence to pathway-level context when matching disease, cell/tissue labels, and intersection genes are available.
 
-The archived benchmark contains **567 disease–gene-list pairs across 24 complex diseases**. The audited Figure 2 snapshot yields disease-macro mean FDR-support rates of **29.3% in round 1 and 39.6% in round 2** when category rows with at least one newly matched term are averaged within each disease. Earlier draft values of 28.9% and 39.8% do not follow from this archived snapshot under that definition and require reconciliation before citation. Statistical testing remains necessary after refinement because many new hypotheses still fail enrichment.
+The archived benchmark contains **567 disease–gene-list pairs across 24 complex diseases**. Following the manuscript's disease-macro definition, the matched-term FDR pass rate was **28.9% for the initial prompt (Figure 2)** and **39.8% after feedback refinement (Figure 3)**. Gene-list rates are averaged within each disease and database, the five database rates are averaged within each disease, and the 24 diseases receive equal weight. The source logs and reproduction commands are documented in [`scripts/manuscript_figure2/README.md`](scripts/manuscript_figure2/README.md). Statistical testing remains necessary after refinement because many new hypotheses still fail enrichment.
 
 ---
 

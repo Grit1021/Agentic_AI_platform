@@ -151,13 +151,17 @@ def _current_round1_validation_counts() -> tuple[pd.DataFrame, pd.DataFrame]:
     return counts, inventory
 
 
-def _apply_current_round1_validation(
+def _audit_current_round1_validation(
     metrics: pd.DataFrame,
     validation_counts: pd.DataFrame,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Replace stale round-1 log match rates with current matched CSV counts."""
-    result = metrics.copy()
-    round1 = result[result["iteration"].eq(1)].copy()
+) -> pd.DataFrame:
+    """Audit current matched CSV counts without changing manuscript log rates.
+
+    The matched-term files were updated after the logged benchmark snapshot for
+    some pairs. Overwriting the log rates mixes two snapshots and changes the
+    paper's Figure 2 statistics. Keep the discrepancy in the audit table.
+    """
+    round1 = metrics[metrics["iteration"].eq(1)].copy()
     audit = round1.merge(
         validation_counts,
         on=["disease", "module", "category"],
@@ -177,25 +181,11 @@ def _apply_current_round1_validation(
         audit["fdr_rows"] / audit["matched_rows"] * 100.0,
         0.0,
     )
-    keys = ["disease", "module", "iteration", "category"]
-    updates = audit[keys + ["matched_rows", "fdr_rows"]].copy()
-    updates["matched"] = updates["matched_rows"].astype(int)
-    updates["new_matched"] = updates["matched_rows"].astype(int)
-    updates["fdr_pct"] = current_rate
-    updates["nfdr_pct"] = current_rate
-    update_columns = ["matched", "new_matched", "fdr_pct", "nfdr_pct"]
-    result[["fdr_pct", "nfdr_pct"]] = result[
-        ["fdr_pct", "nfdr_pct"]
-    ].astype(float)
-    result = result.set_index(keys)
-    updates = updates.set_index(keys)
-    result.loc[updates.index, update_columns] = updates[update_columns]
-    result = result.reset_index().sort_values(keys).reset_index(drop=True)
     audit["current_fdr_pct"] = current_rate
     audit["matched_row_difference"] = (
         audit["matched_rows"] - audit["log_new_matched"]
     )
-    return result, audit
+    return audit
 
 
 def build_current_metrics() -> tuple[
@@ -282,7 +272,7 @@ def build_current_metrics() -> tuple[
         raise ValueError(f"Expected 567 round-1 pairs; found {len(pair_audit)}")
 
     validation_counts, e_inventory = _current_round1_validation_counts()
-    metrics, validation_audit = _apply_current_round1_validation(
+    validation_audit = _audit_current_round1_validation(
         metrics, validation_counts
     )
     enriched = metrics.merge(

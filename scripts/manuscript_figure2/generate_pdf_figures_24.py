@@ -6,7 +6,7 @@ Outputs (saved to ../pdf/):
   1. nfdr_trend_composite.pdf/.png/.svg   — 5-panel composite (3 top + 2 bottom)
   2. gpt_fdr_performance_overview.pdf/.png/.svg — Zero-shot overview (box + stacked bar)
 
-Data source: cross_disease_24_nfdr_metrics_v5.csv
+Data source: Figure 2 builder's paper-aligned v6 metric CSV.
 """
 
 import os
@@ -22,9 +22,12 @@ from scipy.stats import gaussian_kde
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, "..", ".."))
 RUN_ROOT = os.environ.get("BENCHMARK_RUN_ROOT", PROJECT_ROOT)
-CSV_PATH = os.path.join(SCRIPT_DIR, "cross_disease_24_nfdr_metrics_v5.csv")
-MODSIZE_CSV = os.path.join(SCRIPT_DIR, "nfdr_with_module_size_external.csv")
 OUTPUT_DIR = os.environ.get("BENCHMARK_FIGURE2_OUTPUT_DIR", os.path.join(PROJECT_ROOT, "output", "figure2_consistent_current"))
+MODSIZE_CSV = os.path.join(OUTPUT_DIR, "Figure2_current_metrics_with_module_size.csv")
+CSV_PATH = os.environ.get(
+    "BENCHMARK_FIGURE_METRICS",
+    os.path.join(OUTPUT_DIR, "Figure2_current_metrics_24_diseases.csv"),
+)
 # Per-(disease, module) GPT predictions + g:Profiler matched files (Panel 2D).
 MEMBANK_DIR = os.path.join(RUN_ROOT, "result", "memory_bank_external")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
